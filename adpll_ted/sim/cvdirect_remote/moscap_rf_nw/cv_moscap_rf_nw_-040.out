@@ -1,0 +1,247 @@
+
+Spectre (R) Circuit Simulator
+Version 25.1.0.393.isr10 64bit -- 9 Jun 2026
+Copyright (C) 1989-2026 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: mei   Host: dell5860   HostID: A8C0156E   PID: 2131048
+Memory  available: 256.3534 GB  physical: 269.1193 GB
+Linux   : Rocky Linux release 8.10 (Green Obsidian)
+CPU Type: Intel(R) Xeon(R) w7-2495X
+        Socket: Processors [Frequency] (Hyperthreaded Processor)
+        0:       0 [3295.0] ( 24 ),  1 [3300.0] ( 25 ),  2 [3266.3] ( 26 )
+                 3 [3300.0] ( 27 ),  4 [3300.0] ( 28 ),  5 [3300.0] ( 29 )
+                 6 [3300.0] ( 30 ),  7 [3300.0] ( 31 ),  8 [3282.3] ( 32 )
+                 9 [3300.0] ( 33 ), 10 [3300.0] ( 34 ), 11 [3300.0] ( 35 )
+                12 [3300.0] ( 36 ), 13 [3300.0] ( 37 ), 14 [3300.0] ( 38 )
+                15 [3300.0] ( 39 ), 16 [3300.0] ( 40 ), 17 [3300.0] ( 41 )
+                18 [3258.7] ( 42 ), 19 [3300.0] ( 43 ), 20 [3300.0] ( 44 )
+                21 [3284.7] ( 45 ), 22 [3300.0] ( 46 ), 23 [3300.0] ( 47 )
+        
+System load averages (1min, 5min, 15min) : 27.8 %, 36.7 %, 31.9 %
+Hyperthreading is enabled
+
+
+Simulating `cv_moscap_rf_nw_-040.scs' on dell5860 at 10:58:52 AM, Wed Aug 26, 2026 (process id: 2131048).
+Current working directory: /tmp/gmei_cvd/cvdirect/moscap_rf_nw
+Environment variable:
+    SPECTRE_DEFAULTS=-E
+Command line:
+    /edatool/cadence/spectre2510.10.393/tools.lnx86/bin/spectre -64  \
+        cv_moscap_rf_nw_-040.scs +escchars +log  \
+        cv_moscap_rf_nw_-040.out -format psfascii -raw  \
+        ./cv_moscap_rf_nw_-040.raw +mt=1
+
+Licensing Information:
+[10:58:53.199089] Configured Lic search path (24.01-s002): 5280@192.168.110.18
+
+Licensing Information:
+[10:58:53.481441] Periodic Lic check successful
+
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libinfineon_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libphilips_I_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libphilips_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libsparam_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libstmodels_sh.so ...
+Reading file:  /tmp/gmei_cvd/cvdirect/moscap_rf_nw/cv_moscap_rf_nw_-040.scs
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/configs/spectre.cfg
+Reading file:  /usr/include/stdc-predef.h
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/tmi.cfg
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_aux.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/crn12ffcll_lct_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/res_metal.scs
+Time for NDB Parsing: CPU = 1.22911 s, elapsed = 2.87035 s.
+Time accumulated: CPU = 1.31488 s, elapsed = 2.87035 s.
+Peak resident memory used = 214 Mbytes.
+
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_dir/RH_64/libTMImodel.so
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_age_dir/RH_64/libTMImodel.so
+Reading link:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/discipline.h
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/disciplines.vams
+Reading link:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/constants.h
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/constants.vams
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_dir
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_age_dir
+
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+        Further occurrences of this warning will be suppressed.
+
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB/ (775)
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB//bsource_6dae8c.va.bsource_6dae8c.ahdlcmi/ (775)
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB//bsource_6dae8c.va.bsource_6dae8c.ahdlcmi/Linux-64/ (775)
+Compiling ahdlcmi module library for bsource_6dae8c.
+Finished compilation in 10.3 s (elapsed) for bsource_6dae8c.
+Installed compiled interface for bsource_6dae8c.
+Opening directory ./cv_moscap_rf_nw_-040.ahdlSimDB/ (775)
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB//bsource_a74972.va.bsource_a74972.ahdlcmi/ (775)
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB//bsource_a74972.va.bsource_a74972.ahdlcmi/Linux-64/ (775)
+Compiling ahdlcmi module library for bsource_a74972.
+Finished compilation in 5.54 s (elapsed) for bsource_a74972.
+Installed compiled interface for bsource_a74972.
+Opening directory ./cv_moscap_rf_nw_-040.ahdlSimDB/ (775)
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB//bsource_4c6a7e.va.bsource_4c6a7e.ahdlcmi/ (775)
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB//bsource_4c6a7e.va.bsource_4c6a7e.ahdlcmi/Linux-64/ (775)
+Compiling ahdlcmi module library for bsource_4c6a7e.
+Finished compilation in 6.38 s (elapsed) for bsource_4c6a7e.
+Installed compiled interface for bsource_4c6a7e.
+Opening directory ./cv_moscap_rf_nw_-040.ahdlSimDB/ (775)
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB//bsource_35bd08.va.bsource_35bd08.ahdlcmi/ (775)
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB//bsource_35bd08.va.bsource_35bd08.ahdlcmi/Linux-64/ (775)
+Compiling ahdlcmi module library for bsource_35bd08.
+Finished compilation in 1.97 s (elapsed) for bsource_35bd08.
+Installed compiled interface for bsource_35bd08.
+Opening directory ./cv_moscap_rf_nw_-040.ahdlSimDB/ (775)
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB//bsource_7626b8.va.bsource_7626b8.ahdlcmi/ (775)
+Created directory ./cv_moscap_rf_nw_-040.ahdlSimDB//bsource_7626b8.va.bsource_7626b8.ahdlcmi/Linux-64/ (775)
+Compiling ahdlcmi module library for bsource_7626b8.
+Finished compilation in 4.47 s (elapsed) for bsource_7626b8.
+Installed compiled interface for bsource_7626b8.
+Time for Elaboration: CPU = 4.81064 s, elapsed = 29.3128 s.
+Time accumulated: CPU = 6.1256 s, elapsed = 32.1832 s.
+Peak resident memory used = 259 Mbytes.
+
+
+Time for EDB Visiting: CPU = 847 us, elapsed = 849.962 us.
+Time accumulated: CPU = 6.12651 s, elapsed = 32.1841 s.
+Peak resident memory used = 259 Mbytes.
+
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/tmi.cfg
+
+Netlist title:
+        // cvdirect moscap_rf_nw_-040
+
+
+Global user options:
+             tmiage = 1
+          tmioutput = /tmp/gmei_cvd/cvdirect/moscap_rf_nw/./cv_moscap_rf_nw_-040
+            degfile = /tmp/gmei_cvd/cvdirect/moscap_rf_nw/./cv_moscap_rf_nw_-040
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 10
+     bsource_4c6a7e 1     
+     bsource_6dae8c 1     
+     bsource_35bd08 1     
+     bsource_7626b8 1     
+     bsource_a74972 1     
+          capacitor 1     
+              diode 1     
+           inductor 2     
+            isource 1     
+           resistor 5     
+            vsource 2     
+
+Analysis and control statement inventory:
+               tran 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 1     
+
+
+Notice from spectre.
+    10 warnings suppressed.
+
+Time for parsing: CPU = 1.439 ms, elapsed = 6.22082 ms.
+Time accumulated: CPU = 6.12799 s, elapsed = 32.1904 s.
+Peak resident memory used = 264 Mbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+
+*************************************************
+Transient Analysis `cvtran': time = (0 s -> 4 ns)
+*************************************************
+Convergence achieved in 2 iterations.
+DC simulation time: CPU = 219 us, elapsed = 220.06 us.
+
+Opening the PSFASCII file ./cv_moscap_rf_nw_-040.raw/cvtran.tran.tran ...
+Important parameter values:
+    start = 0 s
+    outputstart = 0 s
+    stop = 4 ns
+    step = 4 ps
+    maxstep = 1 ps
+    ic = all
+    useprevic = no
+    skipdc = no
+    reltol = 10e-03
+    abstol(V) = 1 uV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    errpreset = liberal
+    method = gear2only
+    lteratio = 3.5
+    relref = sigglobal
+    cmin = 0 F
+    gmin = 1 pS
+
+
+Output and IC/nodeset summary:
+                 save   1       (voltage)
+
+......9......8......7......6......5......4......3......2......1......0
+Number of accepted tran steps =             4003
+If your circuit contains signals of the same quantity that are vastly different in size (such as high voltage circuitry combined with low voltage control circuitry), you should consider specifying global option `bin_relref=yes'.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Post-Transient Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   -   To further speed up simulation, consider
+          add ++aps on command line
+   -   Non-default settings that could significantly slow down simulation
+          maxstep = 1 ps, default 80 ps
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+During simulation, the CPU load for active processors is :
+         0 (99.4 %)      1 (99.0 %)      2 (99.1 %)      3 (99.3 %)
+         4 (99.2 %)      5 (99.5 %)      6 (99.3 %)      7 (99.8 %)
+         8 (99.6 %)      9 (99.5 %)     10 (99.8 %)     11 (99.9 %)
+        12 (99.6 %)     13 (99.0 %)     14 (99.6 %)     15 (99.3 %)
+        16 (99.6 %)     17 (99.4 %)     18 (99.3 %)     19 (99.3 %)
+        20 (99.2 %)     21 (99.6 %)     22 (99.1 %)     23 (99.8 %)
+        24 (97.6 %)     25 (97.5 %)     26 (97.9 %)     27 (97.9 %)
+        28 (97.9 %)     29 (97.5 %)     30 (97.7 %)     31 (98.3 %)
+        32 (97.7 %)     33 (97.8 %)     34 (97.9 %)     35 (98.4 %)
+        36 (97.7 %)     37 (97.7 %)     38 (97.9 %)     39 (98.1 %)
+        40 (97.9 %)     41 (97.8 %)     42 (97.7 %)     43 (97.9 %)
+        44 (97.9 %)     45 (97.8 %)     46 (97.6 %)     47 (98.0 %)
+        Total: 4734.3%
+Initial condition solution time: CPU = 243 us, elapsed = 242.949 us.
+Intrinsic tran analysis time:    CPU = 47.398 ms, elapsed = 49.8559 ms.
+
+Maximum value achieved for any signal of each quantity: 
+V: V(X1.1) = 806.7 mV
+I: I(X1.lsd_rf:1) = 1 uA
+Total time required for tran analysis `cvtran': CPU = 48.183 ms, elapsed = 50.6399 ms, util. = 95.1%.
+Time accumulated: CPU = 6.18135 s, elapsed = 32.2488 s.
+Peak resident memory used = 264 Mbytes.
+
+Licensing Information:
+Lic Summary:
+[10:59:25.001328] cdslmd servers: 5280@192.168.110.18
+[10:59:25.016560] Feature usage summary:
+[10:59:25.145423]   Virtuoso_Spectre  
+
+
+Aggregate audit (10:59:25 AM, Wed Aug 26, 2026):
+Time used: CPU = 6.19 s, elapsed = 32.3 s, util. = 19.2%.
+Time spent in licensing: elapsed = 511 ms.
+Peak memory used = 265 Mbytes.
+Simulation started at: 10:58:52 AM, Wed Aug 26, 2026, ended at: 10:59:25 AM, Wed Aug 26, 2026, with elapsed time (wall clock): 32.3 s.
+spectre completes with 0 errors, 5 warnings, and 2 notices.

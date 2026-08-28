@@ -1,0 +1,86 @@
+// vco_dual.scs — reconfigurable dual-core VCO (paper Fig.12/13), generated
+// EN2=0.8: dual-core; EN2=0: core B powered down, coupling off (single-core)
+// VDD feeds both cores via MPWRB; COUTP/COUTN are the shorted tank outputs
+
+subckt vco_x (VDD VSS VCTRL OUTP OUTN)
+
+MN1 (OUTP OUTN VSS VSS) nch_svt_mac l=16n nfin=2 w=58n multi=1 nf=16 \
+        sd=74n sa=90n sb=90n ploda1=16n ploda2=0 ploda3=0 plodb1=16n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=103n spob=103n spotl1=103n spobl1=103n spotl2=103n \
+        spobl2=103n spotr1=103n spobr1=103n spotr2=103n spobr2=103n
+MN0 (OUTN OUTP VSS VSS) nch_svt_mac l=16n nfin=2 w=58n multi=1 nf=16 \
+        sd=74n sa=90n sb=90n ploda1=16n ploda2=0 ploda3=0 plodb1=16n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=103n spob=103n spotl1=103n spobl1=103n spotl2=103n \
+        spobl2=103n spotr1=103n spobr1=103n spotr2=103n spobr2=103n
+L1 (VDD OUTN) inductor l=2.49n r=2
+L0 (VDD OUTP) inductor l=2.49n r=2
+CF11 (net08 OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 \
+        nr=192 n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF10 (net09 OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 \
+        nr=192 n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF9 (OUTN OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 nr=192 \
+        n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF8 (net15 OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 nr=192 \
+        n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF7 (net16 OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 nr=192 \
+        n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF6 (OUTP OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 nr=192 \
+        n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF5 (net8 OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 nr=192 \
+        n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF4 (net9 OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 nr=192 \
+        n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF3 (net10 OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 nr=192 \
+        n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF2 (net11 OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 nr=192 \
+        n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF1 (net12 OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 nr=192 \
+        n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CF0 (OUTP OUTN VSS) cfmom_wo_p80 dmflag=0 lr=1u multi=1 mxd_flag=0 nr=192 \
+        n_mxa=2 shield=2 spm=3 stm=1 vapmod=2 grflag=1 gdis_t=185n \
+        gdis_b=185n gdis_l=102n gdis_r=102n
+CV_OUTN_0 (OUTN VB_OUTN_0 VB_OUTN_0) moscap_rf wr=28n nfin=12 lr=200n gr=2 br=2 multi=1
+E_OUTN_0 (VB_OUTN_0 VOF_OUTN_0 VCTRL 0) vcvs gain=1.0
+V_OUTN_0 (VOF_OUTN_0 0) vsource dc=-0.2
+CV_OUTN_1 (OUTN VB_OUTN_1 VB_OUTN_1) moscap_rf wr=28n nfin=12 lr=200n gr=2 br=2 multi=1
+E_OUTN_1 (VB_OUTN_1 VOF_OUTN_1 VCTRL 0) vcvs gain=1.0
+V_OUTN_1 (VOF_OUTN_1 0) vsource dc=-0.3
+CV_OUTN_2 (OUTN VB_OUTN_2 VB_OUTN_2) moscap_rf wr=28n nfin=12 lr=200n gr=2 br=2 multi=1
+E_OUTN_2 (VB_OUTN_2 VOF_OUTN_2 VCTRL 0) vcvs gain=1.0
+V_OUTN_2 (VOF_OUTN_2 0) vsource dc=-0.4
+CV_OUTN_3 (OUTN VB_OUTN_3 VB_OUTN_3) moscap_rf wr=28n nfin=12 lr=200n gr=2 br=2 multi=1
+E_OUTN_3 (VB_OUTN_3 VOF_OUTN_3 VCTRL 0) vcvs gain=1.0
+V_OUTN_3 (VOF_OUTN_3 0) vsource dc=-0.5
+CV_OUTN_4 (OUTN VB_OUTN_4 VB_OUTN_4) moscap_rf wr=28n nfin=12 lr=200n gr=2 br=2 multi=1
+E_OUTN_4 (VB_OUTN_4 VOF_OUTN_4 VCTRL 0) vcvs gain=1.0
+V_OUTN_4 (VOF_OUTN_4 0) vsource dc=-0.6
+CV_OUTP_0 (OUTP VB_OUTP_0 VB_OUTP_0) moscap_rf wr=28n nfin=12 lr=200n gr=2 br=2 multi=1
+E_OUTP_0 (VB_OUTP_0 VOF_OUTP_0 VCTRL 0) vcvs gain=1.0
+V_OUTP_0 (VOF_OUTP_0 0) vsource dc=-0.2
+CV_OUTP_1 (OUTP VB_OUTP_1 VB_OUTP_1) moscap_rf wr=28n nfin=12 lr=200n gr=2 br=2 multi=1
+E_OUTP_1 (VB_OUTP_1 VOF_OUTP_1 VCTRL 0) vcvs gain=1.0
+V_OUTP_1 (VOF_OUTP_1 0) vsource dc=-0.3
+CV_OUTP_2 (OUTP VB_OUTP_2 VB_OUTP_2) moscap_rf wr=28n nfin=12 lr=200n gr=2 br=2 multi=1
+E_OUTP_2 (VB_OUTP_2 VOF_OUTP_2 VCTRL 0) vcvs gain=1.0
+V_OUTP_2 (VOF_OUTP_2 0) vsource dc=-0.4
+CV_OUTP_3 (OUTP VB_OUTP_3 VB_OUTP_3) moscap_rf wr=28n nfin=12 lr=200n gr=2 br=2 multi=1
+E_OUTP_3 (VB_OUTP_3 VOF_OUTP_3 VCTRL 0) vcvs gain=1.0
+V_OUTP_3 (VOF_OUTP_3 0) vsource dc=-0.5
+CV_OUTP_4 (OUTP VB_OUTP_4 VB_OUTP_4) moscap_rf wr=28n nfin=12 lr=200n gr=2 br=2 multi=1
+E_OUTP_4 (VB_OUTP_4 VOF_OUTP_4 VCTRL 0) vcvs gain=1.0
+V_OUTP_4 (VOF_OUTP_4 0) vsource dc=-0.6
+ends vco_x
+

@@ -1,0 +1,36 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Tue Aug 25 15:33:06 2026"
+"psfversion" "1.4.0"
+"simulator" "spectre"
+"version" "25.1.0.393.isr10"
+"date" "3:33:06 PM, Tue Aug 25, 2026"
+"design" "// dtc_code960.scs — DTC delay vs code (thermometer pattern of first 960 gates on)"
+"signalNameType" "spectre"
+"simMode" "Spectre X"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"plltran-tran" "analysisInst" (
+"tran"
+"plltran.tran.tran"
+"PSF"
+""
+("time")
+"Transient Analysis `plltran': time = (0 s -> 40 ns)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+END

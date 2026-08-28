@@ -1,0 +1,366 @@
+
+Spectre (R) Circuit Simulator
+Version 25.1.0.393.isr10 64bit -- 9 Jun 2026
+Copyright (C) 1989-2026 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: mei   Host: dell5860   HostID: A8C0156E   PID: 1704253
+Memory  available: 260.4286 GB  physical: 269.1193 GB
+Linux   : Rocky Linux release 8.10 (Green Obsidian)
+CPU Type: Intel(R) Xeon(R) w7-2495X
+        Socket: Processors [Frequency] (Hyperthreaded Processor)
+        0:       0 [2500.0] ( 24 ),  1 [2500.0] ( 25 ),  2 [2500.0] ( 26 )
+                 3 [2500.0] ( 27 ),  4 [2500.0] ( 28 ),  5 [2500.0] ( 29 )
+                 6 [2500.0] ( 30 ),  7 [4286.8] ( 31 ),  8 [2500.0] ( 32 )
+                 9 [2500.0] ( 33 ), 10 [2500.0] ( 34 ), 11 [2500.0] ( 35 )
+                12 [2500.0] ( 36 ), 13 [2500.0] ( 37 ), 14 [2500.0] ( 38 )
+                15 [2500.0] ( 39 ), 16 [2500.0] ( 40 ), 17 [2500.0] ( 41 )
+                18 [2500.0] ( 42 ), 19 [2500.0] ( 43 ), 20 [2500.0] ( 44 )
+                21 [2500.0] ( 45 ), 22 [2500.0] ( 46 ), 23 [2500.0] ( 47 )
+        
+System load averages (1min, 5min, 15min) : 2.2 %, 2.2 %, 2.8 %
+Hyperthreading is enabled
+HPC is enabled
+
+
+Simulating `/tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_pnoise_single.scs' on dell5860 at 3:24:20 PM, Tue Aug 25, 2026 (process id: 1704253).
+Current working directory: /home/mei
+Environment variable:
+    SPECTRE_DEFAULTS=-E
+Command line:
+    /edatool/cadence/spectre2510.10.393/tools.lnx86/bin/spectre -64  \
+        /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_pnoise_single.scs  \
+        +escchars +log  \
+        /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/spectre.out  \
+        -format psfascii -raw  \
+        /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_pnoise_single.raw  \
+        +aps +lqtimeout 900 -maxw 5 -maxn 5 +logstatus
+
+Licensing Information:
+[15:24:20.199025] Configured Lic search path (24.01-s002): 5280@192.168.110.18
+
+Licensing Information:
+[15:24:21.018408] Periodic Lic check successful
+
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libinfineon_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libphilips_I_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libphilips_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libsparam_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libstmodels_sh.so ...
+Reading file:  /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_pnoise_single.scs
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/configs/spectre.cfg
+Reading file:  /usr/include/stdc-predef.h
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/tmi.cfg
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_aux.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/crn12ffcll_lct_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/res_metal.scs
+Reading file:  /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_dual.scs
+Time for NDB Parsing: CPU = 485.49 ms, elapsed = 538.093 ms.
+Time accumulated: CPU = 542.269 ms, elapsed = 538.094 ms.
+Peak resident memory used = 210 Mbytes.
+
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_dir/RH_64/libTMImodel.so
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_age_dir/RH_64/libTMImodel.so
+Reading link:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/discipline.h
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/disciplines.vams
+Reading link:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/constants.h
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/constants.vams
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_dir
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_age_dir
+
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+        Further occurrences of this warning will be suppressed.
+
+Existing shared object for module bsource_72cbce is up to date.
+Installed compiled interface for bsource_72cbce.
+Existing shared object for module bsource_e2a846 is up to date.
+Installed compiled interface for bsource_e2a846.
+Existing shared object for module bsource_6dae8c is up to date.
+Installed compiled interface for bsource_6dae8c.
+Existing shared object for module bsource_a74972 is up to date.
+Installed compiled interface for bsource_a74972.
+Existing shared object for module bsource_4c6a7e is up to date.
+Installed compiled interface for bsource_4c6a7e.
+Existing shared object for module bsource_35bd08 is up to date.
+Installed compiled interface for bsource_35bd08.
+Existing shared object for module bsource_7626b8 is up to date.
+Installed compiled interface for bsource_7626b8.
+
+Warning from spectre during hierarchy flattening.
+    WARNING (SFE-106): "/tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_pnoise_single.scs" 13: Parameter `type', specified for analysis `pnoise', has been ignored because it is an invalid analysis parameter. Specify a valid analysis parameter and rerun the simulation. Type `spectre -h pnoise' to get more information on valid pnoise analysis parameters.
+    WARNING (SFE-106): "/tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_pnoise_single.scs" 13: Parameter `points', specified for analysis `pnoise', has been ignored because it is an invalid analysis parameter. Specify a valid analysis parameter and rerun the simulation. Type `spectre -h pnoise' to get more information on valid pnoise analysis parameters.
+    WARNING (SFE-106): "/tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_pnoise_single.scs" 13: Parameter `op', specified for analysis `pnoise', has been ignored because it is an invalid analysis parameter. Specify a valid analysis parameter and rerun the simulation. Type `spectre -h pnoise' to get more information on valid pnoise analysis parameters.
+
+Time for Elaboration: CPU = 127.615 ms, elapsed = 63.9529 ms.
+Time accumulated: CPU = 669.938 ms, elapsed = 602.098 ms.
+Peak resident memory used = 253 Mbytes.
+
+
+Time for EDB Visiting: CPU = 2.117 ms, elapsed = 1.12391 ms.
+Time accumulated: CPU = 672.098 ms, elapsed = 603.264 ms.
+Peak resident memory used = 256 Mbytes.
+
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/tmi.cfg
+  *********************************************************
+  ** TMI Share Library             Version is V116091.090007 (Nov  1 2018 19:33:12)
+  ** Built OS                      Version is Red Hat Enterprise Linux Server release 5.8 (Tikanga)
+  ** Built compiler                Version is gcc version 4.1.2 20080704 (Red Hat 4.1.2-52)
+  *********************************************************
+
+Notice from spectre during topology check.
+    No DC path from node `Xvco.net08' to ground, Gmin installed to provide path.
+Notice from spectre during initial setup.
+    Multithreading is disabled due to the size of the design being too small.
+
+
+Netlist title:
+        // VCO 开环相噪标定 单核: 直接实例化 vco_x (无核心B)
+
+
+Global user options:
+             tmiage = 1
+          tmioutput = /home/mei/./vco_pnoise_single
+            degfile = /home/mei/./vco_pnoise_single
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 76
+              bsim4 12    
+     bsource_4c6a7e 2     
+     bsource_6dae8c 2     
+     bsource_35bd08 2     
+     bsource_72cbce 12    
+     bsource_7626b8 2     
+     bsource_a74972 2     
+     bsource_e2a846 24    
+          capacitor 2     
+              diode 2     
+           inductor 6     
+           resistor 56    
+         tmibsimcmg 2     
+            vsource 3     
+
+Analysis and control statement inventory:
+             pnoise 1     
+                pss 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 0     
+
+
+Notice from spectre during initial setup.
+    1 vsources are shorted because their absolute value is less than or equal to 'vabsshort'.
+    APS enabled.
+    10 warnings suppressed.
+
+Time for parsing: CPU = 73.275 ms, elapsed = 39.953 ms.
+Time accumulated: CPU = 745.412 ms, elapsed = 643.255 ms.
+Peak resident memory used = 263 Mbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+   -   (APS) Multi-threading. The recommended number of threads is 1, consider adding +mt=1 on command line.
+~~~~~~~~~~~~~~~~~~~~~~
+Licensing Information:
+[15:24:21.383985] Periodic Lic check successful
+
+
+
+
+*****************************************************************
+Periodic Steady-State Analysis `pllpss': estimated fund = 6.1 GHz
+*****************************************************************
+Convergence achieved in 5 iterations.
+DC simulation time: CPU = 613 us, elapsed = 613.928 us.
+
+Notice from spectre during periodic steady state analysis `pllpss'.
+    No outputs were found. Loosening output filter criterion to `allpub'.
+
+
+==========================================
+pllpss `tstab': time = (0 s -> 60.8197 ns)
+==========================================
+
+Important parameter values in tstab integration:
+    start = 0 s
+    outputstart = 0 s
+    stop = 60.8197 ns
+    period = 163.934 ps
+    maxperiods = 50
+    step = 60.1639 ps
+    maxstep = 1 ps
+    ic = all
+    useprevic = no
+    skipdc = no
+    reltol = 1e-03
+    abstol(V) = 1 uV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    method = traponly
+    lteratio = 3.5
+    relref = sigglobal
+    cmin = 0 F
+    gmin = 1 pS
+    rabsshort = 1 mOhm
+
+...
+
+Notice from spectre at time = 2.56667 ns during periodic steady state analysis `pllpss'.
+    Found trapezoidal ringing on node Xvco.CV1.lsd_rf:1.
+Notice from spectre at time = 2.56767 ns during periodic steady state analysis `pllpss'.
+    Found trapezoidal ringing on node Xvco.CV1.lsd_rf:1.
+Notice from spectre at time = 2.56867 ns during periodic steady state analysis `pllpss'.
+    Found trapezoidal ringing on node Xvco.CV1.lsd_rf:1.
+Notice from spectre at time = 2.6285 ns during periodic steady state analysis `pllpss'.
+    Found trapezoidal ringing on node Xvco.CV0.lsd_rf:1.
+Notice from spectre at time = 2.6295 ns during periodic steady state analysis `pllpss'.
+    Found trapezoidal ringing on node Xvco.CV0.lsd_rf:1.
+        Further occurrences of this notice will be suppressed.
+
+......9......8......7......6......5......4......3......2......1......0
+The Estimated oscillating frequency from Tstab Tran is = 6.21085 GHz . 
+Total time required for tstab analysis `pllpss': CPU = 3.42743 s, elapsed = 1.89697 s.
+Time accumulated: CPU = 4.19117 s, elapsed = 2.55541 s.
+Peak resident memory used = 273 Mbytes.
+
+Conv norm = 137e+03, max dI(Xvco.L1:1) = -14.1571 mA, took 3.42 s.
+
+Important parameter values in pss iteration:
+    start = 60.8197 ns
+    outputstart = 0 s
+    stop = 60.9807 ns
+    period = 161.009 ps
+    maxperiods = 50
+    steadyratio = 1e-03
+    step = 60.1639 ps
+    maxstep = 805.043 fs
+    ic = all
+    useprevic = no
+    skipdc = no
+    reltol = 1e-03
+    abstol(V) = 1 uV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    errpreset = liberal
+    method = traponly
+    lteratio = 3.5
+    relref = sigglobal
+    cmin = 0 F
+    gmin = 1 pS
+    rabsshort = 1 mOhm
+
+
+===========================================
+`pllpss': time = (60.8197 ns -> 60.9807 ns)
+===========================================
+......9......8......7......6......5......4......3......2......1......0
+Conv norm = 2.63e+03, max dI(Vctrl:p) = -255.672 uA, took 10 ms.
+
+
+===========================================
+`pllpss': time = (60.8197 ns -> 60.9807 ns)
+===========================================
+......9......8......7......6......5......4......3......2......1......0
+Conv norm = 12.5, max dI(Xvco.CV0.lgate_rf:1) = 1.23433 uA, took 10 ms.
+
+
+===========================================
+`pllpss': time = (60.8197 ns -> 60.9807 ns)
+===========================================
+......9......8......7......6......5......4......3......2......1......0
+Conv norm = 27.8, max dI(Vvdd:p) = 2.62331 uA, took 10 ms.
+
+
+===========================================
+`pllpss': time = (60.8197 ns -> 60.9807 ns)
+===========================================
+......9......8......7......6......5......4......3......2......1......0
+Conv norm = 18, max dI(Xvco.CV0.lsd_rf:1) = 1.77269 uA, took 10 ms.
+
+
+===========================================
+`pllpss': time = (60.8197 ns -> 60.9807 ns)
+===========================================
+......9......8......7......6......5......4......3......2......1......0
+Conv norm = 3.68, max dI(Xvco.CV0.lgate_rf:1) = -362.334 nA, took 10 ms.
+
+
+===========================================
+`pllpss': time = (60.8197 ns -> 60.9807 ns)
+===========================================
+......9......8......7......6......5......4......3......2......1......0
+Conv norm = 68.7e-03, max dI(Vctrl:p) = -6.55391 nA, took 10 ms.
+
+Fundamental frequency is 6.21104 GHz.
+
+Opening the PSFASCII file /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_pnoise_single.raw/pllpss.td.pss ...
+
+Opening the PSFASCII file /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_pnoise_single.raw/pllpss.fd.pss ...
+
+Notice from spectre during periodic steady state analysis `pllpss'.
+    Trapezoidal ringing is detected during pss analysis.
+        Please use method=trap for better results and performance.
+
+If your circuit contains signals of the same quantity that are vastly different in size (such as high voltage circuitry combined with low voltage control circuitry), you should consider specifying global option `bin_relref=yes'.
+Initial condition solution time: CPU = 642 us, elapsed = 642.061 us.
+pss: The steady-state solution was achieved in 7 iterations.
+Number of accepted pss steps =             211
+Total time required for pss analysis `pllpss': CPU = 3.51572 s, elapsed = 1.99345 s, util. = 176%.
+Time accumulated: CPU = 4.26741 s, elapsed = 2.64419 s.
+Peak resident memory used = 275 Mbytes.
+
+
+Notice from spectre.
+    797 notices suppressed.
+
+
+*****************************************************************************
+Periodic Noise Analysis `pllpnoise': freq = 6.21104 GHz + (10 kHz -> 100 MHz)
+*****************************************************************************
+
+Notice from spectre during PNoise analysis `pllpnoise'.
+    No outputs were found. Loosening output filter criterion to `allpub'.
+
+
+Opening the PSFASCII file /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/867a6d79/vco_pnoise_single.raw/pllpnoise.pnoise ...
+Using the operating-point information generated by PSS analysis `pllpss'.
+The estimated line width of the oscillator is 7.95789 kHz.
+......9......8......7......6......5......4......3......2......1......0
+Total time required for pnoise analysis `pllpnoise': CPU = 249.644 ms, elapsed = 125.178 ms, util. = 199%.
+Time accumulated: CPU = 4.51732 s, elapsed = 2.77249 s.
+Peak resident memory used = 280 Mbytes.
+
+TMI results xml file begins to generate at Tue Aug 25 15:24:23 2026
+
+TMI results xml file /home/mei/./vco_pnoise_single.tmideg0.xml generated at Tue Aug 25 15:24:23 2026
+
+Licensing Information:
+Lic Summary:
+[15:24:23.001288] cdslmd servers: IC_EDA
+[15:24:23.001288] Feature usage summary:
+[15:24:23.016520]  Virtuoso_Spectre_RF  
+[15:24:23.507735]   Virtuoso_Acceler_Parallel_sc  
+
+
+Aggregate audit (3:24:23 PM, Tue Aug 25, 2026):
+Time used: CPU = 4.52 s, elapsed = 2.78 s, util. = 163%.
+Time spent in licensing: elapsed = 243 ms, percentage of total = 8.72%.
+Peak memory used = 280 Mbytes.
+Simulation started at: 3:24:20 PM, Tue Aug 25, 2026, ended at: 3:24:23 PM, Tue Aug 25, 2026, with elapsed time (wall clock): 2.78 s.
+spectre completes with 0 errors, 8 warnings, and 15 notices.

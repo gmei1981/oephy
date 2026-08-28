@@ -1,0 +1,17 @@
+// VCO 频率调谐曲线: VCTRL 0-0.8V 扫描 (KVCO 标定, 单核/双核)
+simulator lang=spectre
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+include "vco_dual.scs"
+
+Vvdd (VDD 0) vsource dc=0.8
+Vvss (VSS 0) vsource dc=0
+Vctrl (VCTRL 0) vsource dc=0.4
+Ven2 (EN2 0) vsource dc=0.8
+
+Xvco (VDD VSS VCTRL OUTP OUTN EN2) vco_dual
+Rloadp (OUTP 0) resistor r=1e6
+Rloadn (OUTN 0) resistor r=1e6
+
+dcOp dc write="spectre.dc"
+pllpss pss fund=6.2G harms=4 errpreset=liberal tstab=60n maxstep=1p \
+    sweep=dc param=Vctrl start=0.2 stop=0.6 step=0.05

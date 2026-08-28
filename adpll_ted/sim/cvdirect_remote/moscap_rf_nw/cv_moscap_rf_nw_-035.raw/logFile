@@ -1,0 +1,36 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Wed Aug 26 10:59:24 2026"
+"psfversion" "1.4.0"
+"simulator" "spectre"
+"version" "25.1.0.393.isr10"
+"date" "10:59:24 AM, Wed Aug 26, 2026"
+"design" "// cvdirect moscap_rf_nw_-035"
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"cvtran-tran" "analysisInst" (
+"tran"
+"cvtran.tran.tran"
+"PSF"
+""
+("time")
+"Transient Analysis `cvtran': time = (0 s -> 4 ns)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+END

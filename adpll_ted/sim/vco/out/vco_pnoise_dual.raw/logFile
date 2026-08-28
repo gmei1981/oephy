@@ -1,0 +1,59 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Tue Aug 25 15:24:14 2026"
+"psfversion" "1.4.0"
+"simulator" "spectre"
+"version" "25.1.0.393.isr10"
+"date" "3:24:14 PM, Tue Aug 25, 2026"
+"design" "// VCO 开环相噪标定: PSS+pnoise, 双核/单核 (论文 Fig.15 比对: -101/-98.1 dBc/Hz @100kHz @3G输出)"
+"signalNameType" "spectre"
+"simMode" "APS"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"pllpss-td.pss" "analysisInst" (
+"td.pss"
+"pllpss.td.pss"
+"PSF"
+""
+("time")
+"Periodic Steady-State Analysis `pllpss': time = (0 s -> 162.017 ps)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"pllpss-fd.pss" "analysisInst" (
+"fd.pss"
+"pllpss.fd.pss"
+"PSF"
+""
+("freq")
+"Periodic Steady-State Analysis `pllpss': fund = 6.17219 GHz"
+) PROP(
+"data_type" "swept_scalar"
+"harmonic_type" "fundamental"
+)
+
+"pllpnoise-pnoise" "analysisInst" (
+"pnoise"
+"pllpnoise.pnoise"
+"PSF"
+""
+("relative frequency")
+"Periodic Noise Analysis `pllpnoise': freq = 6.17219 GHz + (10 kHz -> 100 MHz)"
+) PROP(
+"data_type" "swept_struct"
+)
+
+END

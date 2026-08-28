@@ -1,0 +1,10 @@
+// cvdirect moscap_rf_+010
+simulator lang=spectre
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+Vg (g0 0) vsource dc=0.8
+Rser (g0 g) resistor r=1M
+Vb (b 0) vsource dc=0.1
+X1 (g b b) moscap_rf wr=538n nfin=12 lr=200n gr=2 br=2 multi=1
+I1 (0 g) isource type=sine freq=1e9 ampl=1u
+cvtran tran stop=4n maxstep=1p errpreset=liberal method=gear2only
+save g
