@@ -288,3 +288,25 @@
   fVCO 均值 7.9727G；**参考杂散 −63.4 dBc @100M**（2f_ref −65.2，比 Step 1 −59.5
   好 4dB，距论文 −69.6 差 6dB）；周期抖动 152.9fs（8G）。整数通道无小数杂散 ✓。
   comparison_report.md 定稿（Step 1+2 完成）。
+
+- **0828 网表→原理图转换项目（进行中，状态快照供续跑）**：
+  - 工具（tools/）：sch_pilot.py（vlink parse AST → 角色分类 → 列布局 → SVG 预览）、
+    gen_sketch.py（SKILL 生成器：实例/pins/布线规划 + 括号平衡自检）、cmp_x.scs/ast.json。
+  - 角色分类已正确：cmp_x 7 器件（差分对/尾管/二极管负载/镜像负载/输出推拉）。
+  - **已验证可用的 SKILL API**（IC25.10 与 IC618 均适用）：
+    dbCreateInstByMasterName(cv "tsmcN12" "<master>" "symbol" "<name>" <x>:<y> "R0")
+    ——原点是点、朝向是字符串（旧式 transform 列表形式报 Invalid origin）；
+    本机 IC618 设参用 dbReplaceProp(inst "l" "float" 1.6e-08)（`~>` 赋值在本机报错，
+    21 的 IC25 上 `inst~>p=v` 可用）；dbCreateNet/dbCreateLib/dbOpenCellViewByType/dbSave 正常。
+  - **SKILL 陷阱**：`t` 是布尔常量不能做 let 变量；`>=` 前缀形式是语法错误（用 greaterp）；
+    `>` 是特殊字符；本机 .cdsinit 加载 RAMIC 桥（-nocdsinit 不影响签名）。
+  - **cmp_x 已绘制并验证**：本机 virtuoso_ws/adpll_sch/cmp_x（7 器件全参数已写入、
+    SKILL 查询验证坐标/类型/l 读回 ✓）；21 服务器工作区已 rsync 回
+    server21_sch_backup/（IC25 cellview 存档，本机 IC618 打不开）。
+  - **阻塞：schCreatePin/schCreateWire/schCreateWireLabel 的新版签名未攻克**（两类机器、
+    有无 cdsinit、经典/扩展参数/底层 db 原语、method/glue 各种值全试过）：
+    pin 第 2 参要 net 对象（第 6 参 list、第 7 参 string）；wire 带 method/glue 参数
+    （SCH-1001 报无效值，string/symbol/t/nil 均被拒）；label 要 ≥9 参。
+  - **下一步候选**：① xdotool 在 :0 驱动 Virtuoso GUI 画一根线 → 读 CDS.log 提取
+    GUI 记录的正确 SKILL 语法（无需用户操作）；② 用户手动在 GUI 连线；③ 交付
+    器件摆放 + 布线清单。SPD/GM/VCO 核的摆放管线已就绪（同一生成器）。

@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8">
+<title>cmp_x 原理图预览</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{margin:24px;background:#f5f4f1;font-family:sans-serif}
+.card{background:#fff;border:1px solid #e2e0d9;border-radius:6px;padding:16px;
+max-width:830px;overflow-x:auto}
+h1{font-size:15px;color:#191817;margin:0 0 4px}
+p{font-size:12px;color:#6f6d67;margin:0 0 12px}
+svg{max-width:100%;height:auto;display:block}</style></head>
+<body><div class="card"><h1>subckt cmp_x — 原理图预览（自动重建草案）</h1>
+<p>PMOS 上排（蓝）· NMOS 下排（橙）· 无源中间（绿）；同名标注 = 同一网络；实线 = 直接连接。</p>
+<svg viewBox="0 0 750 366" xmlns="http://www.w3.org/2000/svg" role="img">
+<line x1="50" y1="46" x2="710" y2="46" stroke="#8b887f" stroke-width="2"/>
+<text x="50" y="38" font-size="11" fill="#6f6d67" font-family="monospace">VDD</text>
+<line x1="50" y1="322" x2="710" y2="322" stroke="#8b887f" stroke-width="2"/>
+<text x="50" y="314" font-size="11" fill="#6f6d67" font-family="monospace">VSS</text>
+<text x="10" y="20" font-size="12" font-weight="700" fill="#191817" font-family="monospace">cmp_x</text>
+<text x="10" y="36" font-size="9.5" fill="#6f6d67" font-family="monospace">● VINP</text>
+<text x="10" y="49" font-size="9.5" fill="#6f6d67" font-family="monospace">● VINN</text>
+<text x="10" y="62" font-size="9.5" fill="#6f6d67" font-family="monospace">● VBIAS</text>
+<text x="10" y="75" font-size="9.5" fill="#6f6d67" font-family="monospace">● EOUT</text>
+<text x="10" y="88" font-size="9.5" fill="#6f6d67" font-family="monospace">● VDD</text>
+<text x="10" y="101" font-size="9.5" fill="#6f6d67" font-family="monospace">● VSS</text>
+<rect x="123" y="110" width="84" height="44" fill="#eef4fc" stroke="#2a78d6" stroke-width="1.6" rx="3"/>
+<text x="165.0" y="130" font-size="11.5" font-weight="600" text-anchor="middle" fill="#191817" font-family="monospace">MP2</text>
+<text x="165.0" y="144" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">mirror-load</text>
+<text x="165.0" y="164" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">l=16n w=58n nf=2</text>
+<line x1="165.0" y1="110" x2="165.0" y2="94" stroke="#191817" stroke-width="1.2"/>
+<text x="168" y="92" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">OUTP1</text>
+<line x1="123.0" y1="132.0" x2="107.0" y2="132.0" stroke="#191817" stroke-width="1.2"/>
+<text x="103" y="136" font-size="9" fill="#191817" text-anchor="end" font-family="monospace">OUTN1</text>
+<line x1="165.0" y1="46" x2="165.0" y2="154" stroke="#191817" stroke-width="1.2"/>
+<rect x="123" y="208" width="84" height="44" fill="#fdf3ee" stroke="#eb6834" stroke-width="1.6" rx="3"/>
+<text x="165.0" y="228" font-size="11.5" font-weight="600" text-anchor="middle" fill="#191817" font-family="monospace">MN2</text>
+<text x="165.0" y="242" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">diff-pair</text>
+<text x="165.0" y="262" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">l=16n w=58n nf=2</text>
+<line x1="165.0" y1="208" x2="165.0" y2="192" stroke="#191817" stroke-width="1.2"/>
+<text x="168" y="190" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">OUTP1</text>
+<line x1="123.0" y1="230.0" x2="107.0" y2="230.0" stroke="#191817" stroke-width="1.2"/>
+<text x="103" y="234" font-size="9" fill="#191817" text-anchor="end" font-family="monospace">VINP</text>
+<line x1="165.0" y1="252" x2="165.0" y2="268" stroke="#191817" stroke-width="1.2"/>
+<text x="168" y="272" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">TAILN</text>
+<rect x="273" y="110" width="84" height="44" fill="#eef4fc" stroke="#2a78d6" stroke-width="1.6" rx="3"/>
+<text x="315.0" y="130" font-size="11.5" font-weight="600" text-anchor="middle" fill="#191817" font-family="monospace">MP1</text>
+<text x="315.0" y="144" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">diode-load</text>
+<text x="315.0" y="164" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">l=16n w=58n nf=2</text>
+<line x1="315.0" y1="110" x2="315.0" y2="94" stroke="#191817" stroke-width="1.2"/>
+<text x="318" y="92" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">OUTN1</text>
+<line x1="273.0" y1="132.0" x2="257.0" y2="132.0" stroke="#191817" stroke-width="1.2"/>
+<text x="253" y="136" font-size="9" fill="#191817" text-anchor="end" font-family="monospace">OUTN1</text>
+<line x1="315.0" y1="46" x2="315.0" y2="154" stroke="#191817" stroke-width="1.2"/>
+<rect x="273" y="208" width="84" height="44" fill="#fdf3ee" stroke="#eb6834" stroke-width="1.6" rx="3"/>
+<text x="315.0" y="228" font-size="11.5" font-weight="600" text-anchor="middle" fill="#191817" font-family="monospace">MN1</text>
+<text x="315.0" y="242" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">diff-pair</text>
+<text x="315.0" y="262" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">l=16n w=58n nf=2</text>
+<line x1="315.0" y1="208" x2="315.0" y2="192" stroke="#191817" stroke-width="1.2"/>
+<text x="318" y="190" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">OUTN1</text>
+<line x1="273.0" y1="230.0" x2="257.0" y2="230.0" stroke="#191817" stroke-width="1.2"/>
+<text x="253" y="234" font-size="9" fill="#191817" text-anchor="end" font-family="monospace">VINN</text>
+<line x1="315.0" y1="252" x2="315.0" y2="268" stroke="#191817" stroke-width="1.2"/>
+<text x="318" y="272" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">TAILN</text>
+<rect x="423" y="208" width="84" height="44" fill="#fdf3ee" stroke="#eb6834" stroke-width="1.6" rx="3"/>
+<text x="465.0" y="228" font-size="11.5" font-weight="600" text-anchor="middle" fill="#191817" font-family="monospace">MTAIL</text>
+<text x="465.0" y="242" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">tail</text>
+<text x="465.0" y="262" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">l=16n w=58n nf=2</text>
+<line x1="465.0" y1="208" x2="465.0" y2="192" stroke="#191817" stroke-width="1.2"/>
+<text x="468" y="190" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">TAILN</text>
+<line x1="423.0" y1="230.0" x2="407.0" y2="230.0" stroke="#191817" stroke-width="1.2"/>
+<text x="403" y="234" font-size="9" fill="#191817" text-anchor="end" font-family="monospace">VBIAS</text>
+<line x1="465.0" y1="322" x2="465.0" y2="252" stroke="#191817" stroke-width="1.2"/>
+<rect x="573" y="110" width="84" height="44" fill="#eef4fc" stroke="#2a78d6" stroke-width="1.6" rx="3"/>
+<text x="615.0" y="130" font-size="11.5" font-weight="600" text-anchor="middle" fill="#191817" font-family="monospace">MP3</text>
+<text x="615.0" y="144" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">out-push</text>
+<text x="615.0" y="164" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">l=16n w=58n nf=2</text>
+<line x1="615.0" y1="110" x2="615.0" y2="94" stroke="#191817" stroke-width="1.2"/>
+<text x="618" y="92" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">EOUT</text>
+<line x1="573.0" y1="132.0" x2="557.0" y2="132.0" stroke="#191817" stroke-width="1.2"/>
+<text x="553" y="136" font-size="9" fill="#191817" text-anchor="end" font-family="monospace">OUTP1</text>
+<line x1="615.0" y1="46" x2="615.0" y2="154" stroke="#191817" stroke-width="1.2"/>
+<rect x="573" y="208" width="84" height="44" fill="#fdf3ee" stroke="#eb6834" stroke-width="1.6" rx="3"/>
+<text x="615.0" y="228" font-size="11.5" font-weight="600" text-anchor="middle" fill="#191817" font-family="monospace">MN3</text>
+<text x="615.0" y="242" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">out-pull</text>
+<text x="615.0" y="262" font-size="8.5" text-anchor="middle" fill="#6f6d67" font-family="monospace">l=16n w=58n nf=2</text>
+<line x1="615.0" y1="208" x2="615.0" y2="192" stroke="#191817" stroke-width="1.2"/>
+<text x="618" y="190" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">EOUT</text>
+<line x1="573.0" y1="230.0" x2="557.0" y2="230.0" stroke="#191817" stroke-width="1.2"/>
+<text x="553" y="234" font-size="9" fill="#191817" text-anchor="end" font-family="monospace">OUTP1</text>
+<line x1="615.0" y1="322" x2="615.0" y2="252" stroke="#191817" stroke-width="1.2"/>
+<line x1="165.0" y1="94" x2="165.0" y2="268" stroke="#191817" stroke-width="1.2"/>
+<text x="168" y="90" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">OUTP1</text>
+<line x1="315.0" y1="94" x2="315.0" y2="268" stroke="#191817" stroke-width="1.2"/>
+<text x="318" y="90" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">OUTN1</text>
+<line x1="615.0" y1="94" x2="615.0" y2="268" stroke="#191817" stroke-width="1.2"/>
+<text x="618" y="90" font-size="9" fill="#191817" text-anchor="start" font-family="monospace">EOUT</text>
+<line x1="165.0" y1="268" x2="315.0" y2="268" stroke="#191817" stroke-width="1.2"/>
+<text x="240" y="264" font-size="9" fill="#191817" text-anchor="middle" font-family="monospace">TAILN</text>
+</svg></div></body></html>
