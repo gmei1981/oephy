@@ -1,6 +1,6 @@
 # 论文复现进度（JSSC 2021, Wu et al. 14nm 超低抖动小数 PLL）
 
-更新: 2026-08-25
+更新: 2026-08-29
 
 ## 基础设施（已就绪）
 
@@ -310,3 +310,32 @@
   - **下一步候选**：① xdotool 在 :0 驱动 Virtuoso GUI 画一根线 → 读 CDS.log 提取
     GUI 记录的正确 SKILL 语法（无需用户操作）；② 用户手动在 GUI 连线；③ 交付
     器件摆放 + 布线清单。SPD/GM/VCO 核的摆放管线已就绪（同一生成器）。
+
+## 2026-08-29 存档：原理图转换模块清单 + 手动绘制方法论（本会话状态）
+
+- 本机原理图库确认就绪：`virtuoso_ws/adpll_sch`（cmp_x 已摆放 7 器件+参数读回验证，
+  缺 pin/连线；lt3/lt4 为 pin/wire API 试验 cell）；cds.lib 在 `virtuoso_ws/cds.lib`
+  （basic/analogLib/tsmcN12/adpll_sch；adpll_sch 重复 DEFINE 无害，取第一条）。
+  21 服务器 IC25 副本在 `server21_sch_backup/adpll_sch`（本机 IC618 打不开）。
+- **待转模块清单**（netlist/inc/）：spd_x(7 器件：MIR+RREF 偏置、MCS 充电镜像、
+  MSMP 采样 nf=8、MRST 复位 nf=32、CH 保持 cfmom nr=12、CR0 斜坡 30f)、
+  gm_x(6：NMOS 对 nf=1 + MTAIL + MP1 二极管/MP2 镜像负载，**MP2 l=72n** 余皆 16n)、
+  vco_x(16：交叉耦合对 nf=16 + 2.49nH 电感 r=2 + 12×cfmom nr=192（中间浮空节点
+  net8-16 须保留）+ 2×moscap_rf wr=538n)、vco_dual(8+2×vco_x：EN2 反相器 +
+  MPWRB 供电开关 nf=64 + MSWP/MSWN 耦合开关 nf=64)、vco_dual_8g(同构，1.5nH)、
+  dtc_10b(R0 rhim 2.3µ×2µ + CKXB 反相器 + MRST_D 复位管 + 1023×(开关 nf=2 +
+  CLSB=0.5fF 电容)，1027 端口)。
+  VA 模块（mmd_edge/lms/dtc_decoder_10b/hybrid_aux）纯行为级，只需建 symbol。
+- **scs→原理图规则沉淀**：MOSFET 节点顺序恒为 D G S B（bulk：pch→VDD/nch→VSS）；
+  电阻/电容/电感 (+ −)、cfmom (+ − shield→VSS)、moscap_rf (gate bulk)；
+  scs 参数即 CDF 名照抄（nf/nfin/multi 是 pcell 参数，不拆器件）；
+  不在端口列表的节点 = 待命名内部 net（TAILN/OUTP1/VBSPD_M/VDLY/UCAP<n>…）；
+  行尾 `\` 续行合并为单实例。
+- **手动绘制流程**：cd virtuoso_ws && virtuoso → New Cellview(schematic) →
+  I 放实例（tsmcN12 库 pcell symbol+参数）→ W 连线、L 命名内部 net → P 加 pin
+  （按 subckt 端口序，VDD/VSS 用 inputOutput）→ X Check&Save → ADE 导 netlist
+  与原 scs 逐项比对（实例数/节点/参数）。
+- **下一步顺序**：① cmp_x GUI 收尾（6 pin+连线，顺带验证 GUI 流程）→
+  ② gm_x/spd_x → ③ vco_x/vco_dual → ④ dtc_10b 画法决策（层级单元 dtc_unit vs
+  Instance Array vs 仅 symbol 注明结构）→ VA 模块建 symbol。
+- 本会话无新仿真/无代码改动：状态梳理 + 方案沉淀，原理图库 cellview 入库 git。

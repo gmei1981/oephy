@@ -12,3 +12,10 @@ sim/*_remote/
 .design.md.swp
 tt
 __pycache__/
+# Virtuoso 工作区垃圾（日志/锁，库本体 cellview 入库）
+virtuoso_ws/*.log
+virtuoso_ws/*.cdslck
+virtuoso_ws/*.il
+server21_sch_backup/*.log
+server21_sch_backup/*.cdslck
+server21_sch_backup/*.il
