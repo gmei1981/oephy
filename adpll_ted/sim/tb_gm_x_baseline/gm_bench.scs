@@ -1,0 +1,13 @@
+// gm_x 跨导标定: DC 扫 VINP 0.2-0.6, VREF=0.4, VBIAS=0.8, IOUT 负载 VI=0.55V (模拟 CI 电压)
+simulator lang=spectre
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+include "spd_cmp_gm.scs"
+Vvdd (VDD 0) vsource dc=0.8
+Vvss (VSS 0) vsource dc=0
+Vb (VBIAS 0) vsource dc=0.8
+Vr (VREF 0) vsource dc=0.4
+Vi (VINP 0) vsource dc=0.4
+Vl (VI 0) vsource dc=0.55
+Xgm (VINP VREF VBIAS VI VDD VSS) gm_x
+plldc dc dev=Vi param=dc start=0.2 stop=0.6 step=1m
+save VI:p

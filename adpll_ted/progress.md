@@ -339,3 +339,38 @@
   ② gm_x/spd_x → ③ vco_x/vco_dual → ④ dtc_10b 画法决策（层级单元 dtc_unit vs
   Instance Array vs 仅 symbol 注明结构）→ VA 模块建 symbol。
 - 本会话无新仿真/无代码改动：状态梳理 + 方案沉淀，原理图库 cellview 入库 git。
+
+## 2026-08-31 存档：spd_x/cmp_x/gm_x 验证闭环 + tb 测试台 + 基准数据（本会话状态）
+
+- **spd_x 验证闭环完成**：手绘原理图 si 导出 vs 参考 scs 全部一致。修复 2 处：
+  RREF l=25u→**38u**（偏置电流差 1.52×）、内部偏置节点 net11→**VBSPD_M**（打 wire label 改名）。
+  流程固化：桥读拓扑 → schCheck+dbSave → si 批量网表（si.env 需补 simViewList/simStopList，
+  否则 stop-list/OSSHNL-109 报错）→ `tools/compare_block.py` 规范化比对（SI 后缀/
+  16.0n≡16n/multi=(1)≡multi=1/忽略实例序）。
+- **tb_spd_x 搭建+ADE 验证**（用户手绘）：CKDTC vpulse(6.5104n 周期/3.255n 宽/20p 沿) +
+  vcvs 复位链（CKRSTI=−CKDTC、CKRST=CKRSTI+0.8，**E2.MINUS→VDC08 抬压**）+
+  全部源负极 gnd!。V4 vpulse 曾漏设 v2/per/pw（CKDTC 恒 0、VRAMP 卡 358mV），修后波形
+  与基准 <1% 一致。**基准数据**：斜率 214mV/ns、峰顶 677mV@3.255ns（20ps 边沿+开关阈值
+  吃掉 ~40ps 窗口，非纸面 0.8V）、复位段 <1mV。CKFB 采样演示（delay=1.6n/w=0.5n）：
+  VHOLD 阶梯收敛 424mV，采样窗口内斜坡斜率减半（CR0∥CH 电荷共享）。
+- **cmp_x 验证闭环**：修复 5 处——7 管 fingers 1→**2**（参考 nf=2）、MP2 栅极接错
+  （OUTP1→OUTN1，镜像非二极管）、MTAIL 衬底浮空→VSS、内部节点改名、标签桩交叉致
+  OUTN1/OUTP1 短接（删线重建两网）。用户清理后 MP2.G 又接回 OUTP1、OUTN1 标签被删，
+  各自修复后 si 比对全部一致。schCheck (0 0)。
+- **gm_x 验证闭环**：修复 3 处——**MP2 l=16n→72n**（镜像 1/4.5）、3 个 NMOS 衬底浮空→VSS、
+  net 改名 OUTN/TAILN。用户清理后 TAILN 标签被删（net9），补标签后一致。schCheck (0 0)。
+- **tb_cmp_x/tb_gm_x 搭建**（tb_gm_x 由 tb_cmp_x Copy 改造，仅 EOUT→IOUT 之差）。
+  tb_gm_x 已核验全对（7 实例/接线/gnd!）。比较器基准：失调 +0.7mV、过渡区 2mV、
+  增益 347V/V、延迟 39.2ps、边沿 6.6ps（全部达标，判据见会话记录）。
+  GM 基准（VREF=0.4/VI=0.55 钳位测流）：IOUT@0.4V=−1.59µA、**GM 阈值（零电流点）
+  VINP=504.5mV**（LMS VREF DSM 要跟踪的点）、GM@阈值 ~27µS（论文 0.5µS 为复调目标，
+  design.md TODO 未变）。
+- **坑沉淀**：GUI 清理会顺手删网名标签→net 退化自动名（cmp_x/gm_x 各一次），清理后必须
+  重新 si 比对；psfascii 解析 trace 名要精确匹配（Vl:p vs VI:p 混取会拿错电流）；
+  Spectre `parameters` 语句在本机 20.1 无效（SPECTRE-16045），扫参用 `dc dev=Vi param=dc`。
+- **工具链**（tools/）：compare_block.py（通用比对）、compare_spd_x.py、fix_cmp_x.py、
+  rebuild_cmp_nets.py、fix_gm_x.py、read_spd_x.py、build_tb_spd_x.py + 各模块 si 导出网表
+  + spd_x_sch_dump.json。基准目录 sim/tb_{spd,cmp,gm}_x_baseline/。
+- **剩余**：vco_x（9 浮空节点保留、moscap_rf 三端 gate/bulk/gnode、cfmom nr=192）→
+  vco_dual（Xb.VDD→VDDB）→ vco_dual_8g（复制改 1.5nH）→ dtc_unit+dtc_10b（桥批量
+  1023 实例）→ VA×4 仅 symbol。

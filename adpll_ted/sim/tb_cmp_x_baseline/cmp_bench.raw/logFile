@@ -1,0 +1,36 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Mon Aug 31 16:37:20 2026"
+"psfversion" ""
+"simulator" "spectre"
+"version" "20.1.0.068"
+"date" "4:37:20 PM, Mon Aug 31, 2026"
+"design" "// cmp_x 传输曲线标定: DC 扫 VINP, VREF=0.4, VBCMP=0.8 (基准与 tb 对照)"
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"plldc-dc" "analysisInst" (
+"dc"
+"plldc.dc"
+"PSF"
+""
+("dc")
+"DC Analysis `plldc': Vi:dc = (0 V -> 800 mV)"
+) PROP(
+"data_type" "scalar"
+)
+
+END

@@ -1,0 +1,137 @@
+
+Spectre (R) Circuit Simulator
+Version 20.1.0.068 64bit -- 23 Sep 2020
+Copyright (C) 1989-2020 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: gmei   Host: ubuntu   HostID: 7F0101   PID: 33412
+Memory  available: 20.0246 GB  physical: 33.6281 GB
+Linux   : Ubuntu 20.04.6 LTS
+CPU Type: 13th Gen Intel(R) Core(TM) i7-13800H
+All processors running at 2918.4 MHz
+        Socket: Processors
+        0:       0
+        2:       1
+        4:       2
+        6:       3
+        8:       4
+        10:      5
+        12:      6
+        14:      7
+        
+System load averages (1min, 5min, 15min) : 2.8 %, 3.1 %, 3.4 %
+This is a virtual machine
+
+
+Simulating `cmp_bench.scs' on ubuntu at 4:37:19 PM, Mon Aug 31, 2026 (process id: 33412).
+Current working directory: /home/gmei/git/oephy/adpll_ted/sim/tb_cmp_x_baseline
+Command line:
+    /opt/cadence/SPECTRE201/tools.lnx86/bin/spectre -64 -format  \
+        psfascii cmp_bench.scs +log cmp_bench.log
+
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libinfineon_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libphilips_o_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libphilips_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libsparam_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libstmodels_sh.so ...
+Reading file:  /home/gmei/git/oephy/adpll_ted/sim/tb_cmp_x_baseline/cmp_bench.scs
+Reading file:  /opt/cadence/SPECTRE201/tools.lnx86/spectre/etc/configs/spectre.cfg
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/tmi.cfg
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_aux.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/crn12ffcll_lct_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/res_metal.scs
+Reading file:  /home/gmei/git/oephy/adpll_ted/sim/tb_cmp_x_baseline/spd_cmp_gm.scs
+Time for NDB Parsing: CPU = 567.566 ms, elapsed = 325.859 ms.
+Time accumulated: CPU = 599.564 ms, elapsed = 325.861 ms.
+Peak resident memory used = 115 Mbytes.
+
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_dir
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_age_dir
+
+
+Time for Elaboration: CPU = 229.549 ms, elapsed = 115.723 ms.
+Time accumulated: CPU = 829.222 ms, elapsed = 441.692 ms.
+Peak resident memory used = 142 Mbytes.
+
+
+Time for EDB Visiting: CPU = 914 us, elapsed = 915.051 us.
+Time accumulated: CPU = 830.247 ms, elapsed = 442.716 ms.
+Peak resident memory used = 143 Mbytes.
+
+  *********************************************************
+  ** TMI Share Library             Version is V116091.090007 (Nov  1 2018 19:33:12)
+  ** Built OS                      Version is Red Hat Enterprise Linux Server release 5.8 (Tikanga)
+  ** Built compiler                Version is gcc version 4.1.2 20080704 (Red Hat 4.1.2-52)
+  *********************************************************
+
+Global user options:
+             tmiage = 1
+          tmioutput = /home/gmei/git/oephy/adpll_ted/sim/tb_cmp_x_baseline/cmp_bench
+            degfile = /home/gmei/git/oephy/adpll_ted/sim/tb_cmp_x_baseline/cmp_bench
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 9
+         tmibsimcmg 7     
+            vsource 5     
+
+Analysis and control statement inventory:
+                 dc 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 1     
+
+Time for parsing: CPU = 89.663 ms, elapsed = 46.0889 ms.
+Time accumulated: CPU = 919.957 ms, elapsed = 488.852 ms.
+Peak resident memory used = 149 Mbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+
+********************************************
+DC Analysis `plldc': Vi:dc = (0 V -> 800 mV)
+********************************************
+
+Opening the PSFASCII file cmp_bench.raw/plldc.dc ...
+Important parameter values:
+    reltol = 1e-03
+    abstol(V) = 1 uV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    gmindc = 1 pS
+......9......8......7......6......5......4......3......2......1......0
+
+Maximum value achieved for any signal of each quantity: 
+V: V(VINP) = 800 mV
+I: I(Vvss:p) = 8.052 uA
+DC simulation time: CPU = 100.032 ms, elapsed = 51.1019 ms.
+
+Notice from spectre at dc = 800 mV during DC analysis `plldc'.
+    The value of parameter 'dc' has been reset to the original value 0.4.
+
+Total time required for dc analysis `plldc': CPU = 100.107 ms, elapsed = 51.1761 ms.
+Time accumulated: CPU = 1.02785 s, elapsed = 543.13 ms.
+Peak resident memory used = 152 Mbytes.
+
+TMI results xml file begins to generate at Mon Aug 31 16:37:20 2026
+
+TMI results xml file /home/gmei/git/oephy/adpll_ted/sim/tb_cmp_x_baseline/cmp_bench.tmideg0.xml generated at Mon Aug 31 16:37:20 2026
+
+
+Aggregate audit (4:37:20 PM, Mon Aug 31, 2026):
+Time used: CPU = 1.05 s, elapsed = 1.05 s, util. = 100%.
+Time spent in licensing: elapsed = 12 ms.
+Peak memory used = 153 Mbytes.
+Simulation started at: 4:37:19 PM, Mon Aug 31, 2026, ended at: 4:37:20 PM, Mon Aug 31, 2026, with elapsed time (wall clock): 1.05 s.
+spectre completes with 0 errors, 0 warnings, and 2 notices.

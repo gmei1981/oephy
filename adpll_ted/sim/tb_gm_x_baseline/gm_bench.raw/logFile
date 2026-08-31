@@ -1,0 +1,36 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Mon Aug 31 17:30:39 2026"
+"psfversion" ""
+"simulator" "spectre"
+"version" "20.1.0.068"
+"date" "5:30:39 PM, Mon Aug 31, 2026"
+"design" "// gm_x 跨导标定: DC 扫 VINP 0.2-0.6, VREF=0.4, VBIAS=0.8, IOUT 负载 VI=0.55V (模拟 CI 电压)"
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"plldc-dc" "analysisInst" (
+"dc"
+"plldc.dc"
+"PSF"
+""
+("dc")
+"DC Analysis `plldc': Vi:dc = (200 mV -> 600 mV)"
+) PROP(
+"data_type" "scalar"
+)
+
+END
