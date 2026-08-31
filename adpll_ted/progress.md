@@ -374,3 +374,50 @@
 - **剩余**：vco_x（9 浮空节点保留、moscap_rf 三端 gate/bulk/gnode、cfmom nr=192）→
   vco_dual（Xb.VDD→VDDB）→ vco_dual_8g（复制改 1.5nH）→ dtc_unit+dtc_10b（桥批量
   1023 实例）→ VA×4 仅 symbol。
+
+## 2026-08-31 晚：vco_x 验证闭环完成
+
+- **vco_x 已转原理图并比对一致**（18 实例/5 端口/9 浮空节点全对，schCheck 0 18）。
+  修复：① MN0/MN1 fingers/nf 1→16、CF0-11 nr 12→192（桥 dbReplaceProp 直改，已验证）；
+  ② 用户手改 5 处接线：CF0/CF6 PLUS-MINUS 对调+shield 补 VSS、CF9 shield 补 VSS、
+  CF7/CF8 的 net15/net16 对调；③ 修线时 CF1 被误删、补回后闭环。
+- **坑沉淀**：simInitEnvWithArgs 在 run dir 已存在时弹对话框堵死 SKILL 通道（connect timeout，
+  数十秒后自愈）→ 目录须先删且不要 mkdir 预创建；si.env 字段极少（6 行），si -batch 是独立
+  shell 进程不走 SKILL 通道，手写 si.env + 补 simViewList/simStopList/simNetlistHier 即可导出；
+  修线后必须重跑 si 比对（实例误删只在此处暴露）。
+- 工具新增：tools/read_vco_x.py、export_vco_x.py、fix_vco_x.py、vco_x_sch_netlist.scs、
+  vco_x_sch_dump.json。
+- **剩余**：vco_dual（先给 vco_x 建 symbol，再放 Xa/Xb 两实例+4 开关管）→ vco_dual_8g（复制改
+  1.5nH）→ dtc_unit+dtc_10b → VA×4 仅 symbol。
+
+## 2026-09-01 存档：vco_x_8g 派生 + vco_dual_8g 检查修复闭环（本会话状态）
+
+- **vco_x_8g 派生完成并验证**：`cp -r vco_x → vco_x_8g`（schematic+symbol，master.tag 只记
+  oa 文件名、cell 名=目录名，直接拷安全），桥 dbReplaceProp 改 L0/L1 l=1.5n。桥读验证：
+  MN0/MN1 nf=16、CF0-11 nr=192、CV wr=538n、9 浮空节点名/连接全对；schCheck 0 18（与 vco_x
+  同口径，18 警告=9 浮空节点+符号方向提示，属预期）。
+- **vco_dual_8g 绘制完成并修复 4 处**（拓扑 7 实例=2×vco_x_8g+5 管、4 内部网、6 pin）：
+  ① 5 管 nf/fingers 全 1 → 桥修 MNEN/MPEN=2、MPWRB/MSWP/MSWN=64（读回验证）；
+  ② MSWP/MSWN D/S 交叉接反（P 管接了 N 对）→ 用户 GUI 重接（D=核 A 侧 OUTP/OUTN、S=核 B 侧
+  OUTPB/OUTNB）；
+  ③ OUTP/OUTN pin 方向 input→output（否则 schCheck 报 "shorted output"×4）；
+  ④ symbol 视图 OUTP/OUTN 方向同步 output（否则报 "Terminal in schematic is output but is
+  input in symbol"×2，schematic 与 symbol 方向不一致）。
+  另遇 "Pin name OUTN collides with net name OUTP"×2（pin 名与所接网名冲突），用户 GUI 修复后
+  消失。**最终 schCheck (0 0)**，桥读拓扑与参考 netlist/inc/vco_dual_8g.scs 逐项一致
+  （Xa/Xb 全端、EN2B/VDDB/OUTPB/OUTNB 网名、EN2 四栅连、VDD/VSS inputOutput 全对）。
+- **si 闭环比对未跑**：si.env 已备好（/tmp/si_vco_dual_8g，补 simViewList/simStopList/
+  simNetlistHier 共 9 行，cds.lib 已拷入），si -batch 被用户中断。下次续跑：cd 该目录跑
+  `si -batch`，产物 netlist 与参考比对（X 实例 model 名 vco_x_8g→vco_x 需规范化，参考文件
+  内联 vco_x subckt）。
+- **schCheck 警告全谱速查**：floating net=预期浮空节点；shorted output=顶层 pin 方向应为
+  output 却设 input；Terminal direction mismatch=schematic 与 symbol 方向未同步；pin name
+  collides with net name=pin 实例接错网或与 wire label 冲突。
+- **工具新增**：tools/read_vco_dual_8g.py（双 cell dump）、fix_vco_dual_8g.py（nf 桥修）、
+  vco_dual_8g_sch_dump.json。桥 python 需 PYTHONPATH=virtuoso-bridge-lite/src + 其 .venv。
+- **剩余模块清单（顶层手绘前置）**：① vco_dual（6.2G 版，与 vco_dual_8g 同构，Xa/Xb 换 2.49n
+  的 vco_x cell，5 管/网名/pin 照抄，半小时级）；② dtc_10b（大头：R0+CKXB 反相器+MRST_D+
+  1023×(开关 nf=2+CLSB 0.5fF)，1027 端口，需单独 dtc_unit 批量方案）；③ VA×5 仅 symbol
+  （pll_mmd_edge 8 口 / pll_clk_lms 2 口·定义在 pll_hybrid_aux.va / pll_lms 11 口 /
+  pll_dtc_decoder_10b 1027 口 / pll_doubler_edge 2 口·仅 tb 用）；顶层 PLL 原理图由用户手绘
+  （例化清单见 scripts/gen_top.py，VA 网表需 ahdl_include 行补齐）。
