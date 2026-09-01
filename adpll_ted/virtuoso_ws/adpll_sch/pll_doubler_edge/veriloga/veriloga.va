@@ -1,0 +1,30 @@
+// pll_hybrid.va   VA:  (ref2x) + clk_lms  + XO 
+// : 76.8M   153.6M CKDTC  (XOR : )
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_doubler_edge(ref_in, ck2x);
+inout ref_in;
+output ck2x;
+electrical ref_in, ck2x;
+parameter real vth = 0.4;
+parameter real thalf = 3.25n;  // 1/4 REF  -> 2x  50% 
+real ck_v, t_fire;
+analog begin
+    @(initial_step) begin ck_v = 0.0; t_fire = 0.0; end
+    // XOR :  REF (/), thalf 
+    //  3.25ns + 3.25ns -> CK2X = 153.6M, 50% 
+    // (:  ck_v ->  76.8M ,  13ns )
+    @(cross(V(ref_in) - vth, +1)) begin
+        ck_v = 1.0; t_fire = $abstime + thalf;
+    end
+    @(cross(V(ref_in) - vth, -1)) begin
+        ck_v = 1.0; t_fire = $abstime + thalf;
+    end
+    @(timer(t_fire, 100.0)) begin
+        ck_v = 0.0;
+    end
+    V(ck2x) <+ transition(ck_v, 0.0, 5p, 5p);
+end
+endmodule
+

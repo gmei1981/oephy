@@ -1,0 +1,24 @@
+// pll_hybrid.va   VA:  (ref2x) + clk_lms  + XO 
+// : 76.8M   153.6M CKDTC  (XOR : )
+`include "constants.vams"
+`include "disciplines.vams"
+
+
+// clk_lms: CKFB  300ps  LMS 
+module pll_clk_lms(ckfb, clk_lms);
+inout ckfb;
+output clk_lms;
+electrical ckfb, clk_lms;
+parameter real vth = 0.4;
+real clk_v, t_fire;
+analog begin
+    @(initial_step) begin clk_v = 0.0; t_fire = 300p; end
+    @(cross(V(ckfb) - vth, +1)) begin
+        t_fire = $abstime + 300p;
+    end
+    @(timer(t_fire, 100.0)) begin
+        clk_v = 1.0 - clk_v;
+    end
+    V(clk_lms) <+ transition(clk_v, 0.0, 5p, 5p);
+end
+endmodule

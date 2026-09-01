@@ -421,3 +421,24 @@
   （pll_mmd_edge 8 口 / pll_clk_lms 2 口·定义在 pll_hybrid_aux.va / pll_lms 11 口 /
   pll_dtc_decoder_10b 1027 口 / pll_doubler_edge 2 口·仅 tb 用）；顶层 PLL 原理图由用户手绘
   （例化清单见 scripts/gen_top.py，VA 网表需 ahdl_include 行补齐）。
+
+## 2026-09-01 下午：dtc_10b + 顶层两层原理图全部闭环（本会话状态）
+
+- **方案 A'（用户决策）**：解码器 Xdec 内嵌进 dtc_10b（论文架构），顶层 1023 条 c 网消失。
+  - `netlist/inc/dtc_10b.scs` 重生成（11 端口 + Xdec 内嵌 + CODE→c 改名 + vth=0.5 显式，tools/gen_dtc_ref.py）
+  - `gen_top.py`：删 Xdec 块、Xdtc 收为 11 口；`sim/pll_step2_main.scs` 重新生成
+- **dtc_10b 原理图桥批量建成**（tools/build_dtc_10b.py 生成 .il + load_il，2053 实例）：
+  标签命名法零手绘、33×31 网格、schCheck (0 0)、si 导出与参考**逐项一致**
+- **VA symbol 建立流程变更**：Verilog-A import 本机不可用（缺 AMS 环境：xmvlog 纯 Verilog 模式
+  解析不了标准 disciplines.vams）→ veriloga cellview 粘贴 + 编辑器 Create Symbol
+- **si pin 排序规律实测**：实例行按字母序（VA 实例按 module 声明序，DB terminals 乱序无妨）；
+  子电路头按 schematic pin 创建序；层级边界两侧不一致会端口错位（adpll_top OUTP/OUTN 曾交换，
+  删 pin 按字母序重建修复）
+- **adpll_top + tb_adpll_top 建成并闭环**：桥验证 21 实例/11 pin/接线逐位正确；桥修 Vref v1=0、
+  buffer 管 nf=4、Xci ic=0.55、Xmmd.err_out 改接悬空网 ERR（参考如此）
+- **si 平铺比对 30/30 全部一致**（tools/compare_tb_top.py：内联 subckt、丢 Xpll、节点集合比、
+  type/edgetype/delay/seed/vth 白名单、canon 大小写不敏感）
+- 新坑沉淀：嵌套 let 被桥包装器重写（用单层 let 双绑定）；~>props 槽对 VA/vdc 实例 nil（以
+  dbFindProp 为准）；prop 更新用 if(存在→replace, 缺失→create)；改完必须 schCheck+dbSave（OSSHNL-109）；
+  vpulse/isource CDF 字段名 v1/v2/per/pw/tr/tf（导出为 val0/val1/period/width/rise/fall）
+- **剩余**：tb 导出网表补 4 行 ahdl_include 后即与 step2 仿真网表结构等价（可直接冒烟比对）

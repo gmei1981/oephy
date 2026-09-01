@@ -68,11 +68,8 @@ def gen(name: str, stop: str, dual: bool, strobe: Optional[str] = None, save_dtc
     else:
         A("// single-core: direct vco_x (no unpowered core-B floating nodes)")
         A("Xvco (VDD VSS VCTRL OUTP OUTN) vco_x")
-    A("Xdtc (CK2X CKDTCD VDD VSS \\")
-    for i in range(0, NSW, 16):
-        row = " ".join(f"c{j}" for j in range(i, min(i + 16, NSW)))
-        A("    " + row + " \\")
-    A("    ) dtc_10b  // code ports wired directly to Xdec outputs (shared nodes)")
+    A("// plan A': decoder moved INSIDE dtc_10b (paper architecture); only 11 external ports")
+    A("Xdtc (CK2X CKDTCD VDD VSS CKFB KDTC EPSC SEL ALT VDCC RDCC) dtc_10b")
     A("Xspd (VBSPD CKRST CKFB VHOLD VRAMP VDD VSS) spd_x")
     A("Xcmp (VHOLD VREF VBCMP EBIT VDD VSS) cmp_x")
     A("Xgm  (VHOLD VREF VBGM VI VDD VSS) gm_x")
@@ -100,13 +97,6 @@ def gen(name: str, stop: str, dual: bool, strobe: Optional[str] = None, save_dtc
     else:
         A("    mu_k=0.01 mu_v=5e-13 mu_r=1e-13 mu_off=4.2e-13 K0=1.0 vdcc0=12e-12 rdcc0=-12e-12 ohat0=32e-12 \\")
     A(f"    offset_s=32e-12 vref0={vref0} fref={lms_fref:.6e} m_slope=1e9 mode=1 tscale=1e-6 seed=121")
-    A("Xdec (CKFB KDTC EPSC SEL ALT VDCC RDCC \\")
-    for i in range(0, NSW, 16):
-        row = " ".join(f"c{j}" for j in range(i, min(i + 16, NSW)))
-        A("    " + row + " \\")
-    A("    ) pll_dtc_decoder_10b \\")
-    A(f"    fout={fvco:.6e} fref={dec_fref:.6e} frac2={frac2} Tres={Tres:.6e}")
-
     A("")
     A("Xci (VI 0) capacitor c=2p ic=0.55")
     A("// 预充电: 0-2ns 注入 550uA -> VI≈0.55V, 环路从近锁定状态启动")
