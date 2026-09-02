@@ -27,6 +27,11 @@ INC_FILES = [
     "dtc_10b.scs",
     "vco_dual.scs",
     "vco_dual_8g.scs",
+    "vco_c.scs",
+    "vco_c_nols.scs",
+    "vco_c_novar.scs",
+    "vco_c_svt.scs",
+    "ldo_05.scs",
     "spd_cmp_gm.scs",
 ]
 

@@ -442,3 +442,111 @@
   dbFindProp 为准）；prop 更新用 if(存在→replace, 缺失→create)；改完必须 schCheck+dbSave（OSSHNL-109）；
   vpulse/isource CDF 字段名 v1/v2/per/pw/tr/tf（导出为 val0/val1/period/width/rise/fall）
 - **剩余**：tb 导出网表补 4 行 ahdl_include 后即与 step2 仿真网表结构等价（可直接冒烟比对）
+
+## 2026-09-02：tb_adpll_top 顶层冒烟启动 + Esumrst 接线错误修复（本会话）
+
+- **Esumrst 接线错误（重要坑沉淀）**：si 平铺比对的"节点按集合比"看不到 ± 端子交换。
+  adpll_top 的 Esumrst vcvs 被画成 MINUS→gnd!、NC-→VDC08，导出
+  `Esumrst (CKRST 0 CKRSTI VDC08)` ⇒ CKRST=CKRSTI−0.8（∈[−1.6,−0.8]，MRST NMOS 恒关、
+  SPD 斜坡永不复位、环路必死）；参考为 `(CKRST VDC08 CKRSTI 0)` ⇒ CKRST=CKRSTI+0.8。
+  已在跑冒烟前修复（tools/fix_esumrst.py：几何范围删端子桩线+标签（gnd! 全网删除是灾难，
+  必须按端子 bBox 中心 <1.0 过滤），再 label_instance_term 重贴 MINUS→VDC08/NC-→gnd!；
+  schCheck (0 4)；重导出后该行与参考逐字符一致）。
+  教训：vcvs/vcvs 类 4 端器件的 0/VDC08 端在集合比对下不可见，冒烟仿真才是最终裁决。
+- **冒烟双跑已上 21 服务器**（+preset=ax +mt，300ns）：sim/run_smoke_tb_top.scs（原理图 si
+  导出 + 4 行 ahdl_include + save=selected + ic="OUTP=0.6"）vs sim/run_smoke_ref.scs。
+  坑：sim/step2/smoke/top.scs 是 0827 方案 A' 之前的旧 staging（Xdtc 1027 口），与现行
+  11 口 dtc_10b.scs 不兼容（SFE-3347 master 限 11 端子）→ 参考跑改用现行
+  sim/pll_step2_main.scs 重拼。原理图跑已过 52ns（Xpll.MMDIN LTE 松弛警告属预期）。
+- **Esum 接线错误（第二处同类坑，冒烟抓到）**：首次双跑完成（均 0 错误）后波形比对：
+  参考 VCTRL 末值 +0.554V，原理图 **−0.5476V**（=VN1−VI，其余信号 CKFB/VRAMP/CKDTCD
+  全摆幅错位均为其后果，fVCO 7.78 vs 7.93G）。根因：Esum vcvs 画成
+  `(VCTRL 0 VN1 VI)` ⇒ VCTRL=VN1−VI；参考 `(VCTRL VN1 VI 0)` ⇒ VCTRL=VN1+VI。
+  又是节点集合比对不可见的 ± 交换。修复 tools/fix_esum.py（MINUS→VN1/NC+→VI/NC-→gnd!
+  三端子旋转）。**新坑**：几何范围删桩（半径 1.0）误伤相邻实例 Ep 的两根桩（VN1/gnd!
+  标签被删、wire 变匿名 net7/net8）→ 修复工具必须先确认匿名网全网仅属目标端子
+  （schematic.read nets 查询）再全网删 + 重贴标签（tools/fix_ep_nets.py），事后
+  导出逐行 diff 复核。**防复发工具**：tools/compare_semantic.py——按各自 subckt 头把
+  实例节点映射到端子名再逐端子比对（30/30 通过）；Esumrst/Esum 类错误在冒烟前即可静态抓出。
+- 修复后 schCheck (0 4)、导出 5 个 vcvs 行与参考逐字符一致；tb 冒烟重跑中。
+- **方案 C（论文 0.5V 核 + VAR_I/VAR_P + LDO）scs 模块实现中（2026-09-02 下午）**：
+  - 论文 Fig.12 要点已落实进 `netlist/inc/vco_c.scs`（tools/gen_vco_c.py 生成）：核 0.5V、
+    Ls 尾电感 2n、CF 组 nr=188（标定值回写）、VAR_I 3bit（单元=3.3fF 串联+ulvt...moscap
+    nfin=1，估算 20MHz/V/单元，组 1+1+2→0/20/40/60/80）、VAR_P 5bit（单元=0.23fF 串联+
+    moscap，估算 0.5MHz/V/单元，组 1/2/4/8/16）、使能=bulk 侧 PMOS 开关（off 钉 VDDC）。
+    串联电容一举两得：标 KVCO 量级+压低变容管 RF 摆幅。VAR_T 跳过（固定温度）。
+  - `netlist/inc/ldo_05.scs`：5T OTA（**ulvt 输入对**——svt 在 0.5V 共模下 Vgs≈0.27 打不开、
+    EA 仅 6µA；尾管也 ulvt）+ RLPF 20k/8p（STG2 味道）+ PMOS pass nf=256（速度饱和上限
+    ~15mA）。本地 TB：4/8mA 调节到 ~0.5V ✓（settling µs 级），12mA 跌落（pass 上限，
+    待 VCO 实测电流定尺寸）。EA 极性坑：VOUT 接镜像侧输入。
+  - 顶层 `sim/pll_step2_main_c.scs`：VCTRL 分离（VCTRL_P=VHOLD 经理想缓冲占位、
+    VCTRL_I=VI 直连），LDO 1V→0.5V，Rf/Cf/Ep/Esum 链移除。
+  - **卡点：0.5V 核独立 TB 不起振**（vco_c_tune 30ns：OUTP/OUTN 平 0.5、核电流≈0）。
+    排查中：svt/ulvt 对均试过、加 Ikick/VCTRL 参数激励无效；对照实验发现**原始 0.8V
+    vco_x 独立 TB 也不起振**（原设计只在闭环网表里振）——参考冒烟数据里 VCO 是 4.5ns
+    才跳起的（先衰减环后起振），独立 TB 的启动激励机制未复刻。待本地 60ns 闭环跑
+    确认 20.1 本机闭环可振后定位差异。
+- **方案 C 关键突破（2026-09-02 晚）**：① 启动机制定位：最小闭环上下文（VCO+Xci(2p)+
+  Iinj+Rf/Cf/Ep/Esum 链）本机 60ns 可振（7.923G，本机 20.1 与服务器一致）；独立 TB 复刻
+  该上下文即可起振。② **0.5V 核 + 直连大 moscap（nfin=12×2）变容管：KVCO=206MHz/V 单调**
+  （VCTRL 0.15→0.53V，f 7.976→8.056G）、VI 无漂移——moscap_rf 在 0.5V 核小摆幅下恢复可用
+  C-V，Plan C 核心假设成立。③ **串联电容单元方案否决**：分压后变容管落在过渡区中央，
+  moscap_rf 模型非保守泵浦放大 ~80×（8µA 灌进控制节点，GM 压不住）→ 改为直连 moscap
+  单元（泵浦 ~0.1µA 量级可忽略）。④ vco_c.scs v2（gen_vco_c.py 重写）：VAR_I 3bit=
+  nfin 2/2/4 单元（实测 ENI0 单元 110MHz/V，满组 ~440，步进比例与论文 20/40/80 同构、
+  绝对值为 5.5×，配合 GM×KVCO/CI 量纲复核可用）、VAR_P 5bit=nfin 1/2/4/8/16（0.5MHz/V
+  步进在本 PDK 不可达，记录偏差）、Ls=2n 尾电感、CF nr=188。⑤ 核电流实测 1.32mA/核
+  （峰值 5mA）→ LDO pass nf=256 富余，LDO 定稿。⑥ 本机 60ns 闭环参考跑修掉一个回退：
+  build_smoke.py 会从旧 staging 重建 ref（Xdtc 1027 口）→ 已改为恒从 pll_step2_main.scs 生成。
+- **剩余（服务器批量）**：VAR 逐码 KVCO 标定（ENI/ENP 组合×VCTRL 扫点）→ LDO 带真实
+  VCO 负载复验 → 闭环 pll_step2_main_c.scs 锁定验证（Iinj 预充电改 VI≈0.3，对应 0.5V
+  核过渡区）→ 原理图三新 cell（vco_x_c/vco_dual_8g_c/ldo_05）桥批量绘制 + adpll_top
+  改造（删 Rf/Cf/Ep/Esum、VHOLD→VCTRL_P 缓冲、VI→VCTRL_I、加 Xldo）。
+- **25.10 服务器发散排查（重要坑，2026-09-02 深夜）**：混合网表（原理图 si 导出块内联
+  + 新 scs）在服务器 25.10 上 32.5ps 发散（SPECTRE-16384，I(Vvdd:p)/I(Xlms:rdcc_flow)
+  交替爆 GA 级）。二分排除：Ls×、VAR 组×、LDO×、ulvt×、ic=0.6>轨×、vth×、maxstep 0.5p×
+  ——最终定位：**si 导出的 dtc_10b/spd/cmp/gm 子块与 Plan C 新模块混搭时 25.10 发散**；
+  纯 scs（netlist/inc 版本）5ns 服务器测试 ok=True。注意：si 导出整网表单独跑 tb 冒烟
+  （25.10）没问题——是"混搭"才触发。结论：**服务器 Plan C 闭环用纯 scs
+  pll_step2_main_c.scs**；原理图侧的等价性已有 tb 冒烟 PASS 背书，si 混搭问题留档
+  待后续（原理图 C 版绘好后整体 si 导出测试即可，届时全是 si 块、无混搭）。
+- **混合网表闭环跑通（2026-09-02 深夜）**：不画原理图、直接组 pll_step2_main_c_hyb.scs
+  （tools/build_hyb_c.py：原理图 si 导出的 spd_x/cmp_x/gm_x/dtc_10b 内联 + vco_c.scs +
+  ldo_05.scs）。LDO 连环坑全清：① VBL 浮空侥幸自稳→加 pin 后失效，ulvt Vth≈0.3（实测），
+  正确偏置 **VBL=0.62**（0.45 时 TAIL 0.22、输入对 Vgs 0.28 关断）；② RLPF 20k×8p 在主环
+  内=160ns 限速（论文的 RC 在 master 支路主环外）→ RLPF 2k；③ CLPF 8p→2p、尾管 nf=1
+  （nf=2 引入 89mV 稳态误差）；④ 最终 LDO：VDDC 40ns 内归位 0.53V（10% 误差，可接受）。
+  ⑤ CF nr 188→**165**（C 设计坦克中心校正：7.553→7.963G）；⑥ MMD vth 0.7→**0.5**
+  （0.53V 域 MMDIN 峰值 0.89V，0.7 阈值太苛刻）。本地 60ns 判决全过：fVCO 7.963G、
+  CKFB=99.5M（=fVCO/80 分频正常，60ns 窗口 2 个上升沿是对的——别误判）、VDDC 0.533、
+  VI 0.3015 稳。**300ns 闭环已上服务器**：关键看 CKFB 是否被 VAR_I 拉到 100.0M（严格锁定）。
+- **冒烟重跑 PASS（原理图↔网表电气等价确认，2026-09-02）**：修复后 300ns 双跑（ax+mt，
+  服务器，0 错误）。比对（tools/compare_smoke.py，save=selected 仅存 18 信号）：
+  模拟状态量逐点 <0.01%（VCTRL 0.5516/0.5516、VI、VREF、VDCC=12、RDCC=−12.79、KDTC 全对齐）；
+  fVCO 7.9258 vs 7.9252G（+0.008%）、CKFB 99.07 vs 99.06M、OUTP 摆幅 2.111V 相同、
+  VCTRL 末值 0.5539 vs 0.5540；**边沿对齐** OUTP 16/16 沿 mean|Δt|=0.66ps、CKFB 5/5 沿
+  5.13ps、fire-rate 差 0.0079%（两独立 tran 求解器容差级漂移，晚窗 ~21ps 相位漂移属预期，
+  点迹 max|d| 判据对数字信号是边沿假象，比对器已改：模拟量点迹严格判、数字量按均值漂移
+  +早窗边沿对齐判）。与 0827 记录（fVCO 7.926G/CKFB 99M）一致。
+- 坑：桥下载段 ssh 认证失效（Permission denied (password)，ssh-agent 坑复发）→ 远端
+  spectre 0 错误完成但 ok=False；救回路径=tar czf + scp -o IdentityAgent=none
+  -i ~/.ssh/id_ed25519 手动取回 raw。另：sim/step2/smoke/top.scs 是旧 staging（Xdtc 1027 口）
+  不可再用，参考冒烟以 sim/pll_step2_main.scs 为准。
+- **300ns 闭环 0 错误跑通但未锁（2026-09-03 凌晨，本会话收官状态）**：基线 CKFB 101.9→106.1M
+  跑飞、VCTRL_I 0.30→0.65 单调爬升、fVCO→8.50G。隔离诊断（varIOff/varPOff/D1 CI=15p/
+  D2 VBGM=0.6/预充 0.315）全部轨迹与基线逐位一致 → **根因链**：① 采样几何整体偏移：锁定
+  采样点落在 VHOLD≈0.29V，而 GM 输入对（svt，Vth≈0.45）可用区 ~0.5V（tb_gm_x 实测阈值
+  504.5mV）→ GM 完全关断、环路无频率修正力；② 相位绕回（CKFB 106M 采样 10ns 斜坡每
+  ~17 周期绕回）使 PD 均值失去方向信息 → VI 被 µA 级旁路电流单向充电跑飞；③ 改 CI/VBGM/
+  预充全部无效是 GM 关断的必然结果（注：MMD vth 0.7→0.5 已回退——0.5 让 MMD 对启动毛刺
+  敏感致 25.10 发散，0.7 本来就够）。**下一步（工作点重设计）**：vref0 0.15→0.45、
+  SPD 斜坡电平/DTC 初始延迟把锁定采样点移到 ~0.50V（GM 阈值）、隔离 VI 旁路充电源，
+  然后复跑 300ns/1µs。锁定后波形判据：VCTRL_P 围绕 ~0.50V 呈带小纹波平线（每周期
+  ~mV 台阶=环路极限环×斜坡斜率 214mV/ns + CH 跌落）、VCTRL_I 围绕 ~0.31V 水平。
+- **存档**：全部网表/仿真文件已上传 192.168.110.18:/home/lib/test0902/（netlist+sim 4.8G
+  +tools+scripts+文档；tar 989M、sshpass 密码传输，.18 可写 17T）。本会话新增工具：
+  tools/{gen_vco_c, build_hyb_c, compare_semantic, compare_smoke, export_tb_top,
+  fix_esumrst, fix_esum, fix_ep_nets, gen_vco_c_tune}.py；新增网表：
+  sim/{pll_step2_main_c(+_pc/_d1/_d2/_varIOff/_varPOff/_hyb*).scs, ldo_05_tb,
+  vco_c_tune}.scs、netlist/inc/{vco_c, vco_c_nols, vco_c_novar, vco_c_svt, ldo_05}.scs、
+  schematic_plan_c_steps.md。

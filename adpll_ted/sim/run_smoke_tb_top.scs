@@ -1,3 +1,12 @@
+// smoke_tb_top — schematic top-level (tb_adpll_top si export), step2 config
+// equivalence smoke vs sim/pll_step2_main.scs (reference flat deck)
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+ahdl_include "pll_mmd_edge.va"
+ahdl_include "pll_lms.va"
+ahdl_include "pll_dtc_decoder_10b.va"
+ahdl_include "pll_hybrid_aux.va"
 
 // Library name: adpll_sch
 // Cell name: vco_x_8g
@@ -6516,3 +6525,7 @@ Vref (REF 0) vsource type=pulse val0=0 val1=800.0m period=10n rise=10p \
 Iinj (VI 0) isource type=pulse edgetype=linear val0=0 val1=-550u period=1m \
         rise=10p fall=10p width=2n
 Xpll (EN2 OUTN OUTP REF VBCMP VBGM VBSPD VDC08 VDD VI VSS) adpll_top
+
+plltran tran stop=300n maxstep=2p errpreset=liberal method=gear2only skipdc=yes ic="OUTP=0.6"
+save Xpll.OUTP Xpll.CKFB Xpll.VCTRL Xpll.VI Xpll.VHOLD Xpll.EBIT Xpll.MMDIN Xpll.NBUF1 Xpll.VREF Xpll.VDCC Xpll.RDCC Xpll.KDTC Xpll.VRAMP Xpll.SEL Xpll.EPSC Xpll.CK2X Xpll.CKDTCD Xpll.CKRST
+saveOptions options save=selected
