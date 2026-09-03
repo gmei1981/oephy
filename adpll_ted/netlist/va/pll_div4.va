@@ -1,0 +1,31 @@
+// pll_div4.va — fixed divide-by-4 (ref2 SS-BB-ADPLL divider-based subsampling)
+// Toggles OUT every 2 rising edges of IN: full period = 4 IN periods
+// (8G VCO -> 2G feedback square wave).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_div4(in, out);
+inout in;
+output out;
+electrical in, out;
+
+parameter real vth = 0.5;
+
+integer cnt;
+real ov;
+
+analog begin
+    @(initial_step) begin
+        cnt = 0;
+        ov = 0.0;
+    end
+    @(cross(V(in) - vth, +1)) begin
+        cnt = cnt + 1;
+        if (cnt >= 2) begin
+            cnt = 0;
+            ov = 0.8 - ov;
+        end
+    end
+    V(out) <+ transition(ov, 0, 10p);
+end
+endmodule

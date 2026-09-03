@@ -1,0 +1,32 @@
+// pll_dac7.va — ideal 7-bit DAC (ref2 coarse DAC1: drives big varactor ~206MHz/V)
+// code0..code6 digital inputs (0.8V logic) -> analog staircase, 1ns smoothing.
+// out = vmin + cv*(vmax-vmin)/128.
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_dac7(out, code0, code1, code2, code3, code4, code5, code6);
+output out;
+inout code0, code1, code2, code3, code4, code5, code6;
+electrical out, code0, code1, code2, code3, code4, code5, code6;
+
+parameter real vmin = 0.0;
+parameter real vmax = 0.5;
+parameter real tr = 1n;
+parameter real vth = 0.4;
+
+real vo;
+integer cv;
+
+analog begin
+    cv = 0;
+    if (V(code0) > vth) cv = cv + 1;
+    if (V(code1) > vth) cv = cv + 2;
+    if (V(code2) > vth) cv = cv + 4;
+    if (V(code3) > vth) cv = cv + 8;
+    if (V(code4) > vth) cv = cv + 16;
+    if (V(code5) > vth) cv = cv + 32;
+    if (V(code6) > vth) cv = cv + 64;
+    vo = vmin + cv * (vmax - vmin) / 128.0;
+    V(out) <+ transition(vo, 0, tr);
+end
+endmodule

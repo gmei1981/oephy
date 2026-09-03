@@ -608,3 +608,50 @@
   f 从 8.48G 回落；GM 恢复 µA 级泵流 → VI 获得频率权威 → CKFB 拉向 100M。
 - wp4 波形分析工具：psf 二进制导出文本（`psf -i raw -s -t SIG -f %.8e`），注意文本解析要
   从 VALUE 行之后开始（头部参数区含 "tolerance"/"grid" 等假信号名）。
+
+## 2026-09-03 上午：wp5 300ns 判定 + 1µs 续跑启动（本会话）
+
+- **wp5 300ns 判定（部分成功，未锁但 I 路径已恢复）**：CKFB 102.2-102.7M 全程平稳（wp4 的
+  105.9-106.8M 恒定 → 现随 VI 响应）；fVCO 8.48G→8.16-8.21G，与 VI 联动（+0.56GHz/V 实测，
+  与 moscap C-V 负斜率一致）——VAR_I NMOS 开关修复生效 ✓。VCTRL_P 前 210ns 仍极限环
+  [−0.055, 0.763]，**210ns 后相变**（30ns 窗口均值 0.215→0.453→0.503，最后 60ns 摆动收窄
+  [−0.007, 0.726]）。VI 0.285（预充）→0.02 快速跌落→回升 0.11→0.09，工作区远低于预期
+  0.26-0.30，落在 C-V 最陡段（VB<0.1，dC/dVB≈−894fF/V）。VREF 0.457-0.461 稳、VDDC 0.5385
+  稳 pp=18mV、KDTC 1.0 恒定。CKFB +2.5% 残差未拉入（目标 100.0M）。
+- **1µs 续跑已启动（本机，10:05，预计 ~11:50 完成）**：wp5 无 writefinal/.fc 检查点 →
+  同网表从头跑 1µs（Iinj 预充电只在 t=0 触发一次，属正确启动行为）。运行目录
+  sim/out/wp5_1u/（stop=300n→1u，其余与 wp5 完全相同：gear2only/maxstep=2p/psfbin/+mt=8）。
+  网表存档 sim/pll_step2_main_c_wp5_1u.scs。判定重点：210ns 相变后是收敛到 VCTRL_P≈0.5
+  平线（锁定）还是极限环复发；VI 是否回升到 0.2+ 并拉 f 向 8.0G。
+- 坑沉淀：psf 文本导出带 -s 时每点两行（"trace" sweep / "trace" value 交错），按 trace 名
+  过滤再解析；CKFB 等信号与 time 网格长度不同时取 min 截断会错位，必须先核对各 trace 长度。
+
+## 2026-09-03 午：ref2 SS-BB-ADPLL 重构 V0+V1（本会话，状态存档）
+
+- **wp5_1u（旧架构）**：350ns 处 SIGSTOP 暂停（raw 保留，SIGCONT 可恢复），速率已过启动段 6-9ns/min。
+  判据已定：CKFB 102.2-102.7M 未拉入、210ns 相变后续走向未知——旧架构就此挂起。
+- **ref2 计划**：ref2_ssbb_plan.md 定稿。新架构 = SS-BB-ADPLL（Ye et al. CSTIC 2025）：
+  REF→DTC(现有1023单元)→BBPD(亚采样bang-bang)→PI DLF→双理想DAC(7b粗/9b细)→现有VCO单核
+  （vco_c_dac：删核B/68开关/1G bleeder，DAC直驱 moscap bulk nfin=24粗/nfin=2细）；
+  ÷4 反馈（VA）、AFC 粗锁（VA）、GS 换档（VA）。删 spd/cmp/gm/LMS/MMD/Esumrst/Iinj。
+- **V0 完成**：netlist/va/ 新增 pll_bbpd/pll_dlf/pll_dac7/pll_dac9/pll_afc/pll_gs/pll_div4/
+  pll_frac_acc/pll_dtc_code(生成) 九个 VA；tools/gen_dtc_ss.py（dtc_10b_ss 14端口+内嵌
+  10b直通解码器）、tools/gen_vco_c_dac.py（vco_x_c_dac 单核+DAC直驱）已产出 netlist/inc/。
+- **VA 语法坑（本会话实测，重要）**：① 变量索引 V(code[i])/总线端口参数化宽度
+  [0:nbits-1] 本地 ahdlcmi 不支持 → 全部改独立端口+展开赋值（沿用老解码器模式）；
+  ② transition() 不能嵌在条件语句里 → 目标值条件赋值、transition 提到顶层；
+  ③ pwl wave 括号对无效（(0 0) 语法错）、pwl 线性插值（台阶须重复时间点）；
+  ④ 实例行参数覆盖会静默压过 VA 默认值（TB 里 target=20 盖掉 .va 的 320——行为像旧
+  模块还在，实为实例参数没同步，排查半天）。
+- **V1 判定（11 台 0 错误）**：bbpd（死区两窗口：ckr沿前向+div4沿到达后补写，对齐/错位
+  两案方向与 dz 占空比全对）、dlf（±1 累加+afc 基址装载）、dac7 阶梯 0/0.332/0.496V、
+  div4（每2沿翻转=÷4，早期写成每4沿=÷8 已修）、gs（W=8 三档 8→4→2）、frac_acc（FCW=512
+  码周期20n）、dtc_10b_ss（code=4→c0-3 开/c5 关，Xdtc.c5 层级探针可用）——全部 PASS。
+  **AFC 剩余 3 项未过**：target=320 + ref_cnt>K（K+1 沿判定）修复后首窗口方向已验证正确
+  （1.95G 案 cnt=312<320 → 64→96 上走 ✓，CNTOUT 调试口实锤计数正确），但终值轨迹异常
+  （1.95G 案停在 65 而非 127；2.0G 案未置 afc_done）——下次从窗口沿数 312/313 交替与
+  hit_cnt 累积逻辑继续。调试口 cnt_out 保留在 pll_afc.va（1V=100 沿）。
+- **待续（下次会话）**：AFC 3 项收口 → V2 开环（DTC码扫 bb 翻转点、vco_c_dac KVCO 标定
+  ——VC1 nfin=24 直驱、复刻 Plan C 启动上下文）→ V3 → V4 整数闭环 100M/8G。
+- 工具：tools/run_ssbb_v1.py（生成+跑台）、tools/check_ssbb_v1.py（波形判定）。
+  TB 网表与结果在 sim/ssbb/v1/<tb>/。

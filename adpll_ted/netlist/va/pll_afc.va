@@ -1,0 +1,69 @@
+// pll_afc.va — automatic frequency control (ref2 SS-BB-ADPLL)
+// Binary search on the coarse code: count DIV4 rising edges over K REF periods
+// (K=16 -> 1 edge = ~25MHz at VCO for 8G/div4/100M), halve the step each window,
+// exact target hit holds the code. afc_done=1 after the step is exhausted and
+// two windows hit the target exactly (code/frequency settled in its bin).
+// a0..a6 -> DLF accumulator base (afc_code<<9 -> coarse DAC1 code).
+// Individual ports + unrolled assignments (bus/V(i) loop not supported locally).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_afc(ref, div4, a0, a1, a2, a3, a4, a5, a6, afc_done, cnt_out);
+inout ref, div4;
+output a0, a1, a2, a3, a4, a5, a6, afc_done, cnt_out;
+electrical ref, div4, a0, a1, a2, a3, a4, a5, a6, afc_done, cnt_out;
+
+parameter real vth = 0.4;
+parameter integer target = 320;  // div4 edges per K-window = 20 edges/REF period * K
+parameter integer K = 16;        // measurement window in REF periods
+parameter integer code0 = 64;    // start at mid code
+parameter integer step0 = 32;
+
+integer cnt, ref_cnt, code_i, step_i, hit_cnt;
+real afcd_v;
+
+analog begin
+    @(initial_step) begin
+        cnt = 0;
+        ref_cnt = 0;
+        code_i = code0;
+        step_i = step0;
+        hit_cnt = 0;
+    end
+    @(cross(V(div4) - vth, +1)) begin
+        cnt = cnt + 1;
+    end
+    @(cross(V(ref) - vth, +1)) begin
+        ref_cnt = ref_cnt + 1;
+        // evaluate after K full periods (at the (K+1)-th edge -> K*10ns window)
+        if (ref_cnt > K) begin
+            ref_cnt = 0;
+            if (cnt < target)
+                code_i = code_i + step_i;
+            else if (cnt > target)
+                code_i = code_i - step_i;
+            else
+                hit_cnt = hit_cnt + 1;
+            cnt = 0;
+            if (step_i > 1) step_i = step_i / 2;
+            else step_i = 0;
+            if (code_i < 0) code_i = 0;
+            if (code_i > 127) code_i = 127;
+        end
+    end
+    if (step_i == 0 && hit_cnt >= 2)
+        afcd_v = 0.8;
+    else
+        afcd_v = 0.0;
+    V(afc_done) <+ transition(afcd_v, 0, 10p);
+    V(a0) <+ (((code_i >> 0) & 1) != 0) ? 0.8 : 0.0;
+    V(a1) <+ (((code_i >> 1) & 1) != 0) ? 0.8 : 0.0;
+    V(a2) <+ (((code_i >> 2) & 1) != 0) ? 0.8 : 0.0;
+    V(a3) <+ (((code_i >> 3) & 1) != 0) ? 0.8 : 0.0;
+    V(a4) <+ (((code_i >> 4) & 1) != 0) ? 0.8 : 0.0;
+    V(a5) <+ (((code_i >> 5) & 1) != 0) ? 0.8 : 0.0;
+    V(a6) <+ (((code_i >> 6) & 1) != 0) ? 0.8 : 0.0;
+    // debug: internal edge count as voltage (1V = 100 edges)
+    V(cnt_out) <+ cnt * 0.01;
+end
+endmodule

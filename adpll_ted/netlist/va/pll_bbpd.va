@@ -1,0 +1,62 @@
+// pll_bbpd.va — subsampling bang-bang PD (ref2 CSTIC 2025 SS-BB-ADPLL style)
+// At each CKR (DTC-delayed REF) rising edge:
+//   bb    = flip-flop model of DIV4 level: edge LATE (after CKR) -> level low
+//           -> bb=0.8 (speed up); edge EARLY -> level high -> bb=0 (slow down)
+//           (negative feedback with DLF: bb=+1 -> code up -> VC up -> f up)
+//   bb_dz = dead-zone flag: 0.0 when the nearest DIV4 edge is within Tdz of the CKR edge
+//           (paper: delay-chain BBPD_DZ used by GS for lock detection), else 0.8
+// Dead zone has two windows (causal model):
+//   "before": last DIV4 edge within Tdz before the CKR edge (checked at CKR edge)
+//   "after" : first DIV4 edge within Tdz after the CKR edge (checked retroactively
+//             at that DIV4 edge — this is how the paper's delay-chain BBPD looks ahead)
+// sgn = loop-polarity override; flip if the closed loop fights instead of locks.
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_bbpd(ckr, div4, bb, bb_dz);
+inout ckr, div4;
+output bb, bb_dz;
+electrical ckr, div4, bb, bb_dz;
+
+parameter real vth = 0.4;
+parameter real Tdz = 50e-12;
+parameter real sgn = 1.0;
+
+real t_last, t_ckr, bb_v, dz_v;
+integer has_edge;
+
+analog begin
+    @(initial_step) begin
+        t_last = -1.0;
+        t_ckr = -1.0;
+        bb_v = 0.0;
+        dz_v = 0.8;
+        has_edge = 0;
+    end
+    // DIV4 edges: track last edge time; retroactive "after" dead-zone window
+    @(cross(V(div4) - vth, +1)) begin
+        t_last = $abstime;
+        has_edge = 1;
+        if (t_ckr >= 0.0 && ($abstime - t_ckr) < Tdz)
+            dz_v = 0.0;
+    end
+    @(cross(V(div4) - vth, -1)) begin
+        t_last = $abstime;
+        has_edge = 1;
+        if (t_ckr >= 0.0 && ($abstime - t_ckr) < Tdz)
+            dz_v = 0.0;
+    end
+    // CKR edge: sample DIV4 level -> bb (inverted: low level = edge late = speed up);
+    // "before" dead-zone window
+    @(cross(V(ckr) - vth, +1)) begin
+        bb_v = (V(div4) > vth) ? 0.0 : 0.8*sgn;
+        if (has_edge >= 1 && ($abstime - t_last) < Tdz)
+            dz_v = 0.0;
+        else
+            dz_v = 0.8;
+        t_ckr = $abstime;
+    end
+    V(bb)   <+ transition(bb_v, 0, 10p);
+    V(bb_dz) <+ transition(dz_v, 0, 10p);
+end
+endmodule
