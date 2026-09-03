@@ -1,0 +1,49 @@
+// TX driver — transistor level, TSMC 12FFC (paper: P+N over N, dedicated VCCIO)
+// VCCIO = 0.45 V low-swing mode. Output stage driven directly from the VDD
+// domain (0.8 V gate swing stays within device ratings; a dedicated level
+// shifter is unnecessary for VCCIO < VDD).
+// Sizing for ~28 ohm Ron (measured model current density at VCCIO):
+//   pch_ulvt @ Vsg=0.45: ~14 uA/fin @ Vsd=0.1  -> 256 fins ~ 27 ohm
+//   nch_ulvt @ Vgs=0.8 : ~75 uA/fin          ->  96 fins ~ 30 ohm
+subckt afe_tx_drv (din pad vccio vdd vss)
+
+// VDD-domain predriver (svt), 3 stages: n3 = !din drives the output stage
+Mp1 (n1 din vdd vdd) pch_svt_mac l=16n nfin=4
+Mn1 (n1 din vss vss) nch_svt_mac l=16n nfin=2
+Mp2a (n2 n1 vdd vdd) pch_svt_mac l=16n nfin=16
+Mp2b (n2 n1 vdd vdd) pch_svt_mac l=16n nfin=16
+Mp2c (n2 n1 vdd vdd) pch_svt_mac l=16n nfin=16
+Mn2a (n2 n1 vss vss) nch_svt_mac l=16n nfin=16
+Mn2b (n2 n1 vss vss) nch_svt_mac l=16n nfin=16
+Mp3a (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+Mp3b (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+Mp3c (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+Mp3d (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+Mn3a (n3 n2 vss vss) nch_svt_mac l=16n nfin=16
+Mn3b (n3 n2 vss vss) nch_svt_mac l=16n nfin=16
+Mn3c (n3 n2 vss vss) nch_svt_mac l=16n nfin=16
+
+// output stage: P pull-up to VCCIO + N pull-down (P+N over N), ulvt
+Mpu01 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu02 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu03 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu04 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu05 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu06 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu07 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu08 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu09 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu10 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu11 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu12 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu13 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu14 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu15 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpu16 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+Mpd1 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+Mpd2 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+Mpd3 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+Mpd4 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+Mpd5 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+Mpd6 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+ends afe_tx_drv

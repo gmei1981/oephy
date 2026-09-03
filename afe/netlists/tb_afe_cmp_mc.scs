@@ -1,0 +1,41 @@
+// AZ comparator residual-offset Monte Carlo TB — single bank + replica bias,
+// slow vin ramp, one AZ at t=0 (baked __AZEN__: 0.8 = AZ on, 0 = raw offset).
+// The trip point of (outp-outn) vs vref gives the input-referred offset per
+// MC run; with AZ on this is the post-autozero residual.
+simulator lang=spectre
+
+// MC sections: TT corner, local mismatch on MOS/RES/MOM (documented TSMC flow)
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_MOS_MOSCAP
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_RES_BIP_DIO_DISRES
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_MOM
+
+include "afecmp_bank.scs"
+include "afe_bias.scs"
+
+Vvdd (vdd 0) vsource dc=0.8
+Vvss (vss 0) vsource dc=0
+Vvref (vref 0) vsource dc=0.225
+// ramp 0.10 -> 0.35 V over 60 ns (vref sits mid-ramp; |Vos| < 125 mV captured
+// — the raw (AZ off) offset spread needs the wide range)
+Vvin (vin 0) vsource type=pwl wave=[0 0.10 0.5n 0.10 60n 0.35]
+// eval OFF during the AZ window: the input switch and the AZ switch must not
+// fight for pA (a previous version held eval=1 through the AZ, which pinned
+// pA to a resistor-divider value and measured a -43 mV fake systematic offset).
+// az_off bakes EVALD=0 and PANODESET=0.10 (=vin at t=0) so the input switch
+// connects from t=0 without a pA step artifact; az_on bakes EVALD=1.6n and
+// PANODESET=0.225 (the AZ anchors pA to vref anyway).
+Veval (eval 0) vsource type=pulse val0=0 val1=0.8 delay=__EVALD__ rise=10p fall=10p width=100n period=200n
+Vaz (az 0) vsource type=pulse val0=0 val1=__AZEN__ delay=0 rise=10p fall=10p width=1.5n period=200n
+
+Xbias (vbias vdd vss) afe_bias
+Xcmp (vin vref eval az vbias outp outn vdd vss gp) afecmp_bank
+
+nodeset gp=0.4 Xcmp.gn=0.4 Xcmp.pA=__PANODESET__
+ic vbias=0.362
+
+mc1 montecarlo numruns=__NRUNS__ variations=mismatch seed=__SEED__ donominal=no {
+    tran tran stop=60n maxstep=5p method=gear2only skipdc=yes
+}
+
+saveOptions options save=selected
+save vin outp outn

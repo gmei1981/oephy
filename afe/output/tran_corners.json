@@ -1,0 +1,1099 @@
+{
+  "configs": [
+    [
+      "top_tt",
+      25
+    ],
+    [
+      "top_ff",
+      25
+    ],
+    [
+      "top_ss",
+      25
+    ],
+    [
+      "top_sf",
+      25
+    ],
+    [
+      "top_fs",
+      25
+    ],
+    [
+      "top_tt",
+      -40
+    ],
+    [
+      "top_tt",
+      125
+    ]
+  ],
+  "summary": [
+    {
+      "corner": "top_tt",
+      "temp": 25,
+      "ok": true,
+      "vbias_v": 0.3627479180050125,
+      "zero_ber_codes": [
+        90,
+        100,
+        110,
+        120,
+        130,
+        140,
+        150,
+        160,
+        170,
+        180,
+        190,
+        200
+      ],
+      "points": [
+        {
+          "vref_code": 90,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.375,
+          "ber": 0.008350730688935281
+        },
+        {
+          "vref_code": 90,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.875,
+          "ber": 0.008350730688935281
+        }
+      ]
+    },
+    {
+      "corner": "top_ff",
+      "temp": 25,
+      "ok": true,
+      "vbias_v": 0.3422701360128028,
+      "zero_ber_codes": [
+        90,
+        100,
+        110,
+        120,
+        130,
+        140,
+        150,
+        160,
+        170,
+        180,
+        190,
+        200,
+        210
+      ],
+      "points": [
+        {
+          "vref_code": 90,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 90,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.875,
+          "ber": 0.0
+        }
+      ]
+    },
+    {
+      "corner": "top_ss",
+      "temp": 25,
+      "ok": true,
+      "vbias_v": 0.386597649181444,
+      "zero_ber_codes": [
+        90,
+        100,
+        110,
+        120,
+        130,
+        140
+      ],
+      "points": [
+        {
+          "vref_code": 90,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.375,
+          "ber": 0.010438413361169102
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.375,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.375,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.375,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.375,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.375,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.375,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 90,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.875,
+          "ber": 0.010438413361169102
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.875,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.875,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.875,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.875,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.875,
+          "ber": null,
+          "errors": [
+            "Failed to download remote raw results from /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/cba295d7/cor_top_ss_25_v200_p875.raw: SSH error: Warning: Permanently added '192.168.110.21' (ECDSA) to the list of known hosts.\r\nmei@192.168.110.21: Permission denied (password). | Tar error: gzip: stdin: unexpected end of file\n/bin/tar: Child returned status 1\n/bin/tar: Error is not recoverable: exiting now"
+          ]
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.875,
+          "ber": null,
+          "errors": [
+            "Failed to download remote raw results from /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/30461111/cor_top_ss_25_v210_p875.raw: SSH error: Warning: Permanently added '192.168.110.21' (ECDSA) to the list of known hosts.\r\nmei@192.168.110.21: Permission denied (password). | Tar error: gzip: stdin: unexpected end of file\n/bin/tar: Child returned status 1\n/bin/tar: Error is not recoverable: exiting now"
+          ]
+        }
+      ]
+    },
+    {
+      "corner": "top_sf",
+      "temp": 25,
+      "ok": true,
+      "vbias_v": 0.3876553239731009,
+      "zero_ber_codes": [
+        90,
+        100,
+        110,
+        120,
+        130,
+        140,
+        150,
+        160,
+        170,
+        180,
+        190,
+        200,
+        210
+      ],
+      "points": [
+        {
+          "vref_code": 90,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 90,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.875,
+          "ber": 0.0
+        }
+      ]
+    },
+    {
+      "corner": "top_fs",
+      "temp": 25,
+      "ok": true,
+      "vbias_v": 0.3388104640838592,
+      "zero_ber_codes": [
+        90,
+        100,
+        110,
+        120,
+        130,
+        140,
+        150,
+        160,
+        170,
+        180,
+        190
+      ],
+      "points": [
+        {
+          "vref_code": 90,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.375,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.375,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 90,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.875,
+          "ber": 0.1315240083507307
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.875,
+          "ber": 0.1315240083507307
+        }
+      ]
+    },
+    {
+      "corner": "top_tt",
+      "temp": -40,
+      "ok": true,
+      "vbias_v": 0.3853590984523046,
+      "zero_ber_codes": [
+        90,
+        100,
+        110,
+        120,
+        130,
+        140,
+        150,
+        160,
+        170,
+        180,
+        190
+      ],
+      "points": [
+        {
+          "vref_code": 90,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.375,
+          "ber": 0.10647181628392484
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.375,
+          "ber": 0.12943632567849686
+        },
+        {
+          "vref_code": 90,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.875,
+          "ber": 0.10647181628392484
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.875,
+          "ber": 0.12943632567849686
+        }
+      ]
+    },
+    {
+      "corner": "top_tt",
+      "temp": 125,
+      "ok": true,
+      "vbias_v": 0.3295093235728006,
+      "zero_ber_codes": [
+        90,
+        100,
+        110,
+        120,
+        130,
+        140,
+        150,
+        160,
+        170,
+        180,
+        190,
+        200,
+        210
+      ],
+      "points": [
+        {
+          "vref_code": 90,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.375,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 90,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 100,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 110,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 120,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 130,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 140,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 150,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 160,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 170,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 180,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 190,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 200,
+          "pi": 0.875,
+          "ber": 0.0
+        },
+        {
+          "vref_code": 210,
+          "pi": 0.875,
+          "ber": 0.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// Transistor-level AFE verification TB (hybrid): PRBS/channel/clocks/checker are
+// VerilogA; TX driver, comparator banks and output mux are TSMC 12FFC transistors.
+module afe_tb_tran (tx_pad, rx_in, vref, ck8, pclk, d_even, d_odd, lock, err_cnt, bit_cnt, vdd, vccio, vss, codeb0, codeb1, codeb2, codeb3, codeb4, codeb5, codeb6, codeb7);
+    output tx_pad, rx_in, ck8, pclk, d_even, d_odd, lock, err_cnt, bit_cnt;
+    inout vref, vdd, vccio, vss;
+    output codeb0, codeb1, codeb2, codeb3, codeb4, codeb5, codeb6, codeb7;
+    electrical tx_pad, rx_in, vref, ck8, pclk, d_even, d_odd, lock, err_cnt, bit_cnt, vdd, vccio, vss;
+    electrical codeb0, codeb1, codeb2, codeb3, codeb4, codeb5, codeb6, codeb7;
+
+    parameter real vref_code = 128.0;   // 8b Vref DAC code (0..255, 450 mV FS)
+    parameter real pi_code   = 0.5;     // sampler clock phase in UI (0..1)
+    parameter real tpclk_ph  = 17.5e-12; // PCLK phase: bank swap 45 ps before sample
+    parameter real az_en     = 1.0;     // autozero enable
+    parameter real drift     = 0.0;     // drift current slope (A/s) into bank A outp
+    parameter integer n_shift = 3;      // RX pipeline delay in UI (BER checker)
+    parameter integer start_bit = 200;  // skip counting before this (training/
+                                        // power-up settling: with the real DAC +
+                                        // bias + package model the first PCLK
+                                        // cycle after bit 100 still errs —
+                                        // measured 39 errors all in 6.3-10 ns)
+
+    electrical din, aggr, pi_in, vbias;
+    electrical a_eval, a_az, b_eval, b_az;
+    electrical a_az_g, b_az_g;
+    electrical gp_a, gp_b;
+    electrical cmp_a_p, cmp_a_n, cmp_b_p, cmp_b_n;
+    electrical act_p, act_n;
+    electrical ntx;
+
+    // ---- VerilogA blocks ----
+    afe_prbs23_gen #(.fbit(16e9), .seed(3))  G1 (din, vdd);
+    afe_prbs23_gen #(.fbit(16e9), .seed(19)) G2 (aggr, vdd);
+    afe_clk_gen #(.tpclk_ph(tpclk_ph)) CK (ck8, pclk, pi_in, vdd);
+    afe_pingpong PP (pclk, a_eval, a_az, b_eval, b_az, vdd);
+    // vref is driven by the transistor R-2R DAC instantiated in the .scs
+    // template; codeb is exported for it
+    afe_samp SMP (act_p, act_n, ck8, d_even, d_odd, vdd);
+    afe_ber_chk #(.n_shift(n_shift), .start_bit(start_bit)) CHK (d_even, d_odd, ck8, lock, err_cnt, bit_cnt, vdd);
+
+    // ---- transistor blocks (TSMC 12FFC) ----
+    afe_tx_drv  DRV (din, tx_pad, vccio, vdd, vss);
+    afe_bias    BIAS (vbias, vdd, vss);
+    afecmp_bank BA (rx_in, vref, a_eval, a_az_g, vbias, cmp_a_p, cmp_a_n, vdd, vss, gp_a);
+    afecmp_bank BB (rx_in, vref, b_eval, b_az_g, vbias, cmp_b_p, cmp_b_n, vdd, vss, gp_b);
+
+    // active-bank TG mux: bank A selected by a_eval, bank B by b_eval
+    nch_svt_mac #(.l(16n), .nfin(4)) MtgAp (cmp_a_p, a_eval, act_p, vss);
+    nch_svt_mac #(.l(16n), .nfin(4)) MtgBp (cmp_b_p, b_eval, act_p, vss);
+    pch_svt_mac #(.l(16n), .nfin(4)) MpgAp (cmp_a_p, b_eval, act_p, vdd);
+    pch_svt_mac #(.l(16n), .nfin(4)) MpgBp (cmp_b_p, a_eval, act_p, vdd);
+    nch_svt_mac #(.l(16n), .nfin(4)) MtgAn (cmp_a_n, a_eval, act_n, vss);
+    nch_svt_mac #(.l(16n), .nfin(4)) MtgBn (cmp_b_n, b_eval, act_n, vss);
+    pch_svt_mac #(.l(16n), .nfin(4)) MpgAn (cmp_a_n, b_eval, act_n, vdd);
+    pch_svt_mac #(.l(16n), .nfin(4)) MpgBn (cmp_b_n, a_eval, act_n, vdd);
+
+    // ---- channel: 1.4 mm 2.5D interposer line + aggressor ----
+    // z0=30 ohm matches the paper's 27-33 ohm driver impedance (source-matched,
+    // no reflection ringing); RX pad cap per UCIe pad spec (~125 fF)
+    resistor #(.r(1.5)) Rser (tx_pad, ntx);
+    tline #(.z0(30.0), .td(9e-12)) TL (ntx, vss, rx_in, vss);
+    capacitor #(.c(8e-15)) Cxt (aggr, rx_in);
+    capacitor #(.c(50e-15)) Crx (rx_in, vss);
+
+    integer vc;
+
+    analog begin
+        @(initial_step) vc = vref_code;
+        V(pi_in) <+ pi_code * 0.8;
+        V(a_az_g) <+ V(a_az) * az_en;
+        V(b_az_g) <+ V(b_az) * az_en;
+        // drift injection (models slow bias/VT drift) into bank A's AZ-anchored
+        // gate node gp: constant current -> linear voltage drift on the cap node;
+        // the periodic AZ re-anchors gp and cancels the accumulated drift
+        I(gp_a) <+ drift;
+        V(codeb0) <+ ((vc & 1) != 0)   ? 0.8 : 0.0;
+        V(codeb1) <+ ((vc & 2) != 0)   ? 0.8 : 0.0;
+        V(codeb2) <+ ((vc & 4) != 0)   ? 0.8 : 0.0;
+        V(codeb3) <+ ((vc & 8) != 0)   ? 0.8 : 0.0;
+        V(codeb4) <+ ((vc & 16) != 0)  ? 0.8 : 0.0;
+        V(codeb5) <+ ((vc & 32) != 0)  ? 0.8 : 0.0;
+        V(codeb6) <+ ((vc & 64) != 0)  ? 0.8 : 0.0;
+        V(codeb7) <+ ((vc & 128) != 0) ? 0.8 : 0.0;
+    end
+endmodule

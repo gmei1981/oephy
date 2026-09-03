@@ -1,0 +1,27 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// Ping-pong control logic (behavioral, driven by PCLK ~100 MHz):
+//   bank A evaluates on PCLK high, bank B on PCLK low;
+//   each bank autozeros with a short pulse (taz) at the start of its OFF phase.
+// The az pulse width is minimized for power (paper: "minimizes the pulse-width
+// duration of the comparator precharge cycle").
+module afe_pingpong (pclk, a_eval, a_az, b_eval, b_az, vdd);
+    input  pclk, vdd;
+    output a_eval, a_az, b_eval, b_az;
+    electrical pclk, vdd, a_eval, a_az, b_eval, b_az;
+    parameter real taz = 1.5e-9;
+
+    real hi, pk, pkd;
+
+    analog begin
+        @(initial_step) hi = V(vdd);
+        pk  = V(pclk);
+        pkd = absdelay(pk, taz);
+
+        V(a_eval) <+ (pk > 0.5 * hi) ? hi : 0.0;
+        V(b_eval) <+ (pk < 0.5 * hi) ? hi : 0.0;
+        V(a_az)   <+ ((pk < 0.5 * hi) && (pkd > 0.5 * hi)) ? hi : 0.0;
+        V(b_az)   <+ ((pk > 0.5 * hi) && (pkd < 0.5 * hi)) ? hi : 0.0;
+    end
+endmodule

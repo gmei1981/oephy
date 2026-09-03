@@ -1,0 +1,19 @@
+{
+  "cases": [
+    {
+      "case": "az_on",
+      "ok": true,
+      "errs": 0.0,
+      "bits": 1279.0,
+      "ber": 0.0
+    },
+    {
+      "case": "az_off",
+      "ok": true,
+      "errs": 134.0,
+      "bits": 1279.0,
+      "ber": 0.10476935105551212
+    }
+  ],
+  "drift_a_per_s": 2.5e-07
+}

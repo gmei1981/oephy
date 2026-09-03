@@ -1,0 +1,24 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// P+N-over-N low-swing source-terminated driver (behavioral).
+// Pull-up PMOS to VCCIO / pull-down NMOS to GND, Ron ~ 28 ohm each.
+// Dedicated VCCIO (0.45 V low-swing mode) per ISSCC 2025 36.3 Fig. 36.3.2.c.
+module afe_tx_driver (din, vccio, pad);
+    input  din, vccio;
+    output pad;
+    electrical din, vccio, pad;
+    parameter real ron = 28.0;
+    parameter real tsw = 10e-12;
+
+    real st, s;
+
+    analog begin
+        @(initial_step) st = 0.0;
+        @(cross(V(din) - 0.5 * V(vccio), +1)) st = 1.0;
+        @(cross(V(din) - 0.5 * V(vccio), -1)) st = 0.0;
+        s = transition(st, 0.0, tsw, tsw);
+        // Norton form: pad pulled to VCCIO (s=1) or GND (s=0) through Ron
+        I(pad) <+ s * (V(pad) - V(vccio)) / ron + (1.0 - s) * V(pad) / ron;
+    end
+endmodule

@@ -1,0 +1,43 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// Autozero comparator bank — behavioral model of the ping-pong RX AFE comparator
+// (ISSCC 2025 36.3, Fig. 36.3.3.b).
+//   eval=1 : regenerating decision of vin vs (vref + residual offset)
+//   az=1   : precharge (outputs to mid rail) + offset autozero
+// The injected input offset vos is cancelled at each az pulse, leaving a
+// residual = az_resid * vos (periodic drift cancellation via ping-pong).
+module afe_azcmp (vin, vref, eval, az, outp, outn, vdd);
+    input  vin, vref, eval, az, vdd;
+    output outp, outn;
+    electrical vin, vref, eval, az, vdd, outp, outn;
+    parameter real vos      = 4e-3;    // injected input-referred offset (V)
+    parameter real az_resid = 0.05;    // residual offset fraction after autozero
+    parameter real gcmp     = 120.0;   // regeneration sharpness
+    parameter real tcmp     = 25e-12;  // comparator delay
+    parameter real vn_rms   = 1e-3;    // input-referred noise (rms, per UI)
+    parameter real fbit     = 16e9;    // noise resample rate
+
+    real resid, vhi, gate, gates, dec, vnoise;
+    integer nseed;
+
+    analog begin
+        @(initial_step) begin
+            resid  = vos;
+            vhi    = V(vdd);
+            gate   = 0.0;
+            nseed  = 11;
+            vnoise = 0.0;
+        end
+        @(cross(V(az) - 0.5 * vhi, 1)) resid = vos * az_resid;
+        @(cross(V(eval) - 0.5 * vhi, +1)) gate = 1.0;
+        @(cross(V(eval) - 0.5 * vhi, -1)) gate = 0.0;
+        @(timer(0.0, 1.0 / fbit)) vnoise = vn_rms * $rdist_normal(nseed, 0.0, 1.0);
+
+        gates = transition(gate, 0.0, 20e-12, 20e-12);
+        dec   = 0.5 + 0.5 * tanh(gcmp * (V(vin) - V(vref) - resid + vnoise) / vhi);
+
+        V(outp) <+ 0.5 * vhi * (1.0 - gates) + gates * absdelay(dec * vhi, tcmp);
+        V(outn) <+ 0.5 * vhi * (1.0 - gates) + gates * absdelay((1.0 - dec) * vhi, tcmp);
+    end
+endmodule

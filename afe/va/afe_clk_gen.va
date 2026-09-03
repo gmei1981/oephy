@@ -1,0 +1,40 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// Half-rate clock ck8 (8 GHz) + ping-pong clock PCLK (100 MHz),
+// both derived from a 100 MHz reference (PLL modeled as ideal multiplier).
+// pi_code (0..1 of vdd) shifts ck8 phase over 1 UI (125 ps @ 16 Gb/s) — PI model.
+module afe_clk_gen (ck8, pclk, pi_code, vdd);
+    output ck8, pclk;
+    input  pi_code, vdd;
+    electrical ck8, pclk, pi_code, vdd;
+    parameter real fck    = 8.0e9;     // half-rate clock
+    parameter real fpclk  = 100.0e6;   // ping-pong clock
+    parameter real tpi_max = 125e-12;  // PI range = 1 UI
+    parameter real tr = 6e-12, tf = 6e-12;
+    parameter real sj_rms = 2e-12;     // sampling-clock edge jitter (rms)
+    parameter real tpclk_ph = 0.0;     // PCLK phase offset (bank-swap placement)
+
+    integer ckbit, pclkbit, jseed;
+    real    vhi, tpi, sq, sp, tjit;
+
+    analog begin
+        @(initial_step) begin
+            ckbit   = 0;
+            pclkbit = 0;
+            vhi     = V(vdd);
+            jseed   = 7;
+            tjit    = 0.0;
+        end
+        @(timer(0.0, 0.5 / fck)) begin
+            ckbit = 1 - ckbit;
+            tjit  = sj_rms * $rdist_normal(jseed, 0.0, 1.0);
+        end
+        @(timer(0.0, 0.5 / fpclk)) pclkbit = 1 - pclkbit;
+        sq = ckbit ? vhi : 0.0;      // piecewise-constant
+        sp = pclkbit ? vhi : 0.0;    // piecewise-constant
+        tpi = tpi_max * V(pi_code) / vhi + tjit;
+        V(ck8)  <+ transition(absdelay(sq, tpi), 0.0, tr, tf);
+        V(pclk) <+ transition(absdelay(sp, tpclk_ph), 0.0, tr, tf);
+    end
+endmodule

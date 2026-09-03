@@ -1,0 +1,35 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// Serial PRBS23 generator (x^23 + x^18 + 1), NRZ at fbit (16 Gb/s)
+module afe_prbs23_gen (vout, vdd);
+    output vout;
+    input  vdd;
+    electrical vout, vdd;
+    parameter real    fbit = 16.0e9;
+    parameter integer seed = 3;
+    parameter real    tr   = 8e-12;
+    parameter real    tf   = 8e-12;
+
+    integer lfsr [22:0];
+    integer bitv;
+    integer i, fb;
+    real    vhi;
+
+    analog begin
+        @(initial_step) begin
+            for (i = 0; i < 23; i = i + 1)
+                lfsr[i] = (seed >> i) & 1;
+            bitv = 0;
+            vhi = V(vdd);
+        end
+        @(timer(0.0, 1.0 / fbit)) begin
+            bitv = lfsr[22];
+            fb   = lfsr[22] ^ lfsr[17];
+            for (i = 22; i > 0; i = i - 1)
+                lfsr[i] = lfsr[i - 1];
+            lfsr[0] = fb;
+        end
+        V(vout) <+ transition(bitv ? vhi : 0.0, 0.0, tr, tf);
+    end
+endmodule

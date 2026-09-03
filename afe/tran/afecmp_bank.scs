@@ -1,0 +1,62 @@
+// Ping-pong autozero comparator bank — transistor level, TSMC 12FFC (CLN12FFCLL)
+// (ISSCC 2025 36.3 RX AFE: unterminated front end, periodic AZ drift cancellation)
+//
+//   eval=1 : differential pair (cap-coupled inputs) amplifies vin vs VREF
+//   az=1   : input caps reset (plates -> VREF, gates -> VBIAS), outputs shorted
+//            for common-mode balance — periodic refresh cancels slow drift
+//
+// v3: two-stage linear gain. Stage-1 diode-load tops (s1p/s1n) drive a second
+// lvt diff pair whose drains ARE the bank outputs (outp/outn, diode loads).
+// Regeneration lives in the per-bit StrongARM samplers (tran/afe_sampler.scs) —
+// a continuously-on cross-coupled latch on these outputs was measured to drop
+// 21.7% of 16Gb/s bit flips (positive-feedback ISI/hysteresis) and was removed.
+//
+// Threshold math: gate_p = VBIAS + (vin - VREF), gate_n = VBIAS  (data-independent)
+subckt afecmp_bank (vin vref eval az vbias outp outn vdd vss gp)
+parameters nfin_in=8 nfin_ld=2 nfin_sw=8 nfin_az=8 nfin_sh=2 nfin_tail=8 caz=80f \
+           nfin2=6 nfin2ld=2 nfin2tail=6
+
+// input coupling caps (ideal cap placeholder for MOM cap; large vs Cgd to
+// limit clock feedthrough onto the floating gate nodes; 80f also scales down
+// the AZ charge-injection/kickback residual on the gates)
+C1 (pA  gp) capacitor c=caz
+C2 (vref gn) capacitor c=caz
+
+// input switch: vin -> pA during eval; ulvt keeps the 1-level settling fast:
+// an svt switch at vin=0.45 has Vgs=0.35 (Ron explodes, tau ~ 1 ns >> bit)
+// and crushes the 1-level at pA — measured as a pi-insensitive eye ceiling
+// at ~353 mV. ulvt gives Vov ~ 0.25 at the 1-level.
+Msw  (pA eval vin  vss) nch_ulvt_mac l=16n nfin=nfin_sw
+// AZ switches: reset both cap plates and gates. ulvt: svt versions have
+// Vgs ~ 0.37 V while anchoring to vbias = 0.43 V (marginal conduction,
+// measured MC residual offset sigma 28 mV with outliers to +100 mV)
+MazA (pA az  vref vss) nch_ulvt_mac l=16n nfin=nfin_az
+MazGp (gp az vbias vss) nch_ulvt_mac l=16n nfin=nfin_az
+MazGn (gn az vbias vss) nch_ulvt_mac l=16n nfin=nfin_az
+
+// stage 1: differential pair (lvt inputs: must conduct at VBIAS +/- signal),
+// diode loads
+MNp (s1n gp tA vss) nch_lvt_mac l=16n nfin=nfin_in
+MNn (s1p gn tA vss) nch_lvt_mac l=16n nfin=nfin_in
+MLp (s1p s1p vdd vdd) pch_svt_mac l=16n nfin=nfin_ld
+MLn (s1n s1n vdd vdd) pch_svt_mac l=16n nfin=nfin_ld
+Mtail (tA eval vss vss) nch_svt_mac l=16n nfin=nfin_tail
+
+// stage 2: linear gain (inverting: s1p -> outn, s1n -> outp; overall
+// vin high -> outp high). ulvt pair: stage-1 diode tops sit at ~0.42 V,
+// an lvt pair there is below threshold (measured: no data correlation at
+// the bank outputs) — ulvt restores Vov ~ 0.25
+MN2p (outn s1p t2 vss) nch_ulvt_mac l=16n nfin=nfin2
+MN2n (outp s1n t2 vss) nch_ulvt_mac l=16n nfin=nfin2
+ML2p (outp outp vdd vdd) pch_svt_mac l=16n nfin=nfin2ld
+ML2n (outn outn vdd vdd) pch_svt_mac l=16n nfin=nfin2ld
+Mtail2 (t2 eval vss vss) nch_svt_mac l=16n nfin=nfin2tail
+
+// AZ output shorting switch (common-mode balance during refresh)
+Msh (outp az outn vss) nch_svt_mac l=16n nfin=nfin_sh
+
+// bleeders for DC solvability of cap-coupled nodes
+RbpA (pA vss) resistor r=1e12
+Rbgp (gp vss) resistor r=1e12
+Rbgn (gn vss) resistor r=1e12
+ends afecmp_bank

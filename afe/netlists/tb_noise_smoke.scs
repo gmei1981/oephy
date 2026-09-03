@@ -1,0 +1,17 @@
+// Device-noise smoke probe: diode-connected lvt NMOS + poly resistor.
+// tran noise on/off (baked __NOISE_OPTS__) — if V(out) std with noise on
+// matches the no-noise numerical floor, the PDK noise flags are off and the
+// fnoise libs are needed.
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+
+Vvdd (vdd 0) vsource dc=0.8
+M1 (out out vss vss) nch_lvt_mac l=16n nfin=8
+R1 (vdd out) rhim l=10u w=0.36u
+C1 (out vss) capacitor c=50f
+
+tran tran stop=40n maxstep=5p method=gear2only skipdc=yes __NOISE_OPTS__
+
+saveOptions options save=selected
+save out

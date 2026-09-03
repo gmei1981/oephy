@@ -1,0 +1,29 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// 8b Vref DAC — 450 mV full-scale (paper: low-swing mode Vref DAC range).
+// Calibrated during link training to cancel data-path DCD.
+module afe_vref_dac (code, vref, vdd);
+    input [7:0] code;
+    input       vdd;
+    output      vref;
+    electrical [7:0] code;
+    electrical vdd, vref;
+    parameter real vmax = 0.45;
+    parameter real vmin = 0.0;
+
+    real c;
+
+    analog begin
+        // unrolled: constant bus indices only (VACOMP restriction)
+        c = ((V(code[0]) > 0.5 * V(vdd)) ? 1.0 : 0.0) * 1.0
+          + ((V(code[1]) > 0.5 * V(vdd)) ? 1.0 : 0.0) * 2.0
+          + ((V(code[2]) > 0.5 * V(vdd)) ? 1.0 : 0.0) * 4.0
+          + ((V(code[3]) > 0.5 * V(vdd)) ? 1.0 : 0.0) * 8.0
+          + ((V(code[4]) > 0.5 * V(vdd)) ? 1.0 : 0.0) * 16.0
+          + ((V(code[5]) > 0.5 * V(vdd)) ? 1.0 : 0.0) * 32.0
+          + ((V(code[6]) > 0.5 * V(vdd)) ? 1.0 : 0.0) * 64.0
+          + ((V(code[7]) > 0.5 * V(vdd)) ? 1.0 : 0.0) * 128.0;
+        V(vref) <+ vmin + (vmax - vmin) * c / 255.0;
+    end
+endmodule

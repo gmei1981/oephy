@@ -1,0 +1,35 @@
+// Replica bias for the AZ comparator banks — replaces the ideal VBIAS source.
+// Diode-connected lvt NMOS matches the comparator input pair (same device)
+// so vbias = Vt + Vov tracks the input pair's threshold across corners:
+// the AZ re-anchor point follows the comparator's own PVT.
+// Rhim poly resistor sets the current (~150 uA at vbias ~ 0.385 V -> ~2.7 kOhm).
+// The AZ switches slam ~0.2 V steps into the cap-coupled gates each PCLK/2;
+// their transient current flows through the bias output impedance, so the
+// node needs a big decap (16x cfmom) to hold the glitch to a few mV.
+// (16-finger diode tried and rejected: the lvt diode needs Vgs ~ 0.4 which
+// pins ~300 uA and the operating point collapses into subthreshold.)
+subckt afe_bias (vbias vdd vss)
+parameters nfin_bias=16 rbias_l=2.35u
+// 2 x 16 fins (binned model caps nfin at ~20.9): the wide replica gives
+// vbias ~ 0.40 V at moderate current (the 8-fin diode sat at 0.45-0.48 V,
+// which degraded the comparator eye — measured 4+ errors everywhere)
+Mba (vbias vbias vss vss) nch_lvt_mac l=16n nfin=nfin_bias
+Mbb (vbias vbias vss vss) nch_lvt_mac l=16n nfin=nfin_bias
+Rb (vdd vbias) rhim l=rbias_l w=0.36u
+Cdec1 (vbias vss) cfmom_2t_p80
+Cdec2 (vbias vss) cfmom_2t_p80
+Cdec3 (vbias vss) cfmom_2t_p80
+Cdec4 (vbias vss) cfmom_2t_p80
+Cdec5 (vbias vss) cfmom_2t_p80
+Cdec6 (vbias vss) cfmom_2t_p80
+Cdec7 (vbias vss) cfmom_2t_p80
+Cdec8 (vbias vss) cfmom_2t_p80
+Cdec9 (vbias vss) cfmom_2t_p80
+Cdec10 (vbias vss) cfmom_2t_p80
+Cdec11 (vbias vss) cfmom_2t_p80
+Cdec12 (vbias vss) cfmom_2t_p80
+Cdec13 (vbias vss) cfmom_2t_p80
+Cdec14 (vbias vss) cfmom_2t_p80
+Cdec15 (vbias vss) cfmom_2t_p80
+Cdec16 (vbias vss) cfmom_2t_p80
+ends afe_bias

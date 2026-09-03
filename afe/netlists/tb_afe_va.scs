@@ -1,0 +1,24 @@
+// UCIe-AP RX AFE — VerilogA behavioral prototype (ISSCC 2025 paper 36.3)
+// 16 Gb/s NRZ, half-rate 8 GHz clock, ping-pong autozero comparator AFE.
+// Sweep handles: __VC__ = Vref DAC code (0..255), __PC__ = PI phase in UI.
+simulator lang=spectre
+
+ahdl_include "afe_prbs23_gen.va"
+ahdl_include "afe_tx_driver.va"
+ahdl_include "afe_channel.va"
+ahdl_include "afe_clk_gen.va"
+ahdl_include "afe_vref_dac.va"
+ahdl_include "afe_azcmp.va"
+ahdl_include "afe_pingpong.va"
+ahdl_include "afe_rx_slice.va"
+ahdl_include "afe_ber_chk.va"
+ahdl_include "afe_tb.va"
+
+Xtb (tx_pad rx_in vref ck8 pclk d_even d_odd lock err_cnt bit_cnt) afe_tb \
+    vref_code=__VC__ pi_code=__PC__ vos_a=__VOSA__ vos_b=__VOSB__ az_resid=__AZR__ n_shift=__NS__
+
+tran tran stop=__STOP__ maxstep=4p errpreset=liberal method=trap skipdc=yes annotate=status
+
+saveOptions options save=selected
+save tx_pad rx_in vref ck8 pclk
+save d_even d_odd lock err_cnt bit_cnt

@@ -1,0 +1,28 @@
+// TX driver Ron Monte Carlo — two drivers in one TB: pull-up (din=0, pad
+// sunk 2 mA: Ron_pu = (0.45 - V(pad_pu))/2m) and pull-down (din=0.8, pad
+// sourced 2 mA: Ron_pd = V(pad_pd)/2m). DC inside the mc block.
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_MOS_MOSCAP
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_RES_BIP_DIO_DISRES
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_MOM
+
+include "afe_tx_drv.scs"
+
+Vvdd (vdd 0) vsource dc=0.8
+Vvccio (vccio 0) vsource dc=0.45
+Vvss (vss 0) vsource dc=0
+Vdin0 (din0 0) vsource dc=0
+Vdin1 (din1 0) vsource dc=0.8
+Ipu (pad_pu 0) isource dc=2m
+Ipd (0 pad_pd) isource dc=2m
+
+Xdrv_pu (din0 pad_pu vccio vdd vss) afe_tx_drv
+Xdrv_pd (din1 pad_pd vccio vdd vss) afe_tx_drv
+
+mc1 montecarlo numruns=__NRUNS__ variations=mismatch seed=__SEED__ donominal=no {
+    dc1 dc
+}
+
+saveOptions options save=selected
+save pad_pu pad_pd

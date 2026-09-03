@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "case": "C_baseline",
+      "ok": true,
+      "errs": 0.0,
+      "bits": 959.0,
+      "ber": 0.0
+    },
+    {
+      "case": "A_az_on_200m",
+      "ok": true,
+      "errs": 3.0,
+      "bits": 959.0,
+      "ber": 0.0031282586027111575
+    },
+    {
+      "case": "B_az_off_200m",
+      "ok": true,
+      "errs": 149.0,
+      "bits": 959.0,
+      "ber": 0.1553701772679875
+    },
+    {
+      "case": "D_az_off_trim",
+      "ok": true,
+      "errs": 222.0,
+      "bits": 959.0,
+      "ber": 0.23149113660062565
+    }
+  ]
+}

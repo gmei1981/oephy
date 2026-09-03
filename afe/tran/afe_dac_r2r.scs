@@ -1,0 +1,117 @@
+// 8b R-2R Vref DAC — voltage mode, terminated ladder. FS = vccio = 0.45 V.
+// rhim unit resistor 6k: with 32-fin TGs (Ron/R ~ 4%) the MSB carries stay
+// monotonic (measured 16-fin/4k version: DNL -5.7 LSB at code 127, non-
+// monotonic); AZ charge path tau = (6k+0.3k) x 50 fF ~ 315 ps ~ 3.5 tau in
+// taz = 1.5 ns -> ~3% data-dependent AZ residual (accepted, vref is
+// per-lane training calibrated).
+// Digital decode (codeb) is generated in the behavioral TB; the complement
+// is produced by internal inverters. Output drives the comparator reference
+// coupling caps through a MOM decap placed in the TB.
+subckt afe_dac_r2r (vref b0 b1 b2 b3 b4 b5 b6 b7 vccio vdd vss)
+parameters unit_r=6k nfin_sw=32
+
+// bit complements (VDD-domain inverters; DAC is quasi-static, delay irrelevant)
+Minv0 (b0n b0 vdd vdd) pch_svt_mac l=16n nfin=4
+Mdnv0 (b0n b0 vss vss) nch_svt_mac l=16n nfin=2
+Minv1 (b1n b1 vdd vdd) pch_svt_mac l=16n nfin=4
+Mdnv1 (b1n b1 vss vss) nch_svt_mac l=16n nfin=2
+Minv2 (b2n b2 vdd vdd) pch_svt_mac l=16n nfin=4
+Mdnv2 (b2n b2 vss vss) nch_svt_mac l=16n nfin=2
+Minv3 (b3n b3 vdd vdd) pch_svt_mac l=16n nfin=4
+Mdnv3 (b3n b3 vss vss) nch_svt_mac l=16n nfin=2
+Minv4 (b4n b4 vdd vdd) pch_svt_mac l=16n nfin=4
+Mdnv4 (b4n b4 vss vss) nch_svt_mac l=16n nfin=2
+Minv5 (b5n b5 vdd vdd) pch_svt_mac l=16n nfin=4
+Mdnv5 (b5n b5 vss vss) nch_svt_mac l=16n nfin=2
+Minv6 (b6n b6 vdd vdd) pch_svt_mac l=16n nfin=4
+Mdnv6 (b6n b6 vss vss) nch_svt_mac l=16n nfin=2
+Minv7 (b7n b7 vdd vdd) pch_svt_mac l=16n nfin=4
+Mdnv7 (b7n b7 vss vss) nch_svt_mac l=16n nfin=2
+
+// ---- ladder: n7 = MSB end (2R termination to vss), n0 = LSB = output ----
+// series R between adjacent nodes (LSB node n0 = output port vref)
+Rs0 (n1 vref) rhim l=3.51u w=0.36u   // unit_r ~ 6k
+Rs1 (n2 n1) rhim l=3.51u w=0.36u
+Rs2 (n3 n2) rhim l=3.51u w=0.36u
+Rs3 (n4 n3) rhim l=3.51u w=0.36u
+Rs4 (n5 n4) rhim l=3.51u w=0.36u
+Rs5 (n6 n5) rhim l=3.51u w=0.36u
+Rs6 (n7 n6) rhim l=3.51u w=0.36u
+// per-node 2R arm: TG to vccio (bit=1) or vss (bit=0).
+// Weights: the node AT the output (vref) carries the MSB (1/2 FS), the far
+// node (n7) the LSB (1/256) — so arm k is driven by bit (7-k).
+Rarm0 (m0 vref) rhim l=6.95u w=0.36u   // -0.9% trim: fixes -0.7 LSB step at code 127
+Mup0na (m0 b7 vccio vss) nch_svt_mac l=16n nfin=16
+Mup0nb (m0 b7 vccio vss) nch_svt_mac l=16n nfin=16
+Mup0pa (m0 b7n vccio vdd) pch_svt_mac l=16n nfin=16
+Mup0pb (m0 b7n vccio vdd) pch_svt_mac l=16n nfin=16
+Mdn0na (m0 b7n vss vss) nch_svt_mac l=16n nfin=16
+Mdn0nb (m0 b7n vss vss) nch_svt_mac l=16n nfin=16
+Mdn0pa (m0 b7 vss vdd) pch_svt_mac l=16n nfin=16
+Mdn0pb (m0 b7 vss vdd) pch_svt_mac l=16n nfin=16
+Rarm1 (m1 n1) rhim l=7.01u w=0.36u
+Mup1na (m1 b6 vccio vss) nch_svt_mac l=16n nfin=16
+Mup1nb (m1 b6 vccio vss) nch_svt_mac l=16n nfin=16
+Mup1pa (m1 b6n vccio vdd) pch_svt_mac l=16n nfin=16
+Mup1pb (m1 b6n vccio vdd) pch_svt_mac l=16n nfin=16
+Mdn1na (m1 b6n vss vss) nch_svt_mac l=16n nfin=16
+Mdn1nb (m1 b6n vss vss) nch_svt_mac l=16n nfin=16
+Mdn1pa (m1 b6 vss vdd) pch_svt_mac l=16n nfin=16
+Mdn1pb (m1 b6 vss vdd) pch_svt_mac l=16n nfin=16
+Rarm2 (m2 n2) rhim l=7.01u w=0.36u
+Mup2na (m2 b5 vccio vss) nch_svt_mac l=16n nfin=16
+Mup2nb (m2 b5 vccio vss) nch_svt_mac l=16n nfin=16
+Mup2pa (m2 b5n vccio vdd) pch_svt_mac l=16n nfin=16
+Mup2pb (m2 b5n vccio vdd) pch_svt_mac l=16n nfin=16
+Mdn2na (m2 b5n vss vss) nch_svt_mac l=16n nfin=16
+Mdn2nb (m2 b5n vss vss) nch_svt_mac l=16n nfin=16
+Mdn2pa (m2 b5 vss vdd) pch_svt_mac l=16n nfin=16
+Mdn2pb (m2 b5 vss vdd) pch_svt_mac l=16n nfin=16
+Rarm3 (m3 n3) rhim l=7.01u w=0.36u
+Mup3na (m3 b4 vccio vss) nch_svt_mac l=16n nfin=16
+Mup3nb (m3 b4 vccio vss) nch_svt_mac l=16n nfin=16
+Mup3pa (m3 b4n vccio vdd) pch_svt_mac l=16n nfin=16
+Mup3pb (m3 b4n vccio vdd) pch_svt_mac l=16n nfin=16
+Mdn3na (m3 b4n vss vss) nch_svt_mac l=16n nfin=16
+Mdn3nb (m3 b4n vss vss) nch_svt_mac l=16n nfin=16
+Mdn3pa (m3 b4 vss vdd) pch_svt_mac l=16n nfin=16
+Mdn3pb (m3 b4 vss vdd) pch_svt_mac l=16n nfin=16
+Rarm4 (m4 n4) rhim l=7.01u w=0.36u
+Mup4na (m4 b3 vccio vss) nch_svt_mac l=16n nfin=16
+Mup4nb (m4 b3 vccio vss) nch_svt_mac l=16n nfin=16
+Mup4pa (m4 b3n vccio vdd) pch_svt_mac l=16n nfin=16
+Mup4pb (m4 b3n vccio vdd) pch_svt_mac l=16n nfin=16
+Mdn4na (m4 b3n vss vss) nch_svt_mac l=16n nfin=16
+Mdn4nb (m4 b3n vss vss) nch_svt_mac l=16n nfin=16
+Mdn4pa (m4 b3 vss vdd) pch_svt_mac l=16n nfin=16
+Mdn4pb (m4 b3 vss vdd) pch_svt_mac l=16n nfin=16
+Rarm5 (m5 n5) rhim l=7.01u w=0.36u
+Mup5na (m5 b2 vccio vss) nch_svt_mac l=16n nfin=16
+Mup5nb (m5 b2 vccio vss) nch_svt_mac l=16n nfin=16
+Mup5pa (m5 b2n vccio vdd) pch_svt_mac l=16n nfin=16
+Mup5pb (m5 b2n vccio vdd) pch_svt_mac l=16n nfin=16
+Mdn5na (m5 b2n vss vss) nch_svt_mac l=16n nfin=16
+Mdn5nb (m5 b2n vss vss) nch_svt_mac l=16n nfin=16
+Mdn5pa (m5 b2 vss vdd) pch_svt_mac l=16n nfin=16
+Mdn5pb (m5 b2 vss vdd) pch_svt_mac l=16n nfin=16
+Rarm6 (m6 n6) rhim l=7.01u w=0.36u
+Mup6na (m6 b1 vccio vss) nch_svt_mac l=16n nfin=16
+Mup6nb (m6 b1 vccio vss) nch_svt_mac l=16n nfin=16
+Mup6pa (m6 b1n vccio vdd) pch_svt_mac l=16n nfin=16
+Mup6pb (m6 b1n vccio vdd) pch_svt_mac l=16n nfin=16
+Mdn6na (m6 b1n vss vss) nch_svt_mac l=16n nfin=16
+Mdn6nb (m6 b1n vss vss) nch_svt_mac l=16n nfin=16
+Mdn6pa (m6 b1 vss vdd) pch_svt_mac l=16n nfin=16
+Mdn6pb (m6 b1 vss vdd) pch_svt_mac l=16n nfin=16
+Rarm7 (m7 n7) rhim l=7.01u w=0.36u
+Mup7na (m7 b0 vccio vss) nch_svt_mac l=16n nfin=16
+Mup7nb (m7 b0 vccio vss) nch_svt_mac l=16n nfin=16
+Mup7pa (m7 b0n vccio vdd) pch_svt_mac l=16n nfin=16
+Mup7pb (m7 b0n vccio vdd) pch_svt_mac l=16n nfin=16
+Mdn7na (m7 b0n vss vss) nch_svt_mac l=16n nfin=16
+Mdn7nb (m7 b0n vss vss) nch_svt_mac l=16n nfin=16
+Mdn7pa (m7 b0 vss vdd) pch_svt_mac l=16n nfin=16
+Mdn7pb (m7 b0 vss vdd) pch_svt_mac l=16n nfin=16
+// termination
+Rterm (n7 vss) rhim l=7.01u w=0.36u
+ends afe_dac_r2r

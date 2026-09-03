@@ -1,0 +1,47 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// UCIe-AP RX AFE verification testbench (VerilogA behavioral prototype).
+// TX (PRBS23 @ 16G) -> driver (VCCIO 0.45 V) -> 1.4 mm 2.5D channel ->
+// RX (ping-pong autozero AFE + half-rate samplers) -> PRBS23 BER checker.
+// Sweep handles: vref_code (8b DAC) and pi_code (sampler phase, in UI).
+module afe_tb (tx_pad, rx_in, vref, ck8, pclk, d_even, d_odd, lock, err_cnt, bit_cnt);
+    output tx_pad, rx_in, vref, ck8, pclk, d_even, d_odd, lock, err_cnt, bit_cnt;
+    electrical tx_pad, rx_in, vref, ck8, pclk, d_even, d_odd, lock, err_cnt, bit_cnt;
+
+    parameter real vref_code = 128.0;   // 8b Vref DAC code (0..255, 450 mV FS)
+    parameter real pi_code   = 0.5;     // sampler clock phase in UI (0..1)
+    parameter real vos_a     = 0.004;   // AFE bank A injected offset (V)
+    parameter real vos_b     = -0.003;  // AFE bank B injected offset (V)
+    parameter real az_resid  = 0.05;    // residual offset after autozero
+    parameter integer n_shift = 3;      // RX pipeline delay in UI (BER checker)
+
+    electrical din, aggr, vdd, vccio, pi_in;
+    electrical [7:0] codeb;
+
+    afe_prbs23_gen #(.fbit(16e9), .seed(3))  G1 (din, vdd);
+    afe_prbs23_gen #(.fbit(16e9), .seed(19)) G2 (aggr, vdd);   // crosstalk aggressor
+    afe_tx_driver  #(.ron(28.0))             DRV (din, vccio, tx_pad);
+    afe_channel    CH (tx_pad, rx_in, aggr);
+    afe_clk_gen    CK (ck8, pclk, pi_in, vdd);
+    afe_vref_dac   DAC (codeb, vref, vdd);
+    afe_rx_slice #(.vos_a(vos_a), .vos_b(vos_b), .az_resid(az_resid)) RX (rx_in, vref, ck8, pclk, d_even, d_odd, vdd);
+    afe_ber_chk #(.n_shift(n_shift)) CHK (d_even, d_odd, ck8, lock, err_cnt, bit_cnt, vdd);
+
+    integer vc;
+
+    analog begin
+        @(initial_step) vc = vref_code;
+        V(vdd)   <+ 0.8;
+        V(vccio) <+ 0.45;
+        V(pi_in) <+ pi_code * 0.8;
+        V(codeb[0]) <+ ((vc & 1) != 0)   ? 0.8 : 0.0;
+        V(codeb[1]) <+ ((vc & 2) != 0)   ? 0.8 : 0.0;
+        V(codeb[2]) <+ ((vc & 4) != 0)   ? 0.8 : 0.0;
+        V(codeb[3]) <+ ((vc & 8) != 0)   ? 0.8 : 0.0;
+        V(codeb[4]) <+ ((vc & 16) != 0)  ? 0.8 : 0.0;
+        V(codeb[5]) <+ ((vc & 32) != 0)  ? 0.8 : 0.0;
+        V(codeb[6]) <+ ((vc & 64) != 0)  ? 0.8 : 0.0;
+        V(codeb[7]) <+ ((vc & 128) != 0) ? 0.8 : 0.0;
+    end
+endmodule

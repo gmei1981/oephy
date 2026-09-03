@@ -1,0 +1,20 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// 2.5D CoWoS-S interposer channel, ~1.4 mm, single-ended behavioral model.
+// Pure propagation delay + mild attenuation + aggressor coupling.
+// (Loss shaping via laplace_nd was removed — it produced ~0 output in the
+// behavioral TB; the transistor-level TB models the line physically.)
+module afe_channel (txin, rxout, aggr);
+    input  txin, aggr;
+    output rxout;
+    electrical txin, aggr, rxout;
+    parameter real td  = 14e-12;          // 1.4 mm propagation delay
+    parameter real a0  = 0.94;            // DC attenuation (-0.5 dB)
+    parameter real kxt = 0.045;           // aggressor coupling (-27 dB)
+
+    analog begin
+        V(rxout) <+ a0 * absdelay(V(txin), td)
+                  + kxt * absdelay(V(aggr), td);
+    end
+endmodule

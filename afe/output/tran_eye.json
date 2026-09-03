@@ -1,0 +1,876 @@
+{
+  "points": [
+    {
+      "vref_code": 90,
+      "vref_v": 0.15882352941176472,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 90,
+      "vref_v": 0.15882352941176472,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 90,
+      "vref_v": 0.15882352941176472,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 90,
+      "vref_v": 0.15882352941176472,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 90,
+      "vref_v": 0.15882352941176472,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 90,
+      "vref_v": 0.15882352941176472,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 90,
+      "vref_v": 0.15882352941176472,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 90,
+      "vref_v": 0.15882352941176472,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 100,
+      "vref_v": 0.17647058823529413,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 100,
+      "vref_v": 0.17647058823529413,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 100,
+      "vref_v": 0.17647058823529413,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 100,
+      "vref_v": 0.17647058823529413,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 100,
+      "vref_v": 0.17647058823529413,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 100,
+      "vref_v": 0.17647058823529413,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 100,
+      "vref_v": 0.17647058823529413,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 100,
+      "vref_v": 0.17647058823529413,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 110,
+      "vref_v": 0.19411764705882353,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 110,
+      "vref_v": 0.19411764705882353,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 110,
+      "vref_v": 0.19411764705882353,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 110,
+      "vref_v": 0.19411764705882353,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 110,
+      "vref_v": 0.19411764705882353,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 110,
+      "vref_v": 0.19411764705882353,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 110,
+      "vref_v": 0.19411764705882353,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 110,
+      "vref_v": 0.19411764705882353,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 120,
+      "vref_v": 0.21176470588235294,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 120,
+      "vref_v": 0.21176470588235294,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 120,
+      "vref_v": 0.21176470588235294,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 120,
+      "vref_v": 0.21176470588235294,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 120,
+      "vref_v": 0.21176470588235294,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 120,
+      "vref_v": 0.21176470588235294,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 120,
+      "vref_v": 0.21176470588235294,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 120,
+      "vref_v": 0.21176470588235294,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 130,
+      "vref_v": 0.22941176470588234,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 130,
+      "vref_v": 0.22941176470588234,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 130,
+      "vref_v": 0.22941176470588234,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 130,
+      "vref_v": 0.22941176470588234,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 130,
+      "vref_v": 0.22941176470588234,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 130,
+      "vref_v": 0.22941176470588234,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 130,
+      "vref_v": 0.22941176470588234,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 130,
+      "vref_v": 0.22941176470588234,
+      "pi_ui": 0.1875,
+      "ber": null,
+      "errs": null,
+      "bits": null,
+      "errors": [
+        "Failed to download remote raw results from /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/56c79461/teye_v130_p187.raw: SSH error:  | Tar error: gzip: stdin: unexpected end of file\n/bin/tar: Unexpected EOF in archive\n/bin/tar: Unexpected EOF in archive\n/bin/tar: Error is not recoverable: exiting now"
+      ]
+    },
+    {
+      "vref_code": 140,
+      "vref_v": 0.2470588235294118,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 140,
+      "vref_v": 0.2470588235294118,
+      "pi_ui": 0.5,
+      "ber": null,
+      "errs": null,
+      "bits": null,
+      "errors": [
+        "Failed to upload files: Warning: Permanently added '192.168.110.21' (ECDSA) to the list of known hosts.\r\nConnection reset by 192.168.110.21 port 22"
+      ]
+    },
+    {
+      "vref_code": 140,
+      "vref_v": 0.2470588235294118,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 140,
+      "vref_v": 0.2470588235294118,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 140,
+      "vref_v": 0.2470588235294118,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 140,
+      "vref_v": 0.2470588235294118,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 140,
+      "vref_v": 0.2470588235294118,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 140,
+      "vref_v": 0.2470588235294118,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 150,
+      "vref_v": 0.2647058823529412,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 150,
+      "vref_v": 0.2647058823529412,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 150,
+      "vref_v": 0.2647058823529412,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 150,
+      "vref_v": 0.2647058823529412,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 150,
+      "vref_v": 0.2647058823529412,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 150,
+      "vref_v": 0.2647058823529412,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 150,
+      "vref_v": 0.2647058823529412,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 150,
+      "vref_v": 0.2647058823529412,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 160,
+      "vref_v": 0.2823529411764706,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 160,
+      "vref_v": 0.2823529411764706,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 160,
+      "vref_v": 0.2823529411764706,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 160,
+      "vref_v": 0.2823529411764706,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 160,
+      "vref_v": 0.2823529411764706,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 160,
+      "vref_v": 0.2823529411764706,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 160,
+      "vref_v": 0.2823529411764706,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 160,
+      "vref_v": 0.2823529411764706,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 170,
+      "vref_v": 0.3,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 170,
+      "vref_v": 0.3,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 170,
+      "vref_v": 0.3,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 170,
+      "vref_v": 0.3,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 170,
+      "vref_v": 0.3,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 170,
+      "vref_v": 0.3,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 170,
+      "vref_v": 0.3,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 170,
+      "vref_v": 0.3,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 180,
+      "vref_v": 0.31764705882352945,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 180,
+      "vref_v": 0.31764705882352945,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 180,
+      "vref_v": 0.31764705882352945,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 180,
+      "vref_v": 0.31764705882352945,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 180,
+      "vref_v": 0.31764705882352945,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 180,
+      "vref_v": 0.31764705882352945,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 180,
+      "vref_v": 0.31764705882352945,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 180,
+      "vref_v": 0.31764705882352945,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 190,
+      "vref_v": 0.33529411764705885,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 190,
+      "vref_v": 0.33529411764705885,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 190,
+      "vref_v": 0.33529411764705885,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 190,
+      "vref_v": 0.33529411764705885,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 190,
+      "vref_v": 0.33529411764705885,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 190,
+      "vref_v": 0.33529411764705885,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 190,
+      "vref_v": 0.33529411764705885,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 190,
+      "vref_v": 0.33529411764705885,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 200,
+      "vref_v": 0.35294117647058826,
+      "pi_ui": 0.375,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 200,
+      "vref_v": 0.35294117647058826,
+      "pi_ui": 0.5,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 200,
+      "vref_v": 0.35294117647058826,
+      "pi_ui": 0.625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 200,
+      "vref_v": 0.35294117647058826,
+      "pi_ui": 0.75,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 200,
+      "vref_v": 0.35294117647058826,
+      "pi_ui": 0.875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 200,
+      "vref_v": 0.35294117647058826,
+      "pi_ui": 1.0,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 200,
+      "vref_v": 0.35294117647058826,
+      "pi_ui": 0.0625,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 200,
+      "vref_v": 0.35294117647058826,
+      "pi_ui": 0.1875,
+      "ber": 0.0,
+      "errs": 0.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 210,
+      "vref_v": 0.37058823529411766,
+      "pi_ui": 0.375,
+      "ber": 0.006263048016701462,
+      "errs": 3.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 210,
+      "vref_v": 0.37058823529411766,
+      "pi_ui": 0.5,
+      "ber": 0.006263048016701462,
+      "errs": 3.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 210,
+      "vref_v": 0.37058823529411766,
+      "pi_ui": 0.625,
+      "ber": 0.006263048016701462,
+      "errs": 3.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 210,
+      "vref_v": 0.37058823529411766,
+      "pi_ui": 0.75,
+      "ber": null,
+      "errs": null,
+      "bits": null,
+      "errors": [
+        "Failed to download remote raw results from /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/5031cffb/teye_v210_p750.raw: SSH error: kex_exchange_identification: read: Connection reset by peer | Tar error: gzip: stdin: unexpected end of file\n/bin/tar: Child returned status 1\n/bin/tar: Error is not recoverable: exiting now"
+      ]
+    },
+    {
+      "vref_code": 210,
+      "vref_v": 0.37058823529411766,
+      "pi_ui": 0.875,
+      "ber": null,
+      "errs": null,
+      "bits": null,
+      "errors": [
+        "Failed to download remote raw results from /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/9a906785/teye_v210_p875.raw: SSH error: Warning: Permanently added '192.168.110.21' (ECDSA) to the list of known hosts.\r\nConnection reset by 192.168.110.21 port 22 | Tar error: gzip: stdin: unexpected end of file\n/bin/tar: Child returned status 1\n/bin/tar: Error is not recoverable: exiting now"
+      ]
+    },
+    {
+      "vref_code": 210,
+      "vref_v": 0.37058823529411766,
+      "pi_ui": 1.0,
+      "ber": null,
+      "errs": null,
+      "bits": null,
+      "errors": [
+        "Failed to download remote raw results from /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/51192a3a/teye_v210_p1000.raw: SSH error: Warning: Permanently added '192.168.110.21' (ECDSA) to the list of known hosts.\r\ntar: teye_v210_p1000.raw: Cannot stat: No such file or directory\ntar: Exiting with failure status due to previous errors | Tar error:"
+      ]
+    },
+    {
+      "vref_code": 210,
+      "vref_v": 0.37058823529411766,
+      "pi_ui": 0.0625,
+      "ber": 0.006263048016701462,
+      "errs": 3.0,
+      "bits": 479.0
+    },
+    {
+      "vref_code": 210,
+      "vref_v": 0.37058823529411766,
+      "pi_ui": 0.1875,
+      "ber": 0.006263048016701462,
+      "errs": 3.0,
+      "bits": 479.0
+    }
+  ],
+  "vref_codes": [
+    90,
+    100,
+    110,
+    120,
+    130,
+    140,
+    150,
+    160,
+    170,
+    180,
+    190,
+    200,
+    210
+  ],
+  "pi_codes": [
+    0.375,
+    0.5,
+    0.625,
+    0.75,
+    0.875,
+    1.0,
+    0.0625,
+    0.1875
+  ]
+}

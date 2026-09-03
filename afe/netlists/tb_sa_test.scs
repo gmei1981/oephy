@@ -1,0 +1,22 @@
+// Standalone StrongARM sampler testbench — isolates the SA from the link.
+// Fixed differential inputs at several common modes; 8 GHz clock; check the
+// decisions and internal ts node.
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+include "afe_sampler.scs"
+
+// 4 cases: input CM 0.15/0.25/0.35/0.45, diff = +/-0.1
+vinp (ip 0) vsource type=pwl wave=[0 0.25 1n 0.25 1.01n 0.15 2n 0.15 2.01n 0.35 3n 0.35 3.01n 0.55 4n 0.55]
+vinn (in 0) vsource type=pwl wave=[0 0.05 1n 0.05 1.01n 0.25 2n 0.25 2.01n 0.15 3n 0.15 3.01n 0.35 4n 0.35]
+vck (ck 0) vsource type=pulse val0=0 val1=0.8 period=125p rise=10p fall=10p width=52.5p delay=0
+vckn (ckn 0) vsource type=pulse val0=0.8 val1=0 period=125p rise=10p fall=10p width=52.5p delay=0
+vvdd (vdd 0) vsource dc=0.8
+vvss (vss 0) vsource dc=0
+
+Xsa (ip in ck ckn qp qn vdd vss) afe_strongarm
+
+tran tran stop=4.2n maxstep=2p method=gear2only skipdc=yes
+
+saveOptions options save=selected
+save ip in ck qp qn Xsa:ts Xsa:pwr

@@ -1,0 +1,20 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// Half-rate even/odd samplers only (transistor AFE drives act_p/act_n).
+// Even latches at ck8 rise, odd at ck8 fall; differential threshold.
+module afe_samp (act_p, act_n, ck8, d_even, d_odd, vdd);
+    input  act_p, act_n, ck8, vdd;
+    output d_even, d_odd;
+    electrical act_p, act_n, ck8, vdd, d_even, d_odd;
+
+    real hi, even_s, odd_s;
+
+    analog begin
+        @(initial_step) hi = V(vdd);
+        @(cross(V(ck8) - 0.4, +1)) even_s = (V(act_p) > V(act_n)) ? hi : 0.0;
+        @(cross(V(ck8) - 0.4, -1)) odd_s  = (V(act_p) > V(act_n)) ? hi : 0.0;
+        V(d_even) <+ transition(even_s, 0.0, 5e-12, 5e-12);
+        V(d_odd)  <+ transition(odd_s, 0.0, 5e-12, 5e-12);
+    end
+endmodule

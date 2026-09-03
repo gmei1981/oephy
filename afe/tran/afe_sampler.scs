@@ -1,0 +1,42 @@
+// Half-rate regenerative samplers — TSMC 12FFC transistor level.
+// StrongARM latch (precharged when ck=0, evaluates/regenerates when ck=1)
+// + transparent D-latch slave (holds the decision while the StrongARM
+// precharges). Replaces the behavioral ideal sampler; regeneration is reset
+// every bit, so no inter-symbol memory (a continuously-on latch was measured
+// to drop 21.7% of 16Gb/s flips).
+//
+// even chain: SA ck=ck8 (decides at rise), slave transparent ck8=1; the BER
+// checker reads d_even at the ck8 fall (slave opaque, decision held).
+// odd chain : SA ck=ck8n (decides at fall), slave transparent ck8n=1; the
+// checker reads d_odd at the ck8 rise.
+subckt afe_strongarm (inp inn ck ckn qp qn vdd vss)
+parameters nfin_in=4 nfin_c=4 nfin_tail=6 nfin_pr=2
+// input pair is ulvt: the comparator stage-2 outputs sit at ~0.3-0.43 V
+// common mode, below the lvt threshold (~0.3 V) — lvt inputs never conduct
+// and the StrongARM sticks at a random decision
+Mtail (ts ck vss vss) nch_svt_mac l=16n nfin=nfin_tail
+MNip (qn inp ts vss) nch_ulvt_mac l=16n nfin=nfin_in
+MNin (qp inn ts vss) nch_ulvt_mac l=16n nfin=nfin_in
+// ts reset: during precharge (ck=0) discharge the shared source node — the
+// floating charge otherwise carries cycle-to-cycle memory (measured: the
+// StrongARM resolved the same direction every cycle regardless of input)
+Mtsr (ts ckn vss vss) nch_svt_mac l=16n nfin=2
+MNxp (qp qn ts vss) nch_lvt_mac l=16n nfin=nfin_c
+MNxn (qn qp ts vss) nch_lvt_mac l=16n nfin=nfin_c
+MPxp (qp qn vdd vdd) pch_svt_mac l=16n nfin=nfin_c
+MPxn (qn qp vdd vdd) pch_svt_mac l=16n nfin=nfin_c
+MPprp (qp ck vdd vdd) pch_svt_mac l=16n nfin=nfin_pr
+MPprn (qn ck vdd vdd) pch_svt_mac l=16n nfin=nfin_pr
+ends afe_strongarm
+
+// transparent D-latch: q follows d (non-inverting: the BER checker expects
+// d_even=1 when act_p>act_n) while ck=1; back-to-back inverters hold q
+// while ck=0
+subckt afe_dlatch (d ck ckn q vdd vss)
+Mtgn (d ck q vss) nch_svt_mac l=16n nfin=4
+Mtgp (d ckn q vdd) pch_svt_mac l=16n nfin=4
+Mh1p (qn q vdd vdd) pch_svt_mac l=16n nfin=2
+Mh1n (qn q vss vss) nch_svt_mac l=16n nfin=2
+Mh2p (q qn vdd vdd) pch_svt_mac l=16n nfin=2
+Mh2n (q qn vss vss) nch_svt_mac l=16n nfin=2
+ends afe_dlatch

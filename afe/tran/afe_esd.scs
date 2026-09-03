@@ -1,0 +1,12 @@
+// ESD protection per pad: dual junction diodes clamp the pad to the rails
+// (pad -> VDD via pdio, VSS -> pad via ndio; hia18 = 1.8V IO high-current
+// ESD diode family, diode anode is port n1). One power clamp (nch_hia18_mac,
+// gate at vss) is added once at top level between the rails.
+// nf parameterized: model area scales ~ nf^2 -> Cj ~ 1.5 fF/finger^2
+// (nf=25 ~ 9 fF, nf=50 ~ 37 fF, nf=100 ~ 150 fF per diode; nf=960 ~ 14 pF).
+// The eye scan sweeps nf to trade clamp size vs pad capacitance.
+subckt afe_pad_esd (pad vdd vss)
+parameters nf_dio=50
+Xpd (pad vdd) pdio_hia18_mac nf=nf_dio
+Xnd (vss pad) ndio_hia18_mac nf=nf_dio
+ends afe_pad_esd

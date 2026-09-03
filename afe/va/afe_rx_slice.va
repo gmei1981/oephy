@@ -1,0 +1,46 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// Per-lane RX slice: ping-pong autozero AFE + half-rate even/odd samplers.
+// Even sampler latches at ck8 rising edges, odd sampler at falling edges
+// (half-rate sampling: 62.5 ps between decisions at 16 Gb/s).
+module afe_rx_slice (rxin, vref, ck8, pclk, d_even, d_odd, vdd);
+    input  rxin, vref, ck8, pclk, vdd;
+    output d_even, d_odd;
+    electrical rxin, vref, ck8, pclk, vdd, d_even, d_odd;
+    parameter real vos_a   = 0.004;   // bank A injected offset
+    parameter real vos_b   = -0.003;  // bank B injected offset
+    parameter real az_resid = 0.05;   // residual offset fraction after AZ
+
+    electrical a_eval, a_az, b_eval, b_az;
+    electrical cmp_a_p, cmp_a_n, cmp_b_p, cmp_b_n;
+    electrical act_p, act_n;
+
+    afe_pingpong PP (pclk, a_eval, a_az, b_eval, b_az, vdd);
+    afe_azcmp #(.vos(vos_a), .az_resid(az_resid)) BA (rxin, vref, a_eval, a_az, cmp_a_p, cmp_a_n, vdd);
+    afe_azcmp #(.vos(vos_b), .az_resid(az_resid)) BB (rxin, vref, b_eval, b_az, cmp_b_p, cmp_b_n, vdd);
+
+    real hi, selbit, sel, even_s, odd_s;
+
+    analog begin
+        @(initial_step) begin
+            hi     = V(vdd);
+            selbit = 1.0;
+        end
+        @(cross(V(a_eval) - 0.5 * hi, +1)) selbit = 1.0;
+        @(cross(V(a_eval) - 0.5 * hi, -1)) selbit = 0.0;
+
+        // active-bank select (smooth switch, avoids network reconfiguration)
+        sel = transition(selbit, 0.0, 20e-12, 20e-12);
+        I(act_p) <+ sel * (V(act_p) - V(cmp_a_p)) / 100.0
+                 + (1.0 - sel) * (V(act_p) - V(cmp_b_p)) / 100.0;
+        I(act_n) <+ sel * (V(act_n) - V(cmp_a_n)) / 100.0
+                 + (1.0 - sel) * (V(act_n) - V(cmp_b_n)) / 100.0;
+
+        @(cross(V(ck8) - 0.4, +1)) even_s = (V(act_p) > V(act_n)) ? hi : 0.0;
+        @(cross(V(ck8) - 0.4, -1)) odd_s  = (V(act_p) > V(act_n)) ? hi : 0.0;
+
+        V(d_even) <+ transition(even_s, 0.0, 5e-12, 5e-12);
+        V(d_odd)  <+ transition(odd_s, 0.0, 5e-12, 5e-12);
+    end
+endmodule

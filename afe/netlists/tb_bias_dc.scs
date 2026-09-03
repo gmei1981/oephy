@@ -1,0 +1,18 @@
+// Replica bias DC operating point — measures the vbias equilibrium per
+// corner/temperature (baked as __VBIC__ into the link TB's ic, since the
+// bias decap x Rb time constant is >> any tran window)
+simulator lang=spectre
+
+__MODELS__
+include "afe_bias.scs"
+
+Vvdd (vdd 0) vsource dc=0.8
+Xb (vbias vdd 0) afe_bias
+
+// temp must go on a named options statement — analysis-level temp= is
+// silently ignored by these TMI binned models (verified 2026-09-03)
+simOpts options temp=__TEMP__
+dc1 dc
+
+saveOptions options save=selected
+save vbias

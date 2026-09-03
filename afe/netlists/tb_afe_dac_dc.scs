@@ -1,0 +1,24 @@
+// 8b R-2R Vref DAC — single-code DC operating point (INL/DNL enumerated
+// in Python: 256 bakes of __B0__..__B7__)
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+include "afe_dac_r2r.scs"
+
+Vvccio (vccio 0) vsource dc=0.45
+Vvdd (vdd 0) vsource dc=0.8
+Vb0 (b0 0) vsource dc=__B0__
+Vb1 (b1 0) vsource dc=__B1__
+Vb2 (b2 0) vsource dc=__B2__
+Vb3 (b3 0) vsource dc=__B3__
+Vb4 (b4 0) vsource dc=__B4__
+Vb5 (b5 0) vsource dc=__B5__
+Vb6 (b6 0) vsource dc=__B6__
+Vb7 (b7 0) vsource dc=__B7__
+
+Xdac (vref b0 b1 b2 b3 b4 b5 b6 b7 vccio vdd 0) afe_dac_r2r
+
+dc1 dc
+
+saveOptions options save=selected
+save vref

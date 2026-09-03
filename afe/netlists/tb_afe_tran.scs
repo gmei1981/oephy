@@ -1,0 +1,84 @@
+// UCIe-AP RX AFE — transistor-level simulation, TSMC 12FFC (ISSCC 2025 36.3)
+// Hybrid: transistor TX driver + ping-pong autozero comparator AFE + R-2R
+// Vref DAC + replica bias; PRBS/clocks/channel/checker behavioral.
+simulator lang=spectre
+
+// corner / MC model selection (baked per point; default = top_tt)
+__MODELS__
+
+include "afecmp_bank.scs"
+include "afe_tx_drv.scs"
+include "afe_sampler.scs"
+include "afe_bias.scs"
+include "afe_dac_r2r.scs"
+include "afe_esd.scs"
+
+ahdl_include "afe_prbs23_gen.va"
+ahdl_include "afe_clk_gen.va"
+ahdl_include "afe_pingpong.va"
+ahdl_include "afe_vref_dac.va"
+ahdl_include "afe_samp.va"
+ahdl_include "afe_ber_chk.va"
+ahdl_include "afe_tb_tran.va"
+
+Xtb (tx_pad rx_in vref ck8 pclk d_even d_odd lock err_cnt bit_cnt \
+     vdd vccio vss codeb0 codeb1 codeb2 codeb3 codeb4 codeb5 codeb6 codeb7) \
+    afe_tb_tran \
+    vref_code=__VC__ pi_code=__PC__ az_en=__AZEN__ drift=__DRIFT__ n_shift=__NS__
+
+// ---- supplies with package parasitics (bake __RS__ __LS__ __AMPL__ __FN__) ----
+Vvdd (vddsrc 0) vsource dc=0.8
+Vnvdd (vddsrc vddpkg) vsource type=sine sinedc=0 ampl=__AMPL__ freq=__FN__
+Rvdd (vddpkg vddi) resistor r=__RS__
+Lvdd (vddi vdd) inductor l=__LS__
+// on-die decap: the bond-wire L carries only the average current; the 16Gb/s
+// switching currents come from these (1x cfmom measured as +/-0.09 V vss
+// bounce and 62 bit errors at the eye center)
+Cdvdd1 (vdd vss) cfmom_2t_p80
+Cdvdd2 (vdd vss) cfmom_2t_p80
+Cdvdd3 (vdd vss) cfmom_2t_p80
+Cdvdd4 (vdd vss) cfmom_2t_p80
+Vvccio (vcciosrc 0) vsource dc=0.45
+Rvccio (vcciosrc vcciopkg) resistor r=__RS__
+Lvccio (vcciopkg vccio) inductor l=__LS__
+Cdvccio1 (vccio vss) cfmom_2t_p80
+Cdvccio2 (vccio vss) cfmom_2t_p80
+Cdvccio3 (vccio vss) cfmom_2t_p80
+Cdvccio4 (vccio vss) cfmom_2t_p80
+Rvss (vss vssext) resistor r=__RS__
+Lvss (vssext 0) inductor l=__LS__
+
+// ---- transistor R-2R Vref DAC + output decap ----
+Xdac (vref codeb0 codeb1 codeb2 codeb3 codeb4 codeb5 codeb6 codeb7 \
+      vccio vdd vss) afe_dac_r2r
+Cdvref1 (vref vss) cfmom_2t_p80
+Cdvref2 (vref vss) cfmom_2t_p80
+
+// ---- ESD: dual diodes per pad + one rail power clamp (nf baked) ----
+Xesd_rx (rx_in vdd vss) afe_pad_esd nf_dio=__NFDIO__
+Xesd_tx (tx_pad vdd vss) afe_pad_esd nf_dio=__NFDIO__
+Xpc (vdd vss vss vss) nch_hia18_mac l=150n nfin=20
+
+// pre-bias the cap-coupled gates (skipdc starts all nodes at 0)
+nodeset Xtb.BA.gp=0.4 Xtb.BA.gn=0.4 Xtb.BA.pA=0.225
+nodeset Xtb.BB.gp=0.4 Xtb.BB.gn=0.4 Xtb.BB.pA=0.225
+// replica bias + DAC outputs: the decap x Zout time constants are >> sim
+// length (nodeset ignored on these driven nodes; ic works). Supplies need
+// ic too: the VA blocks latch V(vdd) at initial_step and the package L/R
+// ramps vdd over ~2 ns (measured: all VA swings collapsed to 0.245 V).
+ic Xtb.vbias=__VBIC__ vref=__VREFV__ vdd=0.8 vccio=0.45
+
+// temp on a named options statement — analysis-level temp= was silently
+// ignored (all pre-2026-09-03 "TEMP=25" runs actually simulated at 27C)
+simOpts options temp=__TEMP__
+tran tran stop=__STOP__ maxstep=2.5p method=gear2only skipdc=yes __NOISE_OPTS__ annotate=status
+
+saveOptions options save=selected
+save rx_in tx_pad vref ck8 pclk d_even d_odd lock err_cnt bit_cnt
+save vdd vccio vss
+save Xtb.act_p Xtb.act_n Xtb.cmp_a_p Xtb.cmp_a_n Xtb.cmp_b_p Xtb.cmp_b_n
+save Xtb.a_eval Xtb.a_az Xtb.b_eval Xtb.din Xtb.n3
+save Xtb.BA.gp Xtb.BA.gn Xtb.BA.pA Xtb.BA.tA Xtb.BA.tAp
+save Xtb.BA.az Xtb.vbias Xtb.BA:MazGp:1
+save Xtb.BA.s1p Xtb.BA.s1n Xtb.BA.t2 Xtb.BB.s1p Xtb.BB.s1n
+save Xtb.BA:pwr Xtb.BB:pwr Xtb.DRV:pwr Xdac:pwr

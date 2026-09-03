@@ -1,0 +1,16 @@
+# 仿真原始产物（raw 目录/临时网表/大体积调试 json）留本地，不入 git——白名单放行图表与最终结果
+output/*
+!output/*.png
+!output/dac_dnl.json
+!output/tran_az.json
+!output/tran_corners.json
+!output/tran_eye.json
+!output/tran_mc_offset.json
+!output/tran_mc_offset_0902_backup.json
+!output/tran_mc_ron.json
+!output/tran_noise.json
+!output/tran_supply.json
+!output/va_az.json
+!output/va_eye.json
+# Python 缓存
+__pycache__/

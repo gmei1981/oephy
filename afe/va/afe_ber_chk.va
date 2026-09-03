@@ -1,0 +1,74 @@
+`include "disciplines.vams"
+`include "constants.vams"
+
+// TRUE-BER PRBS23 checker: replicates the TX LFSR (same seed/timing) and
+// compares received bits against the expected stream shifted by n_shift bits
+// (pipeline delay). Unlike a self-syncing checker, a dead link (all-0/all-1)
+// still reports errors.
+// Event ordering is race-free w.r.t. the samplers: the even bit (latched at the
+// previous ck8 rise) is processed at the falling edge, the odd bit at the rise.
+module afe_ber_chk (d_even, d_odd, ck8, lock, err_cnt, bit_cnt, vdd);
+    input  d_even, d_odd, ck8, vdd;
+    output lock, err_cnt, bit_cnt;
+    electrical d_even, d_odd, ck8, vdd, lock, err_cnt, bit_cnt;
+
+    parameter integer seed    = 3;    // must match TX PRBS seed
+    parameter integer n_shift = 3;    // RX pipeline delay in UI
+    parameter integer start_bit = 100; // skip counting before this (training period)
+    parameter real    fbit    = 16e9;
+
+    integer lfsr [22:0];
+    integer hist [0:15];              // expected-bit shift register
+    integer nbits, nerrs, lk, i, fb, rcv, idx;
+    real    vhi;
+
+    analog begin
+        @(initial_step) begin
+            for (i = 0; i < 23; i = i + 1) lfsr[i] = (seed >> i) & 1;
+            for (i = 0; i <= 15; i = i + 1) hist[i] = 0;
+            nbits = 0;
+            nerrs = 0;
+            lk    = 0;
+        end
+
+        // TX-replica LFSR advances on the bit grid (t = k/fbit, k = 0,1,..)
+        @(timer(0.0, 1.0 / fbit)) begin
+            for (i = 15; i > 0; i = i - 1) hist[i] = hist[i - 1];
+            hist[0] = lfsr[22];
+            fb = lfsr[22] ^ lfsr[17];
+            for (i = 22; i > 0; i = i - 1) lfsr[i] = lfsr[i - 1];
+            lfsr[0] = fb;
+        end
+
+        @(cross(V(ck8) - 0.4, +1)) begin
+            rcv = (V(d_odd) > 0.4) ? 1 : 0;    // odd bit latched at previous fall
+            if (nbits >= n_shift + 23) begin
+                if (nbits >= start_bit) begin
+                    if (rcv != hist[n_shift]) nerrs = nerrs + 1;
+                end
+                nbits = nbits + 1;
+            end else begin
+                nbits = nbits + 1;
+                if (nbits >= n_shift + 23) lk = 1;
+            end
+        end
+
+        @(cross(V(ck8) - 0.4, -1)) begin
+            rcv = (V(d_even) > 0.4) ? 1 : 0;   // even bit latched at previous rise
+            if (nbits >= n_shift + 23) begin
+                if (nbits >= start_bit) begin
+                    if (rcv != hist[n_shift]) nerrs = nerrs + 1;
+                end
+                nbits = nbits + 1;
+            end else begin
+                nbits = nbits + 1;
+                if (nbits >= n_shift + 23) lk = 1;
+            end
+        end
+
+        vhi = V(vdd);
+        V(lock)    <+ transition(lk ? vhi : 0.0, 0.0, 1e-12, 1e-12);
+        V(err_cnt) <+ nerrs * 1.0;
+        V(bit_cnt) <+ nbits * 1.0;
+    end
+endmodule
