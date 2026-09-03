@@ -839,3 +839,46 @@
 - **待续（V3 整数闭环）**: tools/gen_ref3_top.py 顶层组装（VA 全链 + vco_c_dac + dtc_10b_ss
   + ldo_05 + pll_divn 抽头），FSM 全流程 AFC(→339/8)→FLL→PLL→LOCK 判定：fVCO 8.0G±0.1%、
   phe→0±门限、phase_lock、Abank/frac 交接无跳变。本机短闭环→服务器长跑。
+
+## 2026-09-04 凌晨：ref3 V3 顶层组装落地 + 本机闭环在跑（本会话，状态存档）
+
+- **工具**: `tools/gen_ref3_top.py`（顶层生成器，smoke=4.5µs/full=20µs 两模式，含依赖拷贝）
+  + `tools/check_ref3_v3.py`（判定脚本，**待跑**）。run 目录 `sim/ref3/v3/{smoke,main,dbg_*}`
+  （gitignore 内不入库，`python3 tools/gen_ref3_top.py smoke|full` 一条命令重生成）。
+- **顶层组装**: LDO+vco_c_dac+dtc_10b_ss+Rbuf/双反相器缓冲 模拟核 + 14 VA 全链（dsm_fb/
+  mmd_ps/divn/tdc_beh/pfd/fll/afc6/fsm/lockdet/lpf/dsm_dco/cal_kdtc/cal_dcodcc/dac9b×2；
+  refdcc 按决策 D 关闭、rcomp=0V；VC1←dac9b(AB 9b)、VC2←dac9b 低 4b 接 dsm_dco thermo）。
+  阶段A 缩放参数（网表头注释记录偏差）: **afc thr=7**（1.28µs 窗/1 沿=12.5MHz）、**fll thr=8**
+  （2.56µs/6.25MHz）、**fll ftol=4**、**lock_thr=0.02**（TDC 量化 1/64=0.0156，spec 0.01 会
+  要求逐拍 phe==0）。tran: maxstep=2p gear2only skipdc ic=OUTP0.45 + **strobeperiod=50p**
+  （只影响保存，文件省 ~40×，判定精度足够）。
+- **首轮 smoke 跑到 1.38µs 主动停**（排障需要）：数字链全绿——ENA=0.8/FSTATE=1(AFC)、
+  VC1=0.4922V 精确=code63(Abank504)、QERR=−0.5、SELF=0、VDDC 0.548V 稳态纹波 4.4mV、
+  PHE 活跃、CNTOUT 计数中。
+- **大坑① pll_divn 语义（V1 单测漏网）**: 翻转式分频器每 N 个**上升沿**翻转 → 完整输出
+  周期=2N 个 VCO 周期，**N=16 实为 ÷32**（V1 用合成 500MHz 时钟直接喂 CK16，没暴露）。
+  现象=CK16"半频"3.972ns + AFC 期望计数 2×（640 vs 322）。修复 **N=8**（真 ÷16）。
+  VCO 全程健康：3.972ns×32=TVCO 124.1ps → 8.057G，与 V2 标定 8.108G−LDO 50MHz 精确吻合。
+- **迷你 TB 旁证**（LDO+VCO+dac9b+缓冲，300ns×2 台，0 错误）: code504→8.0558G（0.3/0.4/
+  0.5/0.6 四阈值全一致）、code256→7.913G（thr≥0.4 一致；**thr0.3 读 15.8G=OUTP 低阈值双计
+  老坑重现**）。附带坑：迷你网表两级反相器实例名写重（Mi_n×2）报 2 errors——生成器里
+  {name} 参数化别偷懒。
+- **大坑② AFC 停靠残差量化**: afc6 tol=1 停靠时 |Δf| 可达 **±25MHz**（计数量化窗 (−25,+25)
+  开区间），fll thr=8 下 err=±4 沿 → **ftol=2 会卡死在 FLL**（fstep=7 的 1/128 步长拉不动）。
+  修复 **ftol=4**，残差交 PLL 拉（25MHz→41 Abank LSB，phe 摆 0.25/周期在折叠窗 ±2 内，
+  ki=1 约 2-3.5µs 拉入）。
+- **预计轨迹**（实测 KVCO+LDO 偏移推演）: AFC 63→31→47→55 停靠（Abank 440，+23.5MHz）
+  done@~9µs → FLL 首窗即锁@~11.6µs → PLL 拉入@~15µs → **LOCK ~17.6µs**（stop=20µs 有余量）。
+- **本机速率实测 ~12.7ns/min**（比 ref2 V3 的 400ns/min 慢 ~30×：15 个 ahdlcmi 模块逐步
+  评估 + MMD 双沿+divn 三路 8G cross 事件流；+mt=8 实际单线程）→ smoke 4.5µs ≈6h、
+  full 20µs ≈26h。慢得离谱时可挪 21 服务器（ax+mt=8 约 5×）。
+- **取数坑**: 部分 raw 上 `psf -i -s -t <sig>` 可读（读到最后完整块，够判定用）；psfbin
+  尾部字节扫 double 找时间**不可靠**（曾误报 4.4µs，实际 1.34µs）；各 trace 长度不一致
+  （文件在长）按 min 截断后再做布尔索引。
+- **在跑（存档时刻）**: smoke 4.5µs + full 20µs 并行（spectre 99.6%CPU×2）。若会话退出被杀，
+  复跑（netlist 已生成，直接跑）：
+  `cd sim/ref3/v3/<smoke|main> && /opt/cadence/SPECTRE201/tools.lnx86/bin/spectre -64 main.scs -raw main.raw +log main.log -format psfbin +mt=8`
+  判定：`python3 tools/check_ref3_v3.py smoke|full`。
+- **待续**: smoke/full 判定（判据: 0 错误、fVCO 8.0G±0.1%、phe→0±0.03、FSTATE 到 4(LOCK)、
+  FQLK/PHLK 时序、AFC 63→…→~55 阶梯、交接 VC1 无跳变）→ 结果追加 progress.md →
+  V4 分数闭环（FCW=80.5、三校准全开、dither 频谱）。
