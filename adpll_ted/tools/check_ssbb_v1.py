@@ -67,8 +67,9 @@ for lo, hi, exp, lbl in [(30e-9, 90e-9, 0.0, "0-100n=0V"),
     v = o[m].mean()
     check(f"dac {lbl}", abs(v - exp) < 0.02, f"OUT mean={v:.3f} (expect {exp})")
 
-# --- afc high (2.05G -> code 0) / low (1.95G -> 127) / hit (2.0G -> done) ---
-for tag, exp, lo in [("tb_afc_high", 1, 1.4e-6), ("tb_afc_low", 127, 1.4e-6)]:
+# --- afc: with skipwins=2 + re-arm, high walks to the rail (0, was 1 when
+# step exhaustion parked arbitrarily); low parks at 127; hit holds 64 + done ---
+for tag, exp, lo in [("tb_afc_high", 0, 1.4e-6), ("tb_afc_low", 127, 1.4e-6)]:
     t = get(V1 / tag / f"{tag}.raw", "time")
     m = t > lo
     cv = 0

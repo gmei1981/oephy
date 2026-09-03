@@ -19,15 +19,27 @@ VA_FILES = [
     "pll_lms.va",
     "pll_dtc_decoder_10b.va",
     "pll_hybrid_aux.va",
+    # ssbb (ref2) architecture
+    "pll_bbpd.va",
+    "pll_dlf.va",
+    "pll_dac7.va",
+    "pll_dac9.va",
+    "pll_afc.va",
+    "pll_gs.va",
+    "pll_div4.va",
+    "pll_frac_acc.va",
+    "pll_dtc_code.va",
     "constants.vams",
     "disciplines.vams",
 ]
 
 INC_FILES = [
     "dtc_10b.scs",
+    "dtc_10b_ss.scs",
     "vco_dual.scs",
     "vco_dual_8g.scs",
     "vco_c.scs",
+    "vco_c_dac.scs",
     "vco_c_nols.scs",
     "vco_c_novar.scs",
     "vco_c_svt.scs",
@@ -37,10 +49,13 @@ INC_FILES = [
 
 
 def prep_netlist(src: Path, stop: str, maxstep: str) -> Path:
-    """Rewrite VA include paths to bare names and adjust tran stop/maxstep."""
+    """Rewrite VA/inc include paths to bare names and adjust tran stop/maxstep."""
     text = src.read_text()
     for va in VA_FILES:
         text = re.sub(r'ahdl_include\s+".*?%s"' % re.escape(va), 'ahdl_include "%s"' % va, text)
+    # scs includes may carry repo-relative prefixes (netlist/inc/...) -> bare name
+    for inc in INC_FILES:
+        text = re.sub(r'include\s+"[^"]*%s"' % re.escape(inc), 'include "%s"' % inc, text)
     if stop:
         text = re.sub(r"(plltran\s+tran\s+stop=)[0-9.eE+-]+u?n?p?m?", r"\g<1>%s " % stop, text)
     if maxstep:

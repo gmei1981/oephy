@@ -1,8 +1,22 @@
 // pll_afc.va — automatic frequency control (ref2 SS-BB-ADPLL)
 // Binary search on the coarse code: count DIV4 rising edges over K REF periods
-// (K=16 -> 1 edge = ~25MHz at VCO for 8G/div4/100M), halve the step each window,
-// exact target hit holds the code. afc_done=1 after the step is exhausted and
-// two windows hit the target exactly (code/frequency settled in its bin).
+// (K=16 -> 1 edge = ~25MHz at VCO for 8G/div4/100M), halve the step each miss,
+// |cnt-target|<=tol holds the code (tol=1 absorbs boundary-count jitter — hits
+// accumulate WITHOUT reset on purpose: with +-1 jitter alternation a strict
+// "consecutive hits" rule would never fire). afc_done=1 after two windows have
+// hit the target bin.
+// Robustness (V3 closed-loop lessons, 2026-09-03):
+//  - skipwins: first N windows are counted but DISCARDED — the VCO/LDO startup
+//    transient contaminates window 1 (V3 first run read 391 vs 320: one wrong
+//    binary-search step that the exhausted search could never undo).
+//  - after the step is exhausted a persistent miss re-arms the step to
+//    |d|*lsb_per_cnt (clamped 1..32) — binary search becomes a bounded walk,
+//    so the code always reaches the target bin; re-arm only with rail headroom
+//    (code 0/127 parks instead of oscillating).
+//  - a hit parks the step at 0 (no further halving) so hits accumulate.
+// Window geometry: the evaluation edge is also the START of the next window
+// (cnt resets there) -> windows 2+ close at the K-th edge after the reset;
+// window 1 starts at t=0, one edge earlier, hence K+1 edges (off-by-one fix).
 // a0..a6 -> DLF accumulator base (afc_code<<9 -> coarse DAC1 code).
 // Individual ports + unrolled assignments (bus/V(i) loop not supported locally).
 `include "constants.vams"
@@ -16,10 +30,13 @@ electrical ref, div4, a0, a1, a2, a3, a4, a5, a6, afc_done, cnt_out;
 parameter real vth = 0.4;
 parameter integer target = 320;  // div4 edges per K-window = 20 edges/REF period * K
 parameter integer K = 16;        // measurement window in REF periods
+parameter integer tol = 1;       // +-edge tolerance: 1 count = 25MHz at VCO (6.25M at div4)
+parameter integer skipwins = 2;  // discard first N windows (VCO/LDO startup)
+parameter integer lsb_per_cnt = 10; // code LSBs per edge count (25MHz / 2.4MHz)
 parameter integer code0 = 64;    // start at mid code
 parameter integer step0 = 32;
 
-integer cnt, ref_cnt, code_i, step_i, hit_cnt;
+integer cnt, ref_cnt, code_i, step_i, hit_cnt, first_win, d, skipped;
 real afcd_v;
 
 analog begin
@@ -29,26 +46,43 @@ analog begin
         code_i = code0;
         step_i = step0;
         hit_cnt = 0;
+        first_win = 1;
+        skipped = 0;
     end
     @(cross(V(div4) - vth, +1)) begin
         cnt = cnt + 1;
     end
     @(cross(V(ref) - vth, +1)) begin
         ref_cnt = ref_cnt + 1;
-        // evaluate after K full periods (at the (K+1)-th edge -> K*10ns window)
-        if (ref_cnt > K) begin
+        if (ref_cnt >= (first_win ? K + 1 : K)) begin
+            first_win = 0;
             ref_cnt = 0;
-            if (cnt < target)
-                code_i = code_i + step_i;
-            else if (cnt > target)
-                code_i = code_i - step_i;
-            else
-                hit_cnt = hit_cnt + 1;
-            cnt = 0;
-            if (step_i > 1) step_i = step_i / 2;
-            else step_i = 0;
-            if (code_i < 0) code_i = 0;
-            if (code_i > 127) code_i = 127;
+            if (skipped < skipwins) begin
+                skipped = skipped + 1;
+                cnt = 0;
+            end else begin
+                d = cnt - target;
+                if (d < -tol)
+                    code_i = code_i + step_i;
+                else if (d > tol)
+                    code_i = code_i - step_i;
+                else begin
+                    hit_cnt = hit_cnt + 1;
+                    step_i = 0;
+                end
+                if (d < -tol || d > tol) begin
+                    if (step_i > 1)
+                        step_i = step_i / 2;
+                    else if ((d > tol && code_i > 0) || (d < -tol && code_i < 127))
+                        step_i = abs(d) * lsb_per_cnt;
+                    else
+                        step_i = 0;
+                    if (step_i > 32) step_i = 32;
+                end
+                cnt = 0;
+                if (code_i < 0) code_i = 0;
+                if (code_i > 127) code_i = 127;
+            end
         end
     end
     if (step_i == 0 && hit_cnt >= 2)

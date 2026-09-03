@@ -61,11 +61,13 @@ TESTS["tb_bbpd_late"] = dict(
     stop="200n")
 
 # --- dlf: bb high 100 cycles then low 100 cycles, kp=8 ki=8 ---
+# (AFC_DONE=0.8: with the V4 slave semantics done=0 means "slaved to AFC",
+#  and this TB exercises the free-running loop path)
 TESTS["tb_dlf"] = dict(
     va=["pll_dlf.va"], inc=[],
     body=[CKP,
           "Vbb (BB 0) vsource type=pulse val0=0 val1=0.8 period=2u width=1u rise=10p fall=10p",
-          "Vafcd (AFC_DONE 0) vsource dc=0",
+          "Vafcd (AFC_DONE 0) vsource dc=0.8",
           "Vkp (KP 0) vsource dc=8", "Vki (KI 0) vsource dc=8",
           "Va0 (A0 0) vsource dc=0", "Va1 (A1 0) vsource dc=0", "Va2 (A2 0) vsource dc=0",
           "Va3 (A3 0) vsource dc=0", "Va4 (A4 0) vsource dc=0", "Va5 (A5 0) vsource dc=0",
