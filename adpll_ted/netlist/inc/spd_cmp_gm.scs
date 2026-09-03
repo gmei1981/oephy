@@ -64,12 +64,15 @@ ends cmp_x
 
 subckt gm_x (VINP VINN VBIAS IOUT VDD VSS)
 
-MN2 (IOUT VINN TAILN VSS) nch_svt_mac l=16n nfin=2 w=58n multi=1 nf=1 \
+; wp5 fix: input pair svt->ulvt (Vth 0.45->0.3) so GM conducts at the
+; Plan C 0.5V-core working point (VHOLD~0.3, VREF~0.45); svt was the wp4
+; root cause of dead GM (VI slip with no frequency authority)
+MN2 (IOUT VINN TAILN VSS) nch_ulvt_mac l=16n nfin=2 w=58n multi=1 nf=1 \
         sd=74n sa=90n sb=90n ploda1=16n ploda2=0 ploda3=0 plodb1=16n \
         plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
         spot=103n spob=103n spotl1=103n spobl1=103n spotl2=103n \
         spobl2=103n spotr1=103n spobr1=103n spotr2=103n spobr2=103n
-MN1 (OUTN VINP TAILN VSS) nch_svt_mac l=16n nfin=2 w=58n multi=1 nf=1 \
+MN1 (OUTN VINP TAILN VSS) nch_ulvt_mac l=16n nfin=2 w=58n multi=1 nf=1 \
         sd=74n sa=90n sb=90n ploda1=16n ploda2=0 ploda3=0 plodb1=16n \
         plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
         spot=103n spob=103n spotl1=103n spobl1=103n spotl2=103n \

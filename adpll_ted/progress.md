@@ -550,3 +550,61 @@
   sim/{pll_step2_main_c(+_pc/_d1/_d2/_varIOff/_varPOff/_hyb*).scs, ldo_05_tb,
   vco_c_tune}.scs、netlist/inc/{vco_c, vco_c_nols, vco_c_novar, vco_c_svt, ldo_05}.scs、
   schematic_plan_c_steps.md。
+
+## 2026-09-03：工作点重设计 + 极限环根因链 + VAR 开关阈值缺陷修复（本会话）
+
+- **基线波形考古（逐周期实测，纠正前叙认知）**：斜坡=NOT(REF)+~150ps（REF 低相 5ns 充电，
+  斜率 146-231mV/ns 非线性、峰顶 799mV）；采样保持沿=CKFB 下降沿（MSMP 在 CKFB 高相闭合跟踪、
+  下降沿保持）；基线保持点落在复位区（实测 VHOLD≈−36~−53mV，非前叙 0.29V——0.29 是参考设计的
+  VHOLD）。LMS 每周期看到 EBIT 恒高（比较器输入 0.4mV 冻结）→ VREF 以 mu_off×m_slope=0.42mV/周期
+  爬升（实测 +11.3mV/300ns 精确吻合）。VI 充电源实测 1.2-3.5µA=gm 在跟踪相单向强泵（VHOLD 216→799mV
+  ≫VREF=0.15）+68×1M bleeder 对 VDDC 泄流。
+- **三处手改**：① vref0 0.15→0.45（VREF 进 GM 活跃区）；② vco_c.scs 68 个 bulk 侧 bleeder
+  1M→1G（隔离 VI 旁路充电源，gen_vco_c.py 同步）；③ ENP2/3/4→0.8（VAR_P 31→3 单元，P 增益
+  ~100→~10MHz/V）。DTC 初始延迟/SPD 斜坡未动：实测 τ_dtc 仅 ~150ps、VBSPD 是 spd_x 死端口
+  （斜坡电平由 MIR/RREF 自偏置决定），粗采样位置由环路平衡决定。
+- **wp1 本机 120ns**（vref0=0.45+bleeder 1G）：收敛方向正确——保持点 705→687→649→598mV 逐周期
+  下降、CKFB 周期平台化 9.67-9.70ns、VI 不再跑飞（终 0.240）；VDDC 0.537 健康。
+- **wp1c 420ns（readic 续跑）**：发现 ~120ns 周期**极限环**——保持点 0.72V→0V 滑落→平台停驻
+  ~70ns→跳回 0.72V；VI 同步摆动 83↔240mV；CKFB 周期 9.14↔9.74ns 呼吸；VDDC 被 VCO 负载拖动
+  534-579mV（LDO 有限输出阻抗+供电灵敏度 ~5GHz/V 量级放大振荡）。
+- **moscap_rf C-V sp 实测**（gate=0，1GHz 小信号，8 点）：C=1.77/1.68/1.65/1.63/1.62/1.61/
+  1.60/1.60fF @ VB=0/0.1/.../0.7V → **dC/dVB<0 全程**（−894fF/V@0.1V 区 → −45fF/V@0.7V 区）
+  → 控制电压↑→C↓→f↑，**KVCO_P 为正（负反馈方向正确）**，推翻正反馈假设；极限环根因=P 增益过大
+  （环路增益≈KVCO_P×斜率×T²≈2 骑在 bang-bang 边界；论文 VAR_P 总量级 ~15MHz/V）。
+- **wp2 300ns**（VAR_P 3 单元）：极限环仍在（幅度不减），VI 稳定在 103-124mV、fVCO 8.73G 远高于
+  8.0G 目标——暴露**根因级缺陷**：VAR 使能开关是 pch_svt_mac（|Vth|≈0.4V），导通条件=bulk 节点
+  >0.4V，而 0.5V 核控制电压 VI≈0.3/VCTRL_P≈0.45 处于亚阈值——**0.8V 参考设计 VCTRL=0.55>0.4 没事，
+  Plan C 移植时阈值问题漏掉**；实测佐证：VI 与 fVCO 零相关（伪相关全来自 VDDC/幅度耦合）。I 路径
+  实际全程断开（skipdc 下 bulk 节点经 1G bleeder 向 VDDC 爬升 τ~2ms，300ns 内恒 ~0、C 钉 1.77fF）。
+- **修复（wp3）**：① gen_vco_c.py 新增 PCH_SW=pch_ulvt_mac（|Vth|≈0.25），_sw 开关全部换 ulvt
+  （68 处），重新生成 vco_c.scs；② CF nr 165→174（实测中心 8.2-8.7G 偏高，+9 个 nr 把中心降到
+  ~7.98G，VAR_I 上拉至 8.0G 且 VI 保持在开关活跃区）；③ 保留 vref0=0.45/bleeder 1G/ENP 掩码。
+  wp3 300ns 本机跑中。
+- **本机 20.1 工具坑沉淀**：① 多节点 ic 必须双参数形式 `ic="OUTP=0.5" ic="OUTN=0.45"`
+  （逗号/空格分隔均 SFE-1972 被拒）；② 20.1 默认 PSFXL 输出（.psfxl+.sig 容器），IC618 的 psf
+  读不了 → 必须 `-format psfbin` 重跑或直接加该参数；③ 独立 VCO TB 不起振=负阻裕量弱+闭环保有
+  参量泵浦（VCTRL_P 跟踪斜坡扫 C），TB 需复刻启动扰动（VDDC 斜坡供电+OUTP/OUTN 不对称 ic）；
+  ④ sp 分析 ports 参数引用 port 元件实例而非节点名（SFE-1997）。
+
+## 2026-09-03 续：wp4 波形分析 + wp5 修复（NMOS 开关 + GM ulvt 输入对）
+
+- **wp4 300ns 判定（未锁，极限环仍在）**：CKFB 全程 105.9-106.8M 恒定（目标 100.0M，+6%），
+  fVCO=8.48G（目标 8.0G）；VCTRL_P(=VHOLD) 60ns 后 min=−0.05/max=0.76V 全幅摆动（极限环与
+  wp1c 同型）；VI 0.265→0.12 持续下滑且 fVCO 纹丝不动（I 路径仍断）；VDDC 健康 0.538V
+  pp=18mV（LDO 表现良好）；VREF 稳 0.456、GM 泵流 ~0.97µA（VI 下滑率×2pF）不足以成修正力。
+- **开关拓扑根因（wp4 铁证）**：VAR 开关 PMOS（S=cb、D=vctrl、G=en），导通条件 cb>|Vth|≈0.25。
+  VI 工作区 0.1-0.3V 下沿被截断——VI<0.25 时开关截止、cb 冻结在临界值附近、moscap C 钉死。
+  wp3 的 svt→ulvt 换型只把阈值从 0.4 降到 0.25，本质缺陷未除。**PMOS 源接 bulk 的拓扑在
+  0.5V 核域无法覆盖 0.1-0.3V 控制范围**。
+- **GM 输入对根因**：gm_x MN1/MN2 是 svt（Vth≈0.45），VHOLD≈0.31/VREF≈0.456 都在阈值边缘
+  → GM 亚阈值 ~1µA 级。wp4 实测 VI 下滑 0.145V/300ns 即 ~0.97µA，有方向（VHOLD<VREF→吸流，
+  方向正确）但无量级。
+- **wp5 修复（已实施，300ns 跑中）**：① gen_vco_c.py var_cell 开关改 **NMOS**（nch_ulvt，
+  D=cb/G=en/S=vctrl/B=VSS），Vgs=en−VI>0.45 全程强导通；顶层 EN 极性翻转（on=0.8/off=0，
+  vco_c.scs 注释与 vco_c_tune.scs 同步改）；② spd_cmp_gm.scs gm_x 输入对 MN1/MN2 svt→ulvt
+  （Vth≈0.3，覆盖 VHOLD 0.31/VREF 0.456 工作点）；③ 保留 CF nr=174/Iinj/bulk ic 电容/
+  vref0=0.45/bleeder 1G/ENP0-1 掩码。预期：VI 单元 cb 跟随 VI≈0.26-0.30（C 上升）→
+  f 从 8.48G 回落；GM 恢复 µA 级泵流 → VI 获得频率权威 → CKFB 拉向 100M。
+- wp4 波形分析工具：psf 二进制导出文本（`psf -i raw -s -t SIG -f %.8e`），注意文本解析要
+  从 VALUE 行之后开始（头部参数区含 "tolerance"/"grid" 等假信号名）。

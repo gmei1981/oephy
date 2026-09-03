@@ -5,21 +5,20 @@ simulator lang=spectre
 include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
 include "vco_c.scs"
 
-parameters VI=0.35 VP=0.35
+parameters VI=0.3 VP=0.2
 
 Vvdd  (VDD 0)  vsource dc=0.8
 Vvddc (VDDC 0) vsource type=pulse val0=0 val1=0.5 delay=0 rise=1n width=1m period=1m
 Vctrli (VCTRL_I 0) vsource dc=VI
 Vctrlp (VCTRL_P 0) vsource dc=VP
-// NMOS gate switches: EN=0.8 -> enabled, EN=0 -> disabled (wp5 polarity)
-Veni0 (ENI0 0) vsource dc=0.8
-Veni1 (ENI1 0) vsource dc=0.8
-Veni2 (ENI2 0) vsource dc=0.8
-Venp0 (ENP0 0) vsource dc=0.8
-Venp1 (ENP1 0) vsource dc=0.8
-Venp2 (ENP2 0) vsource dc=0.8
-Venp3 (ENP3 0) vsource dc=0.8
-Venp4 (ENP4 0) vsource dc=0.8
+Veni0 (ENI0 0) vsource dc=0
+Veni1 (ENI1 0) vsource dc=0
+Veni2 (ENI2 0) vsource dc=0
+Venp0 (ENP0 0) vsource dc=0
+Venp1 (ENP1 0) vsource dc=0
+Venp2 (ENP2 0) vsource dc=0
+Venp3 (ENP3 0) vsource dc=0
+Venp4 (ENP4 0) vsource dc=0
 Venv2 (EN2 0) vsource dc=0.8
 
 Xvco (VDD VDDC VSS VCTRL_P VCTRL_I OUTP OUTN EN2 \

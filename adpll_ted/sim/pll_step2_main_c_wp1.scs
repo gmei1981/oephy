@@ -36,9 +36,9 @@ Veni1 (ENI1 0) vsource dc=0
 Veni2 (ENI2 0) vsource dc=0
 Venp0 (ENP0 0) vsource dc=0
 Venp1 (ENP1 0) vsource dc=0
-Venp2 (ENP2 0) vsource dc=0.8
-Venp3 (ENP3 0) vsource dc=0.8
-Venp4 (ENP4 0) vsource dc=0.8
+Venp2 (ENP2 0) vsource dc=0
+Venp3 (ENP3 0) vsource dc=0
+Venp4 (ENP4 0) vsource dc=0
 
 Venv2 (EN2 0) vsource dc=0.8
 Xvco (VDD VDDC VSS VCTRL_P VCTRL_I OUTP OUTN EN2 \
@@ -76,6 +76,6 @@ Iinj (VI 0) isource type=pulse val0=0 val1=-300u delay=0 width=2n period=1m rise
 //     real source-follower buffer pending VHOLD hold-cap droop check)
 Ebufp (VCTRL_P 0 VHOLD 0) vcvs gain=1.0
 
-plltran tran stop=300n maxstep=2p errpreset=liberal method=gear2only skipdc=yes ic="OUTP=0.45"
+plltran tran stop=120n maxstep=2p errpreset=liberal method=gear2only skipdc=yes ic="OUTP=0.45"
 save OUTP CKFB VCTRL_P VCTRL_I VI VHOLD EBIT MMDIN NBUF1 VREF VDCC RDCC KDTC VRAMP SEL EPSC CK2X CKDTCD CKRST VDDC
 saveOptions options save=selected

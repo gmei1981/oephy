@@ -1,0 +1,42 @@
+[
+  {
+    "VI": 0.3,
+    "VP": 0.0,
+    "deck": "vco_c_tune_vi0p3_vp0p0.scs"
+  },
+  {
+    "VI": 0.3,
+    "VP": 0.1,
+    "deck": "vco_c_tune_vi0p3_vp0p1.scs"
+  },
+  {
+    "VI": 0.3,
+    "VP": 0.2,
+    "deck": "vco_c_tune_vi0p3_vp0p2.scs"
+  },
+  {
+    "VI": 0.3,
+    "VP": 0.3,
+    "deck": "vco_c_tune_vi0p3_vp0p3.scs"
+  },
+  {
+    "VI": 0.3,
+    "VP": 0.4,
+    "deck": "vco_c_tune_vi0p3_vp0p4.scs"
+  },
+  {
+    "VI": 0.3,
+    "VP": 0.5,
+    "deck": "vco_c_tune_vi0p3_vp0p5.scs"
+  },
+  {
+    "VI": 0.3,
+    "VP": 0.6,
+    "deck": "vco_c_tune_vi0p3_vp0p6.scs"
+  },
+  {
+    "VI": 0.3,
+    "VP": 0.7,
+    "deck": "vco_c_tune_vi0p3_vp0p7.scs"
+  }
+]

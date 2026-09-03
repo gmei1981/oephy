@@ -19,7 +19,7 @@ Vvss (VSS 0) vsource dc=0
 Vref (REF 0) vsource type=pulse val0=0 val1=0.8 period=1.000000e-08 width=5.000000e-09 rise=10p fall=10p
 Vbspd (VBSPD 0) vsource dc=0.52
 Vbcmp (VBCMP 0) vsource dc=0.8
-Vbgm  (VBGM 0) vsource dc=0.8
+Vbgm  (VBGM 0) vsource dc=0.6
 
 // [C] 1V supply for the LDO input + bandgap ref (ideal v1) + EA tail bias
 Vv1v (V1V 0) vsource dc=1.0
@@ -36,9 +36,9 @@ Veni1 (ENI1 0) vsource dc=0
 Veni2 (ENI2 0) vsource dc=0
 Venp0 (ENP0 0) vsource dc=0
 Venp1 (ENP1 0) vsource dc=0
-Venp2 (ENP2 0) vsource dc=0.8
-Venp3 (ENP3 0) vsource dc=0.8
-Venp4 (ENP4 0) vsource dc=0.8
+Venp2 (ENP2 0) vsource dc=0
+Venp3 (ENP3 0) vsource dc=0
+Venp4 (ENP4 0) vsource dc=0
 
 Venv2 (EN2 0) vsource dc=0.8
 Xvco (VDD VDDC VSS VCTRL_P VCTRL_I OUTP OUTN EN2 \
@@ -64,12 +64,12 @@ Xmmd (MMDIN CKFB SEL ALT EPSC ERR) pll_mmd_edge Nint2=80.0 frac2=0.0 vth=0.7
 Xclkl (CKFB CLKLMS) pll_clk_lms vth=0.4
 Xlms (CLKLMS EBIT SEL ALT EPSC KDTC VDCC RDCC VREF) pll_lms \
     mu_k=0.0 mu_v=0.0 mu_r=1e-13 mu_off=4.2e-13 K0=1.0 vdcc0=12e-12 rdcc0=-12e-12 ohat0=32e-12 \
-    offset_s=32e-12 vref0=0.45 fref=1.000000e+08 m_slope=1e9 mode=1 tscale=1e-6 seed=121
+    offset_s=32e-12 vref0=0.15 fref=1.000000e+08 m_slope=1e9 mode=1 tscale=1e-6 seed=121
 
-Xci (VI 0) capacitor c=2p ic=0.30
+Xci (VI 0) capacitor c=15p ic=0.315
 // [C] 预充电: 0-2ns 注入 300uA -> VI≈0.30V (0.5V-core moscap 过渡区新工作点,
 //     实测 KVCO 单调区 VCTRL_I ∈ [0.15, 0.5], 从近锁定状态启动)
-Iinj (VI 0) isource type=pulse val0=0 val1=-300u delay=0 width=2n period=1m rise=10p fall=10p
+Iinj (VI 0) isource type=pulse val0=0 val1=-2.36m delay=0 width=2n period=1m rise=10p fall=10p
 
 // [C] VCTRL_I = VI (same node: GM integral output drives VAR_I bulk)
 // [C] VCTRL_P = VHOLD through ideal unity buffer (v1 placeholder;

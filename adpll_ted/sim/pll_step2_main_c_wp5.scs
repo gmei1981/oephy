@@ -29,16 +29,16 @@ Vvbl (VBL 0) vsource dc=0.62
 // [C] LDO: 1.0V -> 0.5V VCO core supply
 Xldo (VDD V1V VBG VBL VDDC VSS) ldo_05
 
-// [C] enable codes: all banks on (EN=0); VAR_I full ~440MHz/V (v2 direct
-//     moscap: units nfin 2/2/4, ENI0 unit measured 110MHz/V), VAR_P 5-bit
-Veni0 (ENI0 0) vsource dc=0
-Veni1 (ENI1 0) vsource dc=0
-Veni2 (ENI2 0) vsource dc=0
-Venp0 (ENP0 0) vsource dc=0
-Venp1 (ENP1 0) vsource dc=0
-Venp2 (ENP2 0) vsource dc=0.8
-Venp3 (ENP3 0) vsource dc=0.8
-Venp4 (ENP4 0) vsource dc=0.8
+// [wp5] NMOS gate switches: EN=0.8=on. VAR_I full on; VAR_P ENP0/1 only
+//     (wp5: NMOS switch + GM ulvt pair fix)
+Veni0 (ENI0 0) vsource dc=0.8
+Veni1 (ENI1 0) vsource dc=0.8
+Veni2 (ENI2 0) vsource dc=0.8
+Venp0 (ENP0 0) vsource dc=0.8
+Venp1 (ENP1 0) vsource dc=0.8
+Venp2 (ENP2 0) vsource dc=0
+Venp3 (ENP3 0) vsource dc=0
+Venp4 (ENP4 0) vsource dc=0
 
 Venv2 (EN2 0) vsource dc=0.8
 Xvco (VDD VDDC VSS VCTRL_P VCTRL_I OUTP OUTN EN2 \
@@ -72,10 +72,34 @@ Xci (VI 0) capacitor c=2p ic=0.30
 Iinj (VI 0) isource type=pulse val0=0 val1=-300u delay=0 width=2n period=1m rise=10p fall=10p
 
 // [C] VCTRL_I = VI (same node: GM integral output drives VAR_I bulk)
+Cic_Xa_VI00p (Xvco.Xa.VI00p_cb 0) capacitor c=1f ic=0.4
+Cic_Xa_VI00n (Xvco.Xa.VI00n_cb 0) capacitor c=1f ic=0.4
+Cic_Xa_VI10p (Xvco.Xa.VI10p_cb 0) capacitor c=1f ic=0.4
+Cic_Xa_VI10n (Xvco.Xa.VI10n_cb 0) capacitor c=1f ic=0.4
+Cic_Xa_VI20p (Xvco.Xa.VI20p_cb 0) capacitor c=1f ic=0.4
+Cic_Xa_VI20n (Xvco.Xa.VI20n_cb 0) capacitor c=1f ic=0.4
+Cic_Xa_VP00p (Xvco.Xa.VP00p_cb 0) capacitor c=1f ic=0.5
+Cic_Xa_VP00n (Xvco.Xa.VP00n_cb 0) capacitor c=1f ic=0.5
+Cic_Xa_VP10p (Xvco.Xa.VP10p_cb 0) capacitor c=1f ic=0.5
+Cic_Xa_VP10n (Xvco.Xa.VP10n_cb 0) capacitor c=1f ic=0.5
+Cic_Xa_VP11p (Xvco.Xa.VP11p_cb 0) capacitor c=1f ic=0.5
+Cic_Xa_VP11n (Xvco.Xa.VP11n_cb 0) capacitor c=1f ic=0.5
+Cic_Xb_VI00p (Xvco.Xb.VI00p_cb 0) capacitor c=1f ic=0.4
+Cic_Xb_VI00n (Xvco.Xb.VI00n_cb 0) capacitor c=1f ic=0.4
+Cic_Xb_VI10p (Xvco.Xb.VI10p_cb 0) capacitor c=1f ic=0.4
+Cic_Xb_VI10n (Xvco.Xb.VI10n_cb 0) capacitor c=1f ic=0.4
+Cic_Xb_VI20p (Xvco.Xb.VI20p_cb 0) capacitor c=1f ic=0.4
+Cic_Xb_VI20n (Xvco.Xb.VI20n_cb 0) capacitor c=1f ic=0.4
+Cic_Xb_VP00p (Xvco.Xb.VP00p_cb 0) capacitor c=1f ic=0.5
+Cic_Xb_VP00n (Xvco.Xb.VP00n_cb 0) capacitor c=1f ic=0.5
+Cic_Xb_VP10p (Xvco.Xb.VP10p_cb 0) capacitor c=1f ic=0.5
+Cic_Xb_VP10n (Xvco.Xb.VP10n_cb 0) capacitor c=1f ic=0.5
+Cic_Xb_VP11p (Xvco.Xb.VP11p_cb 0) capacitor c=1f ic=0.5
+Cic_Xb_VP11n (Xvco.Xb.VP11n_cb 0) capacitor c=1f ic=0.5
 // [C] VCTRL_P = VHOLD through ideal unity buffer (v1 placeholder;
 //     real source-follower buffer pending VHOLD hold-cap droop check)
 Ebufp (VCTRL_P 0 VHOLD 0) vcvs gain=1.0
 
-plltran tran stop=300n maxstep=2p errpreset=liberal method=gear2only skipdc=yes ic="OUTP=0.45"
+plltran tran stop=300n maxstep=2p errpreset=liberal method=gear2only skipdc=yes ic="OUTP=0.45" ic="Xvco.Xa.VI00p_cb=0.4" ic="Xvco.Xa.VI00n_cb=0.4" ic="Xvco.Xa.VI10p_cb=0.4" ic="Xvco.Xa.VI10n_cb=0.4" ic="Xvco.Xa.VI20p_cb=0.4" ic="Xvco.Xa.VI20n_cb=0.4" ic="Xvco.Xa.VP00p_cb=0.5" ic="Xvco.Xa.VP00n_cb=0.5" ic="Xvco.Xa.VP10p_cb=0.5" ic="Xvco.Xa.VP10n_cb=0.5" ic="Xvco.Xa.VP11p_cb=0.5" ic="Xvco.Xa.VP11n_cb=0.5" ic="Xvco.Xb.VI00p_cb=0.4" ic="Xvco.Xb.VI00n_cb=0.4" ic="Xvco.Xb.VI10p_cb=0.4" ic="Xvco.Xb.VI10n_cb=0.4" ic="Xvco.Xb.VI20p_cb=0.4" ic="Xvco.Xb.VI20n_cb=0.4" ic="Xvco.Xb.VP00p_cb=0.5" ic="Xvco.Xb.VP00n_cb=0.5" ic="Xvco.Xb.VP10p_cb=0.5" ic="Xvco.Xb.VP10n_cb=0.5" ic="Xvco.Xb.VP11p_cb=0.5" ic="Xvco.Xb.VP11n_cb=0.5"
 save OUTP CKFB VCTRL_P VCTRL_I VI VHOLD EBIT MMDIN NBUF1 VREF VDCC RDCC KDTC VRAMP SEL EPSC CK2X CKDTCD CKRST VDDC
 saveOptions options save=selected
