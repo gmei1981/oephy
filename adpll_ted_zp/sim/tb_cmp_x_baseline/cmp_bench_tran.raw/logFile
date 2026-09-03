@@ -1,0 +1,36 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Mon Aug 31 16:52:08 2026"
+"psfversion" ""
+"simulator" "spectre"
+"version" "20.1.0.068"
+"date" "4:52:08 PM, Mon Aug 31, 2026"
+"design" "// cmp_x 瞬态延迟: VINP 0.2->0.6 线性斜坡(200ps), 在 t=10.1ns 跨过 VREF=0.4"
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"plltran-tran" "analysisInst" (
+"tran"
+"plltran.tran.tran"
+"PSF"
+""
+("time")
+"Transient Analysis `plltran': time = (0 s -> 30 ns)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+END

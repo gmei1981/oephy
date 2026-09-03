@@ -1,0 +1,24 @@
+# ahdlcmi 仿真垃圾产物
+*.ahdlSimDB/
+*.tmiage0*
+*.tmicoa0*
+*.tmideg0*
+# 仿真大文件（留在本地磁盘，不入 git）
+sim/out/
+sim/local/
+sim/out_manual/
+sim/*_remote/
+# 编辑器垃圾
+.design.md.swp
+tt
+__pycache__/
+# Virtuoso 工作区垃圾（日志/锁，库本体 cellview 入库）
+virtuoso_ws/*.log
+virtuoso_ws/*.cdslck
+virtuoso_ws/*.il
+server21_sch_backup/*.log
+server21_sch_backup/*.cdslck
+server21_sch_backup/*.il
+sim/out_tune/run/
+sim/ssbb/
+sim/ref3/

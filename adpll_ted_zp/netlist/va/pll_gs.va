@@ -1,0 +1,62 @@
+// pll_gs.va — gear shifting (ref2 SS-BB-ADPLL)
+// Lock detection per W-REF window (sampled at REF falling edge, mid-period,
+// so all BBPD dead-zone updates from the rising-edge alignment are settled):
+//   bb_dz==0 throughout the window AND |sum(bb)| <= THR  ->  locked -> gear up
+//   (kp, ki halved); otherwise stays, re-checks next window.
+// Three gears: (8,1) -> (4,0.5) -> (2,0.25). Outputs drive pll_dlf's kp_in/ki_in.
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_gs(ref, bb, bb_dz, afc_done, g0, g1, g2, kp_out, ki_out);
+inout ref, bb, bb_dz, afc_done;
+output g0, g1, g2, kp_out, ki_out;
+electrical ref, bb, bb_dz, afc_done, g0, g1, g2, kp_out, ki_out;
+
+parameter real vth = 0.4;
+parameter integer W = 128;      // REF periods per lock-check window
+parameter integer THR = 4;      // |sum(bb)| lock threshold
+parameter real kp0 = 8.0;
+parameter real ki0 = 1.0;
+parameter integer ngear = 3;
+
+integer cnt, dz_cnt, gear_i;
+real bb_sum, kp_v, ki_v;
+
+analog begin
+    @(initial_step) begin
+        cnt = 0;
+        dz_cnt = 0;
+        gear_i = 0;
+        bb_sum = 0.0;
+        kp_v = kp0;
+        ki_v = ki0;
+    end
+    @(cross(V(ref) - vth, -1)) begin
+        if (V(afc_done) <= vth) begin
+            cnt = 0;
+            dz_cnt = 0;
+            bb_sum = 0.0;
+        end else begin
+            cnt = cnt + 1;
+            if (V(bb_dz) > vth)
+                dz_cnt = dz_cnt + 1;
+            bb_sum = bb_sum + ((V(bb) > vth) ? 1.0 : -1.0);
+            if (cnt >= W) begin
+                if (dz_cnt == 0 && abs(bb_sum) <= THR && gear_i < (ngear - 1)) begin
+                    gear_i = gear_i + 1;
+                    kp_v = kp_v / 2.0;
+                    ki_v = ki_v / 2.0;
+                end
+                cnt = 0;
+                dz_cnt = 0;
+                bb_sum = 0.0;
+            end
+        end
+    end
+    V(kp_out) <+ transition(kp_v, 0, 10p);
+    V(ki_out) <+ transition(ki_v, 0, 10p);
+    V(g0) <+ (((gear_i >> 0) & 1) != 0) ? 0.8 : 0.0;
+    V(g1) <+ (((gear_i >> 1) & 1) != 0) ? 0.8 : 0.0;
+    V(g2) <+ (((gear_i >> 2) & 1) != 0) ? 0.8 : 0.0;
+end
+endmodule

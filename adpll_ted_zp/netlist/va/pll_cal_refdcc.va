@@ -1,0 +1,60 @@
+// pll_cal_refdcc.va — reference doubler duty-cycle calibration
+// (ref3 ADPLL_ALG 图16, drawing17)
+// even_cycle toggles every REF period; phe is sign-selected by the cycle
+// parity (ref_double_calib_sel flips the pairing direction); the selected
+// value is registered (freq_err, s,19,16), shifted right by step (spec
+// default 6), and accumulated into ref_calib_coef (s,37,31) — the
+// compensation coefficient fed back into the feedback DSM's fractional
+// input. Doubler-mode offset: the even/odd CLKREF22 period mismatch shows
+// up as an alternating-sign phe; integrating cancels everything except
+// that component.
+// Stage A default: ref_double_en=0 -> en gates everything off; structure
+// is exercised in V1 with synthetic alternating phe.
+// Updates on clk FALLING (phe settled; parity flag from the rising edge
+// pairs with the current cycle).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_cal_refdcc(clk, phe, en, rcoef, rsel);
+inout clk, phe, en;
+output rcoef, rsel;
+electrical clk, phe, en, rcoef, rsel;
+
+parameter integer rstep = 6;           // ref_double_calib_step (spec default 6)
+parameter integer rdir = 0;            // ref_double_calib_sel (0/1)
+parameter real rclim = 1.0;            // coef clamp (fractional-FCW units)
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+
+integer even;
+real sel_out, freq_err, shift_out, integ, rsel_v;
+
+analog begin
+    @(initial_step) begin
+        even = 0; sel_out = 0.0; freq_err = 0.0; shift_out = 0.0;
+        integ = 0.0; rsel_v = 0.0;
+    end
+
+    @(cross(V(clk) - vth, -1)) begin
+        if (V(en) > vth) begin
+            // parity select (rdir flips the direction)
+            if (rdir == 0) begin
+                if (even == 1) sel_out = V(phe); else sel_out = -V(phe);
+            end else begin
+                if (even == 1) sel_out = -V(phe); else sel_out = V(phe);
+            end
+            freq_err = sel_out;                    // registered (s,19,16)
+            shift_out = freq_err / pow(2.0, rstep);
+            integ = integ + shift_out;
+            if (integ > rclim) integ = rclim;
+            if (integ < -rclim) integ = -rclim;
+            even = 1 - even;                       // next cycle's parity
+            rsel_v = (even == 1) ? vh : 0.0;       // ref_sel debug
+        end
+    end
+
+    V(rcoef) <+ integ;
+    V(rsel) <+ transition(rsel_v, 0, tt);
+end
+endmodule

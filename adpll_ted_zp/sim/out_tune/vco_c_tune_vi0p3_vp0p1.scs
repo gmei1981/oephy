@@ -1,0 +1,29 @@
+// vco_c_tune.scs — standalone Plan C VCO frequency vs VCTRL_I sweep point
+// all VAR banks enabled; one (VI,VP) point per run (bake via tools/gen_vco_c_tune.py)
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+include "vco_c.scs"
+
+parameters VI=0.3 VP=0.1
+
+Vvdd  (VDD 0)  vsource dc=0.8
+Vvddc (VDDC 0) vsource type=pulse val0=0 val1=0.5 delay=0 rise=1n width=1m period=1m
+Vctrli (VCTRL_I 0) vsource dc=VI
+Vctrlp (VCTRL_P 0) vsource dc=VP
+Veni0 (ENI0 0) vsource dc=0
+Veni1 (ENI1 0) vsource dc=0
+Veni2 (ENI2 0) vsource dc=0
+Venp0 (ENP0 0) vsource dc=0
+Venp1 (ENP1 0) vsource dc=0
+Venp2 (ENP2 0) vsource dc=0
+Venp3 (ENP3 0) vsource dc=0
+Venp4 (ENP4 0) vsource dc=0
+Venv2 (EN2 0) vsource dc=0.8
+
+Xvco (VDD VDDC VSS VCTRL_P VCTRL_I OUTP OUTN EN2 \
+    ENI0 ENI1 ENI2 ENP0 ENP1 ENP2 ENP3 ENP4) vco_dual_8g_c
+
+tran tran stop=120n maxstep=2p errpreset=liberal method=gear2only skipdc=yes ic="OUTP=0.45" ic="OUTN=0.0"
+save OUTP OUTN VCTRL_I VCTRL_P
+saveOptions options save=selected

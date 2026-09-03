@@ -1,0 +1,119 @@
+// pll_dsm_dco.va — DCO control DSM (ref3 ADPLL_ALG 图11-12)
+// lpf_frac (fr0..fr25, u,26,26) -> MASH (dsm_dco_mode 0/1/2) with LFSR
+// dither -> dsm_out_dco 4-bit (f0..f3). The RTL drives a 15-unit
+// thermometer bank; this model outputs the binary equivalent — stage A
+// wires it straight into DAC2's low 4 bits (KVCO2 55kHz/LSB -> dithered
+// effective step ~3.4kHz, better than the 50kHz spec).
+// Output is centered: out = clamp(round(y) + 8, 0, 15); mean = lpf_frac
+// + 8. The +8 DC offset sits on DAC2 and is absorbed by the LPF
+// integrator (documented stage-A deviation).
+// Update domain: clk rising (clk_dsm = REF for stage A).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_dsm_dco(clk,
+    fr0, fr1, fr2, fr3, fr4, fr5, fr6, fr7, fr8, fr9, fr10, fr11, fr12, fr13,
+    fr14, fr15,
+    fr16, fr17, fr18, fr19, fr20, fr21, fr22, fr23, fr24, fr25,
+    f0, f1, f2, f3);
+inout clk;
+inout fr0, fr1, fr2, fr3, fr4, fr5, fr6, fr7, fr8, fr9, fr10, fr11, fr12, fr13,
+    fr14, fr15;
+inout fr16, fr17, fr18, fr19, fr20, fr21, fr22, fr23, fr24, fr25;
+output f0, f1, f2, f3;
+electrical clk;
+electrical fr0, fr1, fr2, fr3, fr4, fr5, fr6, fr7, fr8, fr9, fr10, fr11, fr12,
+    fr13, fr14, fr15;
+electrical fr16, fr17, fr18, fr19, fr20, fr21, fr22, fr23, fr24, fr25;
+electrical f0, f1, f2, f3;
+
+parameter integer dsm_dco_mode = 0;    // 0=MASH1 1=MASH1-1 2=MASH1-1-1
+parameter integer dither_dco_en = 0;
+parameter integer seed = 51;
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+
+real x1, x2, x3, frac_v, dith, y, outv;
+real c1, c2, c3, c2p, c3p, c3pp;
+integer lfsr, lbit, fr26, oi;
+real f0v, f1v, f2v, f3v;
+
+analog begin
+    @(initial_step) begin
+        x1 = 0.0; x2 = 0.0; x3 = 0.0;
+        c1 = 0.0; c2 = 0.0; c3 = 0.0; c2p = 0.0; c3p = 0.0; c3pp = 0.0;
+        lfsr = seed % 1024;
+        if (lfsr <= 0) lfsr = 1023;
+        frac_v = 0.0; dith = 0.0; y = 0.0; outv = 8.0; oi = 8;
+        f0v = 0.0; f1v = 0.0; f2v = 0.0; f3v = 0.0;
+    end
+
+    @(cross(V(clk) - vth, +1)) begin
+        // latch lpf_frac (26-bit binary -> real fraction)
+        fr26 = 0;
+        if (V(fr0) > vth) fr26 = fr26 + 1;
+        if (V(fr1) > vth) fr26 = fr26 + 2;
+        if (V(fr2) > vth) fr26 = fr26 + 4;
+        if (V(fr3) > vth) fr26 = fr26 + 8;
+        if (V(fr4) > vth) fr26 = fr26 + 16;
+        if (V(fr5) > vth) fr26 = fr26 + 32;
+        if (V(fr6) > vth) fr26 = fr26 + 64;
+        if (V(fr7) > vth) fr26 = fr26 + 128;
+        if (V(fr8) > vth) fr26 = fr26 + 256;
+        if (V(fr9) > vth) fr26 = fr26 + 512;
+        if (V(fr10) > vth) fr26 = fr26 + 1024;
+        if (V(fr11) > vth) fr26 = fr26 + 2048;
+        if (V(fr12) > vth) fr26 = fr26 + 4096;
+        if (V(fr13) > vth) fr26 = fr26 + 8192;
+        if (V(fr14) > vth) fr26 = fr26 + 16384;
+        if (V(fr15) > vth) fr26 = fr26 + 32768;
+        if (V(fr16) > vth) fr26 = fr26 + 65536;
+        if (V(fr17) > vth) fr26 = fr26 + 131072;
+        if (V(fr18) > vth) fr26 = fr26 + 262144;
+        if (V(fr19) > vth) fr26 = fr26 + 524288;
+        if (V(fr20) > vth) fr26 = fr26 + 1048576;
+        if (V(fr21) > vth) fr26 = fr26 + 2097152;
+        if (V(fr22) > vth) fr26 = fr26 + 4194304;
+        if (V(fr23) > vth) fr26 = fr26 + 8388608;
+        if (V(fr24) > vth) fr26 = fr26 + 16777216;
+        if (V(fr25) > vth) fr26 = fr26 + 33554432;
+        frac_v = fr26 / 67108864.0;     // 2^26
+
+        // 10-bit LFSR dither (same polynomial as the feedback DSM)
+        lbit = (((lfsr / 512) % 2) ^ ((lfsr / 64) % 2));
+        lfsr = (lfsr * 2 + lbit) % 1024;
+        dith = 0.0;
+        if (dither_dco_en > 0) dith = lbit - 0.5;
+
+        // MASH 1-1-1 on frac_v
+        x1 = x1 + frac_v + dith;
+        c1 = 0.0;
+        if (x1 >= 1.0) begin x1 = x1 - 1.0; c1 = 1.0; end
+        x2 = x2 + x1;
+        c2 = 0.0;
+        if (x2 >= 1.0) begin x2 = x2 - 1.0; c2 = 1.0; end
+        x3 = x3 + x2;
+        c3 = 0.0;
+        if (x3 >= 1.0) begin x3 = x3 - 1.0; c3 = 1.0; end
+        y = c1;
+        if (dsm_dco_mode >= 1) y = y + c2 - c2p;
+        if (dsm_dco_mode >= 2) y = y + c3 - 2.0 * c3p + c3pp;
+        c2p = c2; c3pp = c3p; c3p = c3;
+
+        outv = y + 8.0;
+        if (outv > 15.0) outv = 15.0;
+        if (outv < 0.0) outv = 0.0;
+        oi = outv;                      // truncate toward center
+        f0v = (((oi      ) % 2) > 0) ? vh : 0.0;
+        f1v = (((oi / 2  ) % 2) > 0) ? vh : 0.0;
+        f2v = (((oi / 4  ) % 2) > 0) ? vh : 0.0;
+        f3v = (((oi / 8  ) % 2) > 0) ? vh : 0.0;
+    end
+
+    V(f0) <+ transition(f0v, 0, tt);
+    V(f1) <+ transition(f1v, 0, tt);
+    V(f2) <+ transition(f2v, 0, tt);
+    V(f3) <+ transition(f3v, 0, tt);
+end
+endmodule

@@ -1,0 +1,97 @@
+// pll_mmd_ps.va — multi-modulus divider (ref3 ADPLL_ALG 图6-7)
+// Divide ratio from p0..p12 (freq_div_ratio u,13,0). RTL structure is the
+// pulse-swallow P/S counter (S = ratio[1:0] -> ps_ctrl, P = ratio[12:2],
+// Pcount 11b / Scount 1b); behaviorally N = 4*P + S = ratio for ratio >= 4.
+// V1 fix: a toggle divider needs HALF-period counts — the output toggles
+// every N/2 VCO rising edges (high phase ceil(N/2), low phase floor(N/2)),
+// giving f_out = fVCO/N (the V0 "toggle every N edges" halved the output
+// frequency). sel_clk_fb = 1 defers the output edge to the NEXT VCO
+// FALLING edge (half-period phase interpolation — mechanism validated in
+// pll_mmd_edge.va; exactly one output edge per half-period, no dual-edge
+// pollution). The ratio input is re-latched at each output edge
+// (glitch-free against mid-period DSM code updates).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_mmd_ps(vco_in, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12,
+    sel, ckfb);
+inout vco_in, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, sel;
+output ckfb;
+electrical vco_in, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, sel,
+    ckfb;
+
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+parameter integer ninit = 80;          // initial divide ratio before 1st latch
+
+real ckfb_v;
+integer cnt, ratio_i, pending, half_target;
+
+analog begin
+    @(initial_step) begin
+        cnt = 0; ratio_i = ninit; pending = 0; ckfb_v = 0.0;
+        half_target = (ratio_i + 1) / 2;         // output starts LOW
+    end
+
+    @(cross(V(vco_in) - vth, +1)) begin
+        cnt = cnt + 1;
+        if ((cnt >= half_target) && (pending == 0)) begin
+            if (V(sel) > vth) begin
+                pending = 1;                     // defer to falling edge
+            end else begin
+                ckfb_v = vh - ckfb_v;            // toggle at rising edge
+                ratio_i = 0;
+                if (V(p0) > vth) ratio_i = ratio_i + 1;
+                if (V(p1) > vth) ratio_i = ratio_i + 2;
+                if (V(p2) > vth) ratio_i = ratio_i + 4;
+                if (V(p3) > vth) ratio_i = ratio_i + 8;
+                if (V(p4) > vth) ratio_i = ratio_i + 16;
+                if (V(p5) > vth) ratio_i = ratio_i + 32;
+                if (V(p6) > vth) ratio_i = ratio_i + 64;
+                if (V(p7) > vth) ratio_i = ratio_i + 128;
+                if (V(p8) > vth) ratio_i = ratio_i + 256;
+                if (V(p9) > vth) ratio_i = ratio_i + 512;
+                if (V(p10) > vth) ratio_i = ratio_i + 1024;
+                if (V(p11) > vth) ratio_i = ratio_i + 2048;
+                if (V(p12) > vth) ratio_i = ratio_i + 4096;
+                if (ratio_i < 4) ratio_i = 4;    // spec divide range 4..8191
+                if (ckfb_v < vh * 0.5)
+                    half_target = (ratio_i + 1) / 2;   // now LOW -> high phase
+                else
+                    half_target = ratio_i / 2;         // now HIGH -> low phase
+                cnt = 0;
+            end
+        end
+    end
+
+    @(cross(V(vco_in) - vth, -1)) begin
+        if (pending == 1) begin
+            ckfb_v = vh - ckfb_v;                // toggle at falling edge
+            ratio_i = 0;                         // same latch as rising path
+            if (V(p0) > vth) ratio_i = ratio_i + 1;
+            if (V(p1) > vth) ratio_i = ratio_i + 2;
+            if (V(p2) > vth) ratio_i = ratio_i + 4;
+            if (V(p3) > vth) ratio_i = ratio_i + 8;
+            if (V(p4) > vth) ratio_i = ratio_i + 16;
+            if (V(p5) > vth) ratio_i = ratio_i + 32;
+            if (V(p6) > vth) ratio_i = ratio_i + 64;
+            if (V(p7) > vth) ratio_i = ratio_i + 128;
+            if (V(p8) > vth) ratio_i = ratio_i + 256;
+            if (V(p9) > vth) ratio_i = ratio_i + 512;
+            if (V(p10) > vth) ratio_i = ratio_i + 1024;
+            if (V(p11) > vth) ratio_i = ratio_i + 2048;
+            if (V(p12) > vth) ratio_i = ratio_i + 4096;
+            if (ratio_i < 4) ratio_i = 4;
+            if (ckfb_v < vh * 0.5)
+                half_target = (ratio_i + 1) / 2;
+            else
+                half_target = ratio_i / 2;
+            cnt = 0;
+            pending = 0;
+        end
+    end
+
+    V(ckfb) <+ transition(ckfb_v, 0, tt);
+end
+endmodule

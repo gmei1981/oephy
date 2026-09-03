@@ -1,0 +1,146 @@
+
+Spectre (R) Circuit Simulator
+Version 20.1.0.068 64bit -- 23 Sep 2020
+Copyright (C) 1989-2020 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: gmei   Host: ubuntu   HostID: 7F0101   PID: 38036
+Memory  available: 20.1312 GB  physical: 33.6281 GB
+Linux   : Ubuntu 20.04.6 LTS
+CPU Type: 13th Gen Intel(R) Core(TM) i7-13800H
+All processors running at 2918.4 MHz
+        Socket: Processors
+        0:       0
+        2:       1
+        4:       2
+        6:       3
+        8:       4
+        10:      5
+        12:      6
+        14:      7
+        
+System load averages (1min, 5min, 15min) : 3.2 %, 3.8 %, 2.8 %
+This is a virtual machine
+
+
+Simulating `gm_bench.scs' on ubuntu at 5:30:39 PM, Mon Aug 31, 2026 (process id: 38036).
+Current working directory: /home/gmei/git/oephy/adpll_ted/sim/tb_gm_x_baseline
+Command line:
+    /opt/cadence/SPECTRE201/tools.lnx86/bin/spectre -64 -format  \
+        psfascii gm_bench.scs +log gm_bench.log
+
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libinfineon_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libphilips_o_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libphilips_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libsparam_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libstmodels_sh.so ...
+Reading file:  /home/gmei/git/oephy/adpll_ted/sim/tb_gm_x_baseline/gm_bench.scs
+Reading file:  /opt/cadence/SPECTRE201/tools.lnx86/spectre/etc/configs/spectre.cfg
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/tmi.cfg
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_aux.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/crn12ffcll_lct_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/res_metal.scs
+Reading file:  /home/gmei/git/oephy/adpll_ted/sim/tb_gm_x_baseline/spd_cmp_gm.scs
+Time for NDB Parsing: CPU = 659.299 ms, elapsed = 373.402 ms.
+Time accumulated: CPU = 691.014 ms, elapsed = 373.405 ms.
+Peak resident memory used = 115 Mbytes.
+
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_dir
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_age_dir
+
+
+Time for Elaboration: CPU = 223.098 ms, elapsed = 112.147 ms.
+Time accumulated: CPU = 914.214 ms, elapsed = 485.654 ms.
+Peak resident memory used = 142 Mbytes.
+
+
+Time for EDB Visiting: CPU = 4.854 ms, elapsed = 1.11294 ms.
+Time accumulated: CPU = 919.205 ms, elapsed = 486.903 ms.
+Peak resident memory used = 143 Mbytes.
+
+  *********************************************************
+  ** TMI Share Library             Version is V116091.090007 (Nov  1 2018 19:33:12)
+  ** Built OS                      Version is Red Hat Enterprise Linux Server release 5.8 (Tikanga)
+  ** Built compiler                Version is gcc version 4.1.2 20080704 (Red Hat 4.1.2-52)
+  *********************************************************
+
+Warning from spectre during initial setup.
+    WARNING (SPECTRE-8282): `VI' is not a device or subcircuit instance name. Check the netlist file to ensure that it is a device or subcircuit.
+    WARNING (SPECTRE-8287): Ignoring invalid item `VI:p' in save statement.
+
+
+Global user options:
+             tmiage = 1
+          tmioutput = /home/gmei/git/oephy/adpll_ted/sim/tb_gm_x_baseline/gm_bench
+            degfile = /home/gmei/git/oephy/adpll_ted/sim/tb_gm_x_baseline/gm_bench
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 8
+         tmibsimcmg 5     
+            vsource 6     
+
+Analysis and control statement inventory:
+                 dc 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 1     
+
+Time for parsing: CPU = 101.082 ms, elapsed = 51.3401 ms.
+Time accumulated: CPU = 1.02037 s, elapsed = 538.324 ms.
+Peak resident memory used = 148 Mbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+
+***********************************************
+DC Analysis `plldc': Vi:dc = (200 mV -> 600 mV)
+***********************************************
+
+Notice from spectre during DC analysis `plldc'.
+    No outputs were found. Loosening output filter criterion to `allpub'.
+
+
+Opening the PSFASCII file gm_bench.raw/plldc.dc ...
+Important parameter values:
+    reltol = 1e-03
+    abstol(V) = 1 uV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    gmindc = 1 pS
+......9......8......7......6......5......4......3......2......1......0
+
+Maximum value achieved for any signal of each quantity: 
+V: V(VBIAS) = 800 mV
+I: I(Vvdd:p) = 24.47 uA
+DC simulation time: CPU = 62.156 ms, elapsed = 31.323 ms.
+
+Notice from spectre at dc = 600 mV during DC analysis `plldc'.
+    The value of parameter 'dc' has been reset to the original value 0.4.
+
+Total time required for dc analysis `plldc': CPU = 62.239 ms, elapsed = 31.404 ms.
+Time accumulated: CPU = 1.08521 s, elapsed = 572.981 ms.
+Peak resident memory used = 151 Mbytes.
+
+TMI results xml file begins to generate at Mon Aug 31 17:30:39 2026
+
+TMI results xml file /home/gmei/git/oephy/adpll_ted/sim/tb_gm_x_baseline/gm_bench.tmideg0.xml generated at Mon Aug 31 17:30:39 2026
+
+
+Aggregate audit (5:30:39 PM, Mon Aug 31, 2026):
+Time used: CPU = 1.11 s, elapsed = 1.11 s, util. = 100%.
+Time spent in licensing: elapsed = 11.9 ms.
+Peak memory used = 151 Mbytes.
+Simulation started at: 5:30:39 PM, Mon Aug 31, 2026, ended at: 5:30:39 PM, Mon Aug 31, 2026, with elapsed time (wall clock): 1.11 s.
+spectre completes with 0 errors, 2 warnings, and 3 notices.

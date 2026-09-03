@@ -1,0 +1,10 @@
+// vcotune5 N3_2
+simulator lang=spectre
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+include "vco_x_tuned.scs"
+Vvdd (VDD 0) vsource dc=0.8
+Vvss (VSS 0) vsource dc=0
+Vctrl (VCTRL 0) vsource dc=0.2
+Xvco (VDD VSS VCTRL OUTP OUTN) vco_x
+vctran tran stop=12n maxstep=1p errpreset=liberal method=gear2only
+save OUTP

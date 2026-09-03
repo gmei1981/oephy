@@ -1,0 +1,79 @@
+// pll_mmd_edge.va   MMD:  VCO   
+//  CKFB1/CKFB2 : SEL=+1  CKFB  ()  !
+// ( SEL=+1   SPD    83.6 )
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_mmd_edge(vco_in, ckfb, sel, alt, epsc, err_out);
+inout vco_in;
+output ckfb, sel, alt, epsc, err_out;
+electrical vco_in, ckfb, sel, alt, epsc, err_out;
+
+parameter real Nint2   = 161.0;
+parameter real frac2   = 0.458333;
+parameter real vth     = 0.4;
+parameter integer seed = 51;
+
+real x1, x2, c2p, y, b2, sel_v, epsc_v, alt_v, target_cyc, edge_err;
+integer ncyc, c1, c2, cnt, cnt_target, half_pending;
+real ckfb_v;
+
+analog begin
+    @(initial_step) begin
+        x1 = 0.0; x2 = 0.0; c2p = 0.0; ncyc = 0; target_cyc = 0.0;
+        sel_v = -1.0; alt_v = 1.0; epsc_v = 0.0; ckfb_v = 0.0;
+        cnt = 0; cnt_target = 80; half_pending = 0;
+    end
+    // VCO : ; SEL=-1 , SEL=+1 
+    @(cross(V(vco_in) - vth, +1)) begin
+        cnt = cnt + 1;
+        if (cnt >= cnt_target && half_pending == 0) begin
+            if (sel_v > 0.0) begin
+                half_pending = 1;      //  (CKFB2 )
+            end else begin
+                cnt = 0;
+                ncyc = ncyc + 1;
+                x1 = x1 + frac2;  c1 = (x1 >= 1.0) ? 1 : 0;
+                if (c1) x1 = x1 - 1.0;
+                x2 = x2 + c1;     c2 = (x2 >= 1.0) ? 1 : 0;
+                if (c2) x2 = x2 - 1.0;
+                y = c1 + c2 - c2p;  c2p = c2;
+                b2 = (Nint2 + y) - 2.0*floor((Nint2 + y)/2.0);
+                sel_v = 2.0*b2 - 1.0;
+                target_cyc = target_cyc + 0.5*(Nint2 + y);
+                epsc_v = 2.0*(target_cyc - ncyc*((Nint2 + frac2)/2.0)) + (0.5 - frac2);
+                alt_v = ((ncyc % 2)==0) ? 1.0 : -1.0;
+                edge_err = target_cyc;
+                cnt_target = floor((Nint2 + y) / 2.0);
+                ckfb_v = 1.0 - ckfb_v;
+            end
+        end
+    end
+    // VCO : SEL=+1  ()
+    @(cross(V(vco_in) - vth, -1)) begin
+        if (half_pending == 1) begin
+            half_pending = 0;
+            cnt = 0;
+            ncyc = ncyc + 1;
+            x1 = x1 + frac2;  c1 = (x1 >= 1.0) ? 1 : 0;
+            if (c1) x1 = x1 - 1.0;
+            x2 = x2 + c1;     c2 = (x2 >= 1.0) ? 1 : 0;
+            if (c2) x2 = x2 - 1.0;
+            y = c1 + c2 - c2p;  c2p = c2;
+            b2 = (Nint2 + y) - 2.0*floor((Nint2 + y)/2.0);
+            sel_v = 2.0*b2 - 1.0;
+            target_cyc = target_cyc + 0.5*(Nint2 + y);
+            epsc_v = 2.0*(target_cyc - ncyc*((Nint2 + frac2)/2.0)) + (0.5 - frac2);
+            alt_v = ((ncyc % 2)==0) ? 1.0 : -1.0;
+            edge_err = target_cyc;
+            cnt_target = floor((Nint2 + y) / 2.0);
+            ckfb_v = 1.0 - ckfb_v;
+        end
+    end
+    V(ckfb) <+ transition(ckfb_v, 0.0, 5p, 5p);
+    V(sel)  <+ sel_v;
+    V(alt)  <+ alt_v;
+    V(epsc) <+ epsc_v;
+    V(err_out) <+ edge_err;
+end
+endmodule

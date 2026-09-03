@@ -1,0 +1,52 @@
+// pll_cal_dcodcc.va — DCO duty-cycle calibration (ref3 ADPLL_ALG 图17,
+// drawing18)
+// Correlates phe with the sign-extended sel_clk_fb toggle: se = sel - psel
+// (delayed register, values -1/0/+1), sel_out = phe*se, accumulated with
+// step 1/2^dstep (spec default 2 -> 1/4) into dco_calib_coef, rounded to
+// the (s,6,0) dco_dtc_comp word (clamp +-63) that adds into the DTC code
+// inside pll_cal_kdtc. A DCO duty error shows up as phase error correlated
+// with the rise/fall retiming selection — exactly this projection.
+// Updates on clk FALLING (phe settled; sel/psel from the rising edge).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_cal_dcodcc(clk, phe, sel, en, dcomp, dcoef_dbg);
+inout clk, phe, sel, en;
+output dcomp, dcoef_dbg;
+electrical clk, phe, sel, en, dcomp, dcoef_dbg;
+
+parameter integer dstep = 2;           // dco_duty_calib_step (spec default 2)
+parameter real dclim = 63.0;           // (s,6,0) clamp
+parameter real vth = 0.4;
+parameter real tt = 50p;
+
+integer sel_n, sel_p, se;
+real sel_out, integ, dcomp_v;
+
+analog begin
+    @(initial_step) begin
+        sel_n = 0; sel_p = 0; se = 0;
+        sel_out = 0.0; integ = 0.0; dcomp_v = 0.0;
+    end
+
+    @(cross(V(clk) - vth, -1)) begin
+        sel_n = 0;
+        if (V(sel) > vth) sel_n = 1;
+        se = sel_n - sel_p;                          // sign-extended toggle
+        if (V(en) > vth) begin
+            sel_out = V(phe) * se;
+            integ = integ + sel_out / pow(2.0, dstep);
+            if (integ > dclim) integ = dclim;
+            if (integ < -dclim) integ = -dclim;
+        end
+        sel_p = sel_n;                               // shift delay register
+        // rnd 31 -> (s,6,0) dco_dtc_comp
+        dcomp_v = integ + 0.5;
+        if (dcomp_v > dclim) dcomp_v = dclim;
+        if (dcomp_v < -dclim) dcomp_v = -dclim;
+    end
+
+    V(dcomp) <+ dcomp_v;
+    V(dcoef_dbg) <+ integ;
+end
+endmodule

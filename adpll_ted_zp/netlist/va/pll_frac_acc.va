@@ -1,0 +1,41 @@
+// pll_frac_acc.va — fractional phase accumulator for DTC code (ref2 fractional mode)
+// acc += FCW (mod 1024) at each REF rising edge; c0..c9 = floor(acc).
+// The DTC delays the REF edge by code*Tres, cancelling the accumulated
+// fractional phase each cycle (DTC full range 337ps > TVCO 125ps @8G).
+// Integer-N: FCW=0 -> code stays 0 (REF passes with fixed minimum delay).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_frac_acc(ref, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9);
+inout ref;
+output c0, c1, c2, c3, c4, c5, c6, c7, c8, c9;
+electrical ref, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9;
+
+parameter real vth = 0.4;
+parameter real FCW = 0.0;
+
+real acc;
+integer ci;
+
+analog begin
+    @(initial_step) begin
+        acc = 0.0;
+    end
+    @(cross(V(ref) - vth, +1)) begin
+        acc = acc + FCW;
+        if (acc >= 1024.0)
+            acc = acc - 1024.0;
+    end
+    ci = floor(acc);
+    V(c0) <+ (((ci >> 0) & 1) != 0) ? 0.8 : 0.0;
+    V(c1) <+ (((ci >> 1) & 1) != 0) ? 0.8 : 0.0;
+    V(c2) <+ (((ci >> 2) & 1) != 0) ? 0.8 : 0.0;
+    V(c3) <+ (((ci >> 3) & 1) != 0) ? 0.8 : 0.0;
+    V(c4) <+ (((ci >> 4) & 1) != 0) ? 0.8 : 0.0;
+    V(c5) <+ (((ci >> 5) & 1) != 0) ? 0.8 : 0.0;
+    V(c6) <+ (((ci >> 6) & 1) != 0) ? 0.8 : 0.0;
+    V(c7) <+ (((ci >> 7) & 1) != 0) ? 0.8 : 0.0;
+    V(c8) <+ (((ci >> 8) & 1) != 0) ? 0.8 : 0.0;
+    V(c9) <+ (((ci >> 9) & 1) != 0) ? 0.8 : 0.0;
+end
+endmodule

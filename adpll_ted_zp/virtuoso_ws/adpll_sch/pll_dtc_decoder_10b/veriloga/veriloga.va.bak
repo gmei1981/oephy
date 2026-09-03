@@ -1,0 +1,9 @@
+// VerilogA for adpll_sch, pll_dtc_decoder_10b, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_dtc_decoder_10b;
+
+
+endmodule

@@ -1,0 +1,16 @@
+#
+# Edit Lock-Stake file. CAUTION: Please do not change.
+#
+# Information about current Edit Lock Owner.
+#
+LockStakeVersion               1.1
+LoginName                      gmei
+HostName                       ubuntu
+ProcessIdentifier              4641
+ProcessCreationTime_UTC        1788222782
+ProcessCreationTime_Readable   Tue Sep  1 08:33:02 2026 CST
+AppIdentifier                  OA File System Design Manager
+OSType                         unix
+ReasonForPlacingEditLock       OpenAccess edit lock
+FilePathUsedToEditLock         /home/gmei/git/oephy/adpll_ted/virtuoso_ws/adpll_sch/tb_cmp_x/schematic/sch.oa.cdslck
+TimeEditLocked                 Tue Sep  1 17:44:44 2026 CST

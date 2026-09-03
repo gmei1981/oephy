@@ -1,0 +1,36 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Mon Aug 31 14:50:52 2026"
+"psfversion" ""
+"simulator" "spectre"
+"version" "20.1.0.068"
+"date" "2:50:52 PM, Mon Aug 31, 2026"
+"design" "// SPD 斜坡斜率标定: CKDTC 153.6M 时钟驱动, 扫 VBSPD"
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"plltran-tran" "analysisInst" (
+"tran"
+"plltran.tran.tran"
+"PSF"
+""
+("time")
+"Transient Analysis `plltran': time = (0 s -> 30 ns)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+END

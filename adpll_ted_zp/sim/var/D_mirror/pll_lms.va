@@ -1,0 +1,100 @@
+// pll_lms.va — 三路 sign-LMS + 失调 DSM (论文 Fig.9/10a)
+// 依据: pll_transient_6g8g.m 的校准段 (后台模式: 分相自举 + 后台并行, 真实 μ)
+// 输入:  ebit (比较器输出, 当前周期口径); sel; alt; epsc (MMD 提供); ckfb 保留兼容
+// 输出:  kdtc (1V=1); vdcc/rdcc (1V=1ps); vref (比较器参考, 失调 DSM 驱动)
+// 修复 (0820): ① 原 @(cross(V(ckfb))) 双向沿 = 每周期更新 2 次 (MATLAB 每周期 1 次),
+//   且 ebit/clk 同沿事件序歧义 → 固定周期 timer (13.32ns = SPD 采样后 0.3ns, ebit 已稳)
+//   ② vref 标度原 1e9 (1mV/ps) 与 m_slope=33mV/ps 不一致 → 改 (ohat−offset)·m_slope,
+//   失调 DSM 时间尺度与 MATLAB 1:1
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_lms(ckfb, ebit, sel, alt, epsc, kdtc, vdcc, rdcc, vref);
+inout ckfb, ebit, sel, alt, epsc;
+output kdtc, vdcc, rdcc, vref;
+electrical ckfb, ebit, sel, alt, epsc, kdtc, vdcc, rdcc, vref;
+
+parameter real mu_k    = 3.05176e-5; // 2^-15 (K_DTC)
+parameter real mu_v    = 5e-15;      // VCO DCC (s/步)
+parameter real mu_r    = 1e-15;      // CKREF DCC (s/步)
+parameter real mu_off  = 5e-15;      // 失调 DSM (s/步)
+parameter real K0      = 0.90;       // K_DTC 初始 10% 误差
+parameter real vdcc0   = 0.0;        // VCO DCC 初始值 (冻结校准模式: 12e-12)
+parameter real rdcc0   = 0.0;        // CKREF DCC 初始值 (冻结模式: -12e-12)
+parameter real ohat0   = 0.0;        // 失调 DSM 初始值 (冻结模式: 32e-12)
+parameter real offset_s= 32e-12;     // 比较器失调 (32mV@1mV/ps 口径)
+parameter real vref0   = 0.0;        // 比较器参考标称
+parameter real fref    = 76.8e6;
+parameter real m_slope = 3.3e10;     // SPD 斜坡斜率 (V/s), vref 标度
+parameter real vth     = 0.5;        // 数字阈值
+parameter integer mode = 0;          // 0=全后台并行 1=分相自举(MATLAB bg_mode 同窗口) 2=演示模式(950µs 冻结)
+parameter real tscale = 1.0;         // 分相窗口时间尺度 (混合晶体管仿真用 1e-6: ms→µs)
+
+real kdtc_s, vdcc_s, rdcc_s, ohat_s, t_samp;
+integer sgn;
+analog begin
+    @(initial_step) begin
+        kdtc_s = K0; vdcc_s = vdcc0; rdcc_s = rdcc0; ohat_s = ohat0;
+        t_samp = 1.0/fref + 0.3e-9;  // SPD 采样沿后 0.3ns (fref 参数化, 支持 76.8M/153.6M/100M)
+    end
+    // 每参考周期一次 (固定周期 timer; MATLAB 主循环每周期一次)
+    @(timer(t_samp, 1.0/fref)) begin
+        sgn = (V(ebit) > vth) ? 1 : -1;
+        if (mode == 1) begin
+            if ($abstime <= 0.4e-3*tscale) begin
+                ohat_s = ohat_s + mu_off*sgn;
+            end else if ($abstime <= 2.3e-3*tscale) begin
+                ohat_s = ohat_s + mu_off*sgn;
+                vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+            end else if ($abstime <= 3.9e-3*tscale) begin
+                ohat_s = ohat_s + mu_off*sgn;
+                rdcc_s = rdcc_s + mu_r*sgn*V(alt);
+            end else if ($abstime <= 5.5e-3*tscale) begin
+                ohat_s = ohat_s + mu_off*sgn;
+                kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:((V(epsc)<0.0)?-1.0:0.0));
+            end else begin
+                ohat_s = ohat_s + mu_off*sgn;
+                vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+                rdcc_s = rdcc_s + mu_r*sgn*V(alt);
+                kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:((V(epsc)<0.0)?-1.0:0.0));
+            end
+        end else if (mode == 2) begin
+            // MATLAB 演示模式 (非 paper_bg): ① VCO DCC 20-150µs ② CKREF DCC 150-250µs
+            // ③ K 250-600µs ④ VCO DCC 二遍 600-700µs ⑤ K 二遍 700-950µs → 冻结
+            // 无失调 DSM (offset=0); 整数通道 frac=0 → mu_v=mu_k=0 (网表传 0)
+            if ($abstime > 20e-6 && $abstime <= 150e-6) begin
+                vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+            end else if ($abstime <= 250e-6) begin
+                rdcc_s = rdcc_s + mu_r*sgn*V(alt);
+            end else if ($abstime <= 600e-6) begin
+                kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:((V(epsc)<0.0)?-1.0:0.0));
+            end else if ($abstime <= 700e-6) begin
+                vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+            end else if ($abstime <= 950e-6) begin
+                kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:((V(epsc)<0.0)?-1.0:0.0));
+            end
+        end else begin
+            ohat_s = ohat_s + mu_off*sgn;
+            vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+            rdcc_s = rdcc_s + mu_r*sgn*V(alt);
+            kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:((V(epsc)<0.0)?-1.0:0.0));
+        end
+        // 限幅 (与 MATLAB 一致)
+        if (ohat_s >  200e-12) ohat_s =  200e-12;
+        if (ohat_s < -200e-12) ohat_s = -200e-12;
+        if (vdcc_s >  500e-12) vdcc_s =  500e-12;
+        if (vdcc_s < -500e-12) vdcc_s = -500e-12;
+        if (rdcc_s >  500e-12) rdcc_s =  500e-12;
+        if (rdcc_s < -500e-12) rdcc_s = -500e-12;
+        if (kdtc_s >  1.5) kdtc_s =  1.5;
+        if (kdtc_s <  0.5) kdtc_s =  0.5;
+    end
+    // ---- 输出 (vdcc/rdcc: 1V=1ps) ----
+    V(kdtc) <+ transition(kdtc_s, 0.0, 50p, 50p);
+    V(vdcc) <+ transition(vdcc_s*1e12, 0.0, 50p, 50p);
+    V(rdcc) <+ transition(rdcc_s*1e12, 0.0, 50p, 50p);
+    // 失调 DSM 在比较器节点: vref = vref0 + (ohat − offset)·m_slope
+    // 负反馈: ohat↑ → vref↑ → s↓ → ohat 回落 (时间尺度与 MATLAB 1:1)
+    V(vref) <+ transition(vref0 + (ohat_s - offset_s)*m_slope, 0.0, 50p, 50p);
+end
+endmodule

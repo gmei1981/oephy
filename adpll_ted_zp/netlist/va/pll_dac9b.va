@@ -1,0 +1,37 @@
+// pll_dac9b.va — ideal 9-bit DAC (ref3 stage A: Abank_code -> VC1, the
+// 9-bit extension of pll_dac7; LSB 0.5V/512 = 0.977mV -> ~0.6MHz/LSB at the
+// calibrated KVCO1 621MHz/V... plan §3.9 uses the 0.5V full scale).
+// code0..code8 digital inputs (0.8V logic) -> analog staircase with 1ns
+// smoothing. out = vmin + cv*(vmax-vmin)/512.
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_dac9b(out, code0, code1, code2, code3, code4, code5, code6, code7,
+    code8);
+output out;
+inout code0, code1, code2, code3, code4, code5, code6, code7, code8;
+electrical out, code0, code1, code2, code3, code4, code5, code6, code7, code8;
+
+parameter real vmin = 0.0;
+parameter real vmax = 0.5;
+parameter real tr = 1n;
+parameter real vth = 0.4;
+
+real vo;
+integer cv;
+
+analog begin
+    cv = 0;
+    if (V(code0) > vth) cv = cv + 1;
+    if (V(code1) > vth) cv = cv + 2;
+    if (V(code2) > vth) cv = cv + 4;
+    if (V(code3) > vth) cv = cv + 8;
+    if (V(code4) > vth) cv = cv + 16;
+    if (V(code5) > vth) cv = cv + 32;
+    if (V(code6) > vth) cv = cv + 64;
+    if (V(code7) > vth) cv = cv + 128;
+    if (V(code8) > vth) cv = cv + 256;
+    vo = vmin + cv * (vmax - vmin) / 512.0;
+    V(out) <+ transition(vo, 0, tr);
+end
+endmodule

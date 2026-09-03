@@ -1,0 +1,433 @@
+<title>ADPLL 模块参考</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>window.addEventListener("load", function(){ if (window.mermaid) { mermaid.initialize({startOnLoad:true, theme:"neutral"}); } });</script>
+<style>
+:root {
+  --bg: #f5f4f1;
+  --surface: #ffffff;
+  --ink: #1a1917;
+  --ink-2: #4d4b46;
+  --muted: #7c7972;
+  --line: #e2e0d9;
+  --accent: #2a78d6;
+  --accent-soft: #e8f0fa;
+  --good: #1d6b1d;
+  --warn: #9a6a06;
+  --bad: #bf2f2f;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --serif: "Noto Serif SC", "Songti SC", SimSun, serif;
+  --sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121211;
+    --surface: #1b1b1a;
+    --ink: #ecebe5;
+    --ink-2: #b7b5ad;
+    --muted: #8c8981;
+    --line: #2e2d2a;
+    --accent: #3987e5;
+    --accent-soft: #1c2a3d;
+    --good: #4faf4f;
+    --warn: #d9a93f;
+    --bad: #e06a6a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121211;
+  --surface: #1b1b1a;
+  --ink: #ecebe5;
+  --ink-2: #b7b5ad;
+  --muted: #8c8981;
+  --line: #2e2d2a;
+  --accent: #3987e5;
+  --accent-soft: #1c2a3d;
+  --good: #4faf4f;
+  --warn: #d9a93f;
+  --bad: #e06a6a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.85;
+}
+.wrap { max-width: 46rem; margin: 0 auto; padding: 3.5rem 1.4rem 5rem; }
+header.doc-head { margin-bottom: 2.6rem; }
+.kicker {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.7rem;
+}
+h1 {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 1.9rem;
+  line-height: 1.35;
+  margin: 0 0 0.8rem;
+  text-wrap: balance;
+}
+h1 .sub { display: block; font-size: 1.02rem; font-weight: 500; color: var(--ink-2); margin-top: 0.45rem; }
+.meta {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--muted);
+  display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.8rem;
+}
+.meta b { color: var(--ink-2); font-weight: 500; }
+section { margin-bottom: 2.6rem; }
+h2 {
+  font-family: var(--sans);
+  font-size: 1.18rem;
+  font-weight: 700;
+  margin: 0 0 0.9rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--line);
+  text-wrap: balance;
+}
+h2 .no { color: var(--accent); margin-right: 0.5rem; font-variant-numeric: tabular-nums; }
+h3 {
+  font-family: var(--sans);
+  font-size: 1.02rem;
+  font-weight: 600;
+  margin: 1.9rem 0 0.6rem;
+  padding: 0.35rem 0.7rem;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 4px 4px 0;
+}
+h3 .tag {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 0.6rem;
+  letter-spacing: 0.02em;
+}
+p { margin: 0 0 0.9rem; }
+em { font-style: normal; color: var(--accent); }
+ul, ol { padding-left: 1.4rem; margin: 0 0 0.9rem; }
+li { margin-bottom: 0.35rem; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 0.92em; }
+code {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  background: var(--accent-soft);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+}
+pre.code {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  line-height: 1.6;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  margin: 0.8rem 0 1rem;
+}
+pre.code .c { color: var(--muted); }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.4rem;
+  font-family: var(--sans);
+  font-size: 0.84rem;
+}
+th, td {
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+th { font-weight: 600; color: var(--ink-2); border-bottom: 1.5px solid var(--line); white-space: nowrap; }
+td.num, th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ok { color: var(--good); font-weight: 700; }
+.warn-t { color: var(--warn); font-weight: 700; }
+.bad { color: var(--bad); font-weight: 700; }
+.table-scroll { overflow-x: auto; }
+.pit {
+  border-left: 2px solid var(--warn);
+  padding: 0.15rem 0 0.15rem 1rem;
+  margin: 0.8rem 0;
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+.pit .t { font-family: var(--sans); font-weight: 600; font-size: 0.8rem; color: var(--warn); display: block; margin-bottom: 0.15rem; }
+.diagram {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1.2rem;
+  margin: 1.2rem 0;
+  overflow-x: auto;
+}
+footer {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  padding-top: 1.1rem;
+  margin-top: 3rem;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+<header class="doc-head">
+  <p class="kicker">adpll_ted · 晶体管级模块参考</p>
+  <h1>DTC 采样型小数 PLL —— 模块详解
+    <span class="sub">每个子电路的结构、器件参数、设计指标、实测结果、在系统中的位置与已知坑</span>
+  </h1>
+  <div class="meta">
+    <span>工艺 <b>TSMC CLN12FFC（0.8 V）</b></span>
+    <span>层级 <b>晶体管级 .scs + Verilog-A .va</b></span>
+    <span>配套 <b><a href="report_page.html">比对报告页</a></b></span>
+    <span>日期 <b>2026-08-28</b></span>
+  </div>
+</header>
+
+<section>
+  <h2><span class="no">1</span>代码位置：文件地图</h2>
+  <div class="table-scroll"><table>
+    <tr><th>文件</th><th>层级</th><th>模块</th></tr>
+    <tr><td><code>netlist/inc/vco_dual.scs</code></td><td>晶体管级</td><td>双核 LC VCO（6.2 G 坦克，L=2.49nH）</td></tr>
+    <tr><td><code>netlist/inc/vco_dual_8g.scs</code></td><td>晶体管级</td><td>双核 VCO 8 G 变体（L=1.5nH，Step 2）</td></tr>
+    <tr><td><code>netlist/inc/dtc_10b.scs</code></td><td>晶体管级</td><td>10-bit RC DTC（1023 开关电容单元）</td></tr>
+    <tr><td><code>netlist/inc/spd_cmp_gm.scs</code></td><td>晶体管级</td><td>SPD 斜坡采样器 / 比较器 / GM 跨导</td></tr>
+    <tr><td><code>netlist/va/pll_mmd_edge.va</code></td><td>Verilog-A</td><td>MMD 双沿分频 + SEL 半周期抖动 + MASH1-1 DSM + ε 序列</td></tr>
+    <tr><td><code>netlist/va/pll_lms.va</code></td><td>Verilog-A</td><td>3×sign-LMS（K_DTC/VCO DCC/CKREF DCC）+ 失调 DSM</td></tr>
+    <tr><td><code>netlist/va/pll_dtc_decoder_10b.va</code></td><td>Verilog-A</td><td>10-bit 温度计解码器（1023 输出）</td></tr>
+    <tr><td><code>netlist/va/pll_hybrid_aux.va</code></td><td>Verilog-A</td><td>倍频器（76.8M→153.6M）+ clk_lms 生成</td></tr>
+    <tr><td><code>scripts/gen_blocks.py</code></td><td>生成器</td><td>DTC/解码器/双核 VCO/模拟块 .scs 生成</td></tr>
+    <tr><td><code>scripts/gen_top.py</code></td><td>生成器</td><td>顶层互联、缓冲链、预充电、VCTRL 求和、tran 配置</td></tr>
+    <tr><td><code>sim/</code></td><td>测试台</td><td>各通道网表 staging、<code>sim/out/</code> 仿真结果归档</td></tr>
+  </table></div>
+  <p>PDK 模型：<code>/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs</code>（corner 段 top_tt）。
+  器件均为 nch/pch_svt_mac（l=16n, nfin=2, w=58n，0.8 V 核心管），无源用 PDK rhim 电阻 /
+  cfmom_wo_p80 电容 / inductor / moscap_rf 变容管。</p>
+</section>
+
+<section>
+  <h2><span class="no">2</span>系统架构与信号流</h2>
+  <div class="diagram"><pre class="mermaid">
+flowchart LR
+  XO["XO 76.8M"] --> DBL["倍频器"] --> DTC["10-bit DTC<br>337 fs/LSB"]
+  DTC -->|"CKDTC"| SPD["SPD 斜坡<br>6.5/10 ns"]
+  VCO["双核 LC VCO<br>6.2 / 8 GHz"] --> MMD["MMD+SEL+MASH1-1<br>N=40.36 / 80"] --> CKFB["CKFB<br>153.6 / 100 M"]
+  CKFB --> SPD -->|"VHOLD"| CMP["比较器 e[k]"]
+  CMP --> LMS["3×sign-LMS<br>K_DTC·VDCC·RDCC"] -->|"KDTC/VDCC/RDCC"| DEC["温度计解码器<br>1023 输出"] --> DTC
+  CMP -->|"VREF 失调DSM"| LMS
+  SPD --> GM["GM + CI 积分"] --> VCTRL["VCTRL 求和"] --> VCO
+  LMS -->|"VREF"| CMP
+  </pre></div>
+  <p><strong>采样型鉴相</strong>：DTC 把参考沿延迟 <span class="num">t<sub>del</sub></span> 后触发 SPD 斜坡；
+  CKFB（VCO 分频沿）采样斜坡电压 → VHOLD 携带相位误差信息。<strong>DTC 范围减半</strong>：MMD 的 SEL
+  抖动使 CKFB 沿在 VCO 半周期上抖动，相位量化步长 T<sub>VCO</sub>/2，DTC 动态范围减半。
+  <strong>Type-II 环</strong>：比例路径 VHOLD→VHF→VCTRL（0.06×）直调 VCO，积分路径 GM+CI。
+  <strong>3×LMS</strong>：共用 e[k]，三路相关量分别为 ε 序列（K_DTC）、奇偶交替 alt（CKREF DCC）、
+  SEL（VCO DCC）；比较器参考由失调 DSM 动态跟踪。</p>
+</section>
+
+<section>
+  <h2><span class="no">3</span>模块详解</h2>
+
+  <h3>3.1 双核 LC VCO <span class="tag">vco_x / vco_dual · netlist/inc/vco_dual.scs</span></h3>
+  <p><strong>系统位置</strong>：频率基准。输出 OUTP/OUTN 经 1kΩ 隔离电阻 + 两级反相缓冲送 MMD 计数；
+  VCTRL 只接坦克变容管（本复现 KVCO≈0，见坑 1）。</p>
+  <p><strong>结构</strong>：NMOS 交叉耦合负阻对（MN0/MN1，nf=16）+ 双电感上拉坦克（L0/L1 = 2.49nH, r=2，
+  8G 版 1.5nH）+ 固定电容组 CF0–CF11（cfmom_wo_p80，<code>nr</code> 参数为单元数）+ 连续变容管
+  CV0/CV1（moscap_rf wr=538n nfin=12，gate=OUTP/N、bulk=gnode=VCTRL）。双核包装 <code>vco_dual</code>：
+  核 B 经 MPWRB（PMOS，nf=64）供电开关 + MSWP/MSWN（nf=64）耦合开关，EN2=0.8 双核 / 0 单核。</p>
+  <pre class="code"><span class="c">// 核心负阻对与电感</span>
+MN1 (OUTP OUTN VSS VSS) nch_svt_mac l=16n nfin=2 w=58n nf=16 ...
+L1 (VDD OUTN) inductor l=2.49n r=2
+<span class="c">// 固定电容组（每通道标定 nr：主 195 / 近整数 172 / 8G 188）</span>
+CF6 (OUTP OUTN VSS) cfmom_wo_p80 ... nr=192 ...
+<span class="c">// 连续变容管</span>
+CV0 (OUTP VCTRL VCTRL) moscap_rf wr=538n nfin=12 lr=200n gr=2 br=2 ...</pre>
+  <p><strong>指标</strong>：设计 6.2 G（Step 1）/ 8.0 G（Step 2）；实测 nr=192 时 6.161 G，8G 坦克 7.93 G；
+  OUTP 摆幅 2.01 Vpp；PN −77.3/−77.2 dBc/Hz @100k@6G（单/双核几乎重合）。
+  <strong>实测调谐灵敏度</strong>：nr 每单元 −0.37 MHz（主通道）/ −0.97 MHz（近整数双核）/ −0.266 MHz（8G，
+  按 CKFB 口径）。</p>
+  <div class="pit"><span class="t">坑 1 · KVCO≈0 定案（5 批次穷举）</span>
+  moscap_rf 在 6 GHz 大摆幅下电容锁定在 Cmin 平台（C-V 台阶只有 ~0.2 V 宽，工作区 0.2–1.0 V 全在
+  Cmin），阶梯变容管组 / 晶体管变容管 / 偏置偏移全部试过均无可用调谐 → <strong>Plan A：零 KVCO 简化 +
+  按通道重调固定电容组</strong>（复现报告注③）。</div>
+
+  <h3>3.2 10-bit RC DTC <span class="tag">dtc_10b · netlist/inc/dtc_10b.scs</span></h3>
+  <p><strong>系统位置</strong>：参考路径延迟级。输入 CK2X（倍频后参考），输出 CKDTC 触发 SPD 斜坡；
+  1023 个码端口与解码器输出同名直连（无 vcvs 桥接，规避 Jacobian 奇异）。</p>
+  <p><strong>结构</strong>：R0（rhim l=2.3µ w=2µ）+ 1023 个并联单元（NMOS 开关 U<i>k</i> nf=2 + 单位电容
+  C<i>k</i>=0.5fF，论文 Fig.11a 开关+真实电容结构）+ 输入反相（MNI/MPI）+ 复位管 MRST_D（nf=2）：
+  CK_IN 低时 CKXB 高、VDLY 被钳到 VSS，防止放电期电容反灌电荷丢沿。</p>
+  <pre class="code"><span class="c">// unit: NMOS switch nf=2 + CLSB=0.5fF;  R0 rhim 2.3u x 2u</span>
+<span class="c">// paper: Tres = ln2*R*CLSB = 330 fs, full DR ~ 338 ps</span>
+R0 (CK_IN VDLY) rhim l=2.3e-06 w=2e-06
+U1022 (VDLY CODE1022 UCAP1022 VSS) nch_svt_mac ... nf=2 ...
+C1022 (UCAP1022 VSS) capacitor c=5e-16
+MRST_D (VDLY CKXB VSS VSS) nch_svt_mac ... nf=2 ...  <span class="c">// 复位防反灌</span></pre>
+  <p><strong>指标</strong>：Tres = ln2·R·CLSB = 330 fs 设计；<strong>实测 337 fs</strong> ✓；满量程实测 290 ps
+  （设计 ~345 ps，0.86× 由 KDTC LMS 吸收）；窗口内 INL 最差 ±1.3 ps ≈ ±4 LSB（含测量噪声）。
+  <strong>测试</strong>：16 码点扫描（<code>sim/dtc/</code>，<code>scripts/dtc_meas.py</code>）+
+  链式验证（倍频→DTC 全码→SPD 斜坡 6.50ns/0.702V ✓）。</p>
+  <div class="pit"><span class="t">坑 2 · NMOS 变容管做单位电容不可用</span>
+  1023 个关态栅电容垫底 ~1pF + C-V 非线性 → INL ±数十 ps；改为开关+真实电容后 INL 收敛。
+  另：无复位通路时电容反灌电荷在环路中丢沿（CKDTC 76.8M），加 CK2X 反相复位管解决。</div>
+
+  <h3>3.3 SPD 斜坡采样鉴相器 <span class="tag">spd_x · spd_cmp_gm.scs</span></h3>
+  <p><strong>系统位置</strong>：相位误差→电压转换。CK_SMP=CKFB 采样斜坡，CK_RST=CKRST（CKDTC 反相）复位，
+  VHOLD 送比较器与 GM。</p>
+  <p><strong>结构</strong>：二极管接法 PMOS MIR + RREF（rhim 38µ×450n）产生偏置 → MCS（nf=1）恒流给
+  CR0=30fF 充电 → 线性斜坡；MSMP（nf=8）源跟随采样（VHOLD = VRAMP − V<sub>th,n</sub>）；MRST（nf=32）
+  强复位；CH（cfmom nr=12）保持电容。</p>
+  <pre class="code">MIR (VBSPD_M VBSPD_M VDD VDD) pch_svt_mac ... nf=1
+RREF (VBSPD_M VSS) rhim l=38u w=450n
+MCS (VRAMP VBSPD_M VDD VDD) pch_svt_mac ... nf=1
+MSMP (VRAMP CK_SMP VHOLD VSS) nch_svt_mac ... nf=8   <span class="c">// 采样管</span>
+MRST (VRAMP CK_RST VSS VSS) nch_svt_mac ... nf=32   <span class="c">// 复位管</span>
+CH (VHOLD VSS VSS) cfmom_wo_p80 ... nr=12
+CR0 (VRAMP VSS) capacitor c=30f</pre>
+  <p><strong>指标</strong>：斜坡 6.50 ns / 摆幅 0.702 V（VBSPD=0.48，153.6M 栅格；Step 2 10 ns 栅格
+  VBSPD=0.52）；采样窗 ~0.2–0.6 V 线性区；VHOLD 饱和上限 0.53 V（TB 实测）。</p>
+  <div class="pit"><span class="t">坑 3 · VBSPD 决定斜坡线性区</span>
+  VBSPD=0.20 时斜坡 0.3 ns 即饱和（相位信息丢失）→ 0.48 线性化。采样落斜坡底部平台段 =
+  鉴相器增益≈0（v13 死态根因之一）。</div>
+
+  <h3>3.4 比较器 <span class="tag">cmp_x · spd_cmp_gm.scs</span></h3>
+  <p><strong>系统位置</strong>：VHOLD vs VREF 判决 → EBIT=e[k]，同时驱动 LMS 与失调 DSM 反馈。</p>
+  <p><strong>结构</strong>：五管差分对（MN1/MN2 nf=2，二极管负载 MP1/MP2 nf=2，尾电流 MTAIL nf=2，
+  VBIAS=VBCMP=0.8 V）+ 输出反相级（MN3/MP3 nf=2）。</p>
+  <p><strong>指标</strong>：数字判决输出 EBIT（0/0.8 V）；共模工作区按 VREF 0.1–0.3 V 设计。</p>
+  <div class="pit"><span class="t">坑 4 · CM0.05 动态不翻转</span>
+  尾电流管在低共模下亚阈值冻结（gm 17 pS 量级），比较器动态失效 —— v13 死态共犯；健康区
+  VHOLD≥0.1 V（TB 佐证）。</div>
+
+  <h3>3.5 GM + CI 积分路径 <span class="tag">gm_x · spd_cmp_gm.scs</span></h3>
+  <p><strong>系统位置</strong>：Type-II 环积分路径。I_OUT 给顶层 CI（2pF，ic=0.55V）充放电形成 VCTRL_I。</p>
+  <p><strong>结构</strong>：NMOS 差分对（MN1/MN2 nf=1，输入 VHOLD/VREF）+ 尾电流（nf=1）+ PMOS 镜像
+  （MP1 二极管 / MP2 l=72n 拉长 4.5× 弱上拉，v2 修复：上拉 8.4nA→1.9nA 与下拉对称）。</p>
+  <p><strong>指标</strong>：设计 0.5 µS / CI=15pF@500kHz（论文口径）；本复现 gm 17 pS@CM0.05 实测、
+  CI=2p（复用+调参，环路 BW 由 VHF 比例路径主导）。</p>
+
+  <h3>3.6 MMD + SEL + MASH1-1 DSM <span class="tag">pll_mmd_edge.va</span></h3>
+  <p><strong>系统位置</strong>：VCO 输出 → CKFB 分频 + SEL 半周期抖动 + ε 序列（K_DTC 校准相关量）。
+  晶体管缓冲链（两级反相 nf=4 + 1kΩ 隔离）后的 MMDIN 进 VA。</p>
+  <p><strong>结构</strong>：对 vco_in 上升/下降沿双沿事件计数；<code>cnt_target = floor((Nint2+y)/2)</code>；
+  SEL=+1 时挂起半个 VCO 周期（CKFB2 下降沿重定时），SEL=−1 时上升沿触发 —— <strong>每分频只出
+  一个 CKFB 沿</strong>。MASH1-1：x1/x2/c2p 三个累加器，y = c1+c2−c2p；ε（epsc）=
+  2(target_cyc − ncyc·(Nint2+frac2)/2) + (0.5−frac2)；alt 奇偶周期交替供 CKREF DCC 相关。</p>
+  <pre class="code"><span class="c">// SEL=+1: 上升沿挂起, 下降沿触发 (半周期延迟 = 量化步长 TVCO/2)</span>
+@(cross(V(vco_in) - vth, +1)) begin
+    cnt = cnt + 1;
+    if (cnt >= cnt_target && half_pending == 0) begin
+        if (sel_v > 0.0) begin half_pending = 1; end
+        else begin ... ckfb_v = 1.0 - ckfb_v; end
+    end
+end</pre>
+  <p><strong>指标</strong>：Step 1 Nint2=40/frac2=0.364583（主通道）、42/0.000651（近整数）→ CKFB=153.6M；
+  Step 2 Nint2=80/frac2=0 → CKFB=100M。实例 vth=0.7（顶层覆盖 VA 默认 0.4）。
+  <strong>实测</strong>：三通道 CKFB 全程恒定（fire rate 无丢沿）。</p>
+  <div class="pit"><span class="t">坑 5 · 旧版 SEL=+1 双沿触发</span>
+  每分频出两个沿 → SPD 参考网格被污染、有效分频比 83.6（预期 80.73）的根因；改为
+  「SEL=+1 挂起等下降沿」后每分频严格一个沿。</div>
+
+  <h3>3.7 3×sign-LMS + 失调 DSM <span class="tag">pll_lms.va</span></h3>
+  <p><strong>系统位置</strong>：后台校准大脑。输入 EBIT/SEL/ALT/EPSC，输出 KDTC（1V=1）、VDCC/RDCC
+  （1V=1ps）给解码器，VREF 回比较器参考。</p>
+  <p><strong>结构</strong>：固定周期 <code>timer(1/fref)</code>（采样沿后 0.3ns）每参考周期更新一次；
+  四路并行：kdtc += mu_k·sgn·sign(epsc)、vdcc += mu_v·sgn·sel、rdcc += mu_r·sgn·alt、
+  ohat += mu_off·sgn（vref = vref0 + (ohat−offset_s)·m_slope 负反馈）。限幅：KDTC 0.5–1.5、
+  VDCC/RDCC ±500 ps、ohat ±200 ps。mode=1 分相自举窗口（0.4/2.3/3.9/5.5 ms × tscale=1e-6）。
+  顶层实例：mu_k=0.01、mu_v=5e-13、mu_r=1e-13、mu_off=4.2e-13、K0=1.0、vref0=0.15、
+  m_slope=1e9；Step 2 禁用 mu_k=mu_v=0。</p>
+  <pre class="code">@(timer(t_samp, 1.0/fref)) begin
+    sgn = (V(ebit) > vth) ? 1 : -1;
+    ohat_s = ohat_s + mu_off*sgn;
+    vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+    rdcc_s = rdcc_s + mu_r*sgn*V(alt);
+    kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:...);
+end
+<span class="c">// vdcc/rdcc 输出 1V=1ps;  vref 负反馈闭环</span></pre>
+  <p><strong>实测</strong>：四路全部活动；本工作点无干净收敛（RDCC 慢漂 −14→−95@8µs 仍走、VDCC ±80
+  大摆幅、KDTC 0.5–1.4 抖振）——零 KVCO 结构性原因（复现报告注②）。</p>
+  <div class="pit"><span class="t">坑 6 · 更新时钟与标度</span>
+  ① 旧版用 CKFB 双向沿 = 每周期更新 2 次且 ebit/clk 同沿事件序歧义 → 固定周期 timer；
+  ② vref 旧标度 1e9 与 m_slope=33mV/ps 不一致 → 改 (ohat−offset)·m_slope 与 MATLAB 1:1。</div>
+
+  <h3>3.8 倍频器与 LMS 时钟 <span class="tag">pll_hybrid_aux.va</span></h3>
+  <p><strong>系统位置</strong>：参考路径前端。pll_doubler_edge 把 76.8M 参考倍频为 153.6M（CKDTC 栅格）；
+  Step 2 用顶层 Edbl vcvs 直通（100M 不经倍频）。pll_clk_lms 生成 LMS 更新时钟（CKFB 沿后 300ps）。</p>
+  <p><strong>结构</strong>：XOR 定时器型——REF 每个沿（升+降）输出高、thalf=3.25ns 后回落 → 153.6M、
+  50% 占空比。</p>
+  <div class="pit"><span class="t">坑 7 · 每沿翻转版是延迟复制</span>
+  旧版每个 REF 沿翻转输出 → 只是 76.8M 延迟复制（斜坡周期 13ns、撞 0.8V 轨、采样网格错相 → 死环）。
+  定时器型 XOR 修复。</div>
+
+  <h3>3.9 DTC 温度计解码器 <span class="tag">pll_dtc_decoder_10b.va</span></h3>
+  <p><strong>系统位置</strong>：相位误差 → 1023 温度计码。输入 EPSC（ε，TVCO 单位）、SEL、ALT 与 LMS 输出，
+  1023 个输出与 DTC 码端口同名直连。</p>
+  <p><strong>结构</strong>：延迟计算 <code>tdel = K_DTC·(epsc − (0.5 − frac2))·(0.5/fout)</code>（秒），
+  <code>code = round(tdel/Tres)</code>，温度计 = code + 511（0..1022 有效，511 为 DTC 中点），
+  输出加 <code>transition(50p)</code> 平滑。参数 fout/fref/frac2/Tres 按通道传入。</p>
+  <div class="pit"><span class="t">坑 8 · 三个实现细节</span>
+  ① 1023 端口单行 ≈6.5KB 解析失败 → 每 16 端口折行；② 解码输出与 DTC 码端口同名直连、
+  删除 vcvs 桥接（Jacobian 零对角奇异）；③ transition(50p) 消除 LTE 松弛 5-10× 拖慢。</div>
+
+  <h3>3.10 顶层集成 <span class="tag">gen_top.py 生成</span></h3>
+  <p><strong>互联要点</strong>：</p>
+  <ul>
+    <li><strong>VCO 输出缓冲链</strong>：OUTP →Rbuf 1k→ BUFFIN → 两级反相（nf=4）→ NBUF1 → MMDIN；
+      8G 全速翻转验证 ✓（2.01 Vpp 摆幅健康）</li>
+    <li><strong>预充电启动</strong>：Iinj 0–2ns −550µA → VI≈0.55 V，环路从近锁定态启动（VCTRL=0 时
+      VCO 低频、采样相位冻结在复位区 → 谐波锁死，无外力无法捕获）</li>
+    <li><strong>VCTRL 求和</strong>：比例路径 VHOLD →Rf 5k/Cf 5p→ VHF →Ep 0.06×→ VN1；VCTRL = VI + VN1</li>
+    <li><strong>复位链</strong>：Einv（CKRSTI=−CKDTC）+ Esumrst（CKRST = 0.8 + CKRSTI）</li>
+    <li><strong>tran 配置</strong>：maxstep=2p、gear2only、ic=OUTP=0.6；标定跑 strobe 100p，
+      精采样跑无 strobe 只存 OUTP/CKFB/VCTRL</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="no">4</span>系统级测试结果（三通道汇总）</h2>
+  <div class="table-scroll"><table>
+    <tr><th>通道</th><th>坦克标定</th><th>CKFB（10µs）</th><th>小数杂散</th><th>参考杂散</th><th>周期抖动</th></tr>
+    <tr><td>主 6.2G（Step 1）</td><td class="num">nr=195</td><td class="num">153.28M（−0.21%）</td><td class="num ok">−72.9 dBc @56M</td><td class="num">−59.5 dBc</td><td class="num">106.6 fs</td></tr>
+    <tr><td>近整数 6.451G（Step 1）</td><td class="num">nr=172</td><td class="num">153.98M（+0.26%）</td><td class="num bad">&gt;0 dBc（±UI）</td><td class="num">−57.7 dBc</td><td class="num">96.7 fs</td></tr>
+    <tr><td>8G 整数（Step 2）</td><td class="num">nr=188</td><td class="num">99.66M（−0.34%）</td><td class="num">—（frac=0）</td><td class="num">−63.4 dBc @100M</td><td class="num">152.9 fs</td></tr>
+  </table></div>
+  <p>完整比对、差距根因（注①–⑤）与四张测量图见 <a href="report_page.html">比对报告页</a>；
+  原始数据归档于 <code>sim/out/</code>。</p>
+</section>
+
+<section>
+  <h2><span class="no">5</span>复现入口</h2>
+  <pre class="code"><span class="c"># 生成顶层网表（Step 1 主通道 / Step 2）</span>
+python3 scripts/gen_top.py step1 --chan main --stop 1u --strobe 100p
+python3 scripts/gen_top.py step2 --stop 10u
+<span class="c"># 服务器 AX 多核跑（关键：+preset=ax，裸 +mt 只有单核速度的 1/5）</span>
+cd &lt;staging_dir&gt; && spectre top.scs -format psfascii -raw ./raw +log ./run.log +preset=ax +mt
+<span class="c"># 测量：测频 / 综合精采样分析 / 抖动解析口径</span>
+python3 scripts/cal_measure.py &lt;raw_dir&gt;
+python3 scripts/fine_analyze.py &lt;raw_dir&gt; --fref 153.6e6 --frac 0.364583 --fvco 6.2e9
+python3 scripts/jitter_analytic.py sim/vco/out/vco_pnoise_dual.raw/pn_extract.npz</pre>
+</section>
+
+<footer>adpll_ted 模块参考 · 晶体管级 + Verilog-A 混合 · 与 <a href="report_page.html">比对报告页</a> 配套 · 2026-08-28</footer>
+</div>

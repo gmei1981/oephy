@@ -1,0 +1,21 @@
+// ldo_05_tb.scs — LDO DC regulation (load sweep) + PSR (ac at VIN)
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+include "ldo_05.scs"
+
+Vvdd (VDD 0) vsource dc=0.8
+Vvin (VIN 0) vsource dc=1.0 mag=1.0
+Vvbg (VBG 0) vsource dc=0.5
+Vvbl (VBL 0) vsource dc=0.62
+Iload (VOUT 0) isource dc=4m
+
+Xldo (VDD VIN VBG VBL VOUT 0) ldo_05
+
+// DC: regulation vs load current (sweep the isource dc directly)
+dc1 dc dev=Iload param=dc start=0 stop=12m step=1m
+// AC: PSR = 20log(VOUT/VIN), 1kHz..10GHz
+ac1 ac start=1k stop=10G dec=10
+
+save VOUT VIN
+saveOptions options save=selected

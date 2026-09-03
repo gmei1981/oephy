@@ -1,0 +1,100 @@
+// pll_lms.va   sign-LMS +  DSM ( Fig.9/10a)
+// : pll_transient_6g8g.m  (:  + ,  )
+// :  ebit (, ); sel; alt; epsc (MMD ); ckfb 
+// :  kdtc (1V=1); vdcc/rdcc (1V=1ps); vref (,  DSM )
+//  (0820):   @(cross(V(ckfb)))  =  2  (MATLAB  1 ),
+//    ebit/clk    timer (13.32ns = SPD  0.3ns, ebit )
+//    vref  1e9 (1mV/ps)  m_slope=33mV/ps    (ohatoffset)m_slope,
+//    DSM  MATLAB 1:1
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_lms(ckfb, ebit, sel, alt, epsc, kdtc, vdcc, rdcc, vref);
+inout ckfb, ebit, sel, alt, epsc;
+output kdtc, vdcc, rdcc, vref;
+electrical ckfb, ebit, sel, alt, epsc, kdtc, vdcc, rdcc, vref;
+
+parameter real mu_k    = 3.05176e-5; // 2^-15 (K_DTC)
+parameter real mu_v    = 5e-15;      // VCO DCC (s/)
+parameter real mu_r    = 1e-15;      // CKREF DCC (s/)
+parameter real mu_off  = 5e-15;      //  DSM (s/)
+parameter real K0      = 0.90;       // K_DTC  10% 
+parameter real vdcc0   = 0.0;        // VCO DCC  (: 12e-12)
+parameter real rdcc0   = 0.0;        // CKREF DCC  (: -12e-12)
+parameter real ohat0   = 0.0;        //  DSM  (: 32e-12)
+parameter real offset_s= 32e-12;     //  (32mV@1mV/ps )
+parameter real vref0   = 0.0;        // 
+parameter real fref    = 76.8e6;
+parameter real m_slope = 3.3e10;     // SPD  (V/s), vref 
+parameter real vth     = 0.5;        // 
+parameter integer mode = 0;          // 0= 1=(MATLAB bg_mode ) 2=(950s )
+parameter real tscale = 1.0;         //  ( 1e-6: mss)
+
+real kdtc_s, vdcc_s, rdcc_s, ohat_s, t_samp;
+integer sgn;
+analog begin
+    @(initial_step) begin
+        kdtc_s = K0; vdcc_s = vdcc0; rdcc_s = rdcc0; ohat_s = ohat0;
+        t_samp = 1.0/fref + 0.3e-9;  // SPD  0.3ns (fref ,  76.8M/153.6M/100M)
+    end
+    //  ( timer; MATLAB )
+    @(timer(t_samp, 1.0/fref)) begin
+        sgn = (V(ebit) > vth) ? 1 : -1;
+        if (mode == 1) begin
+            if ($abstime <= 0.4e-3*tscale) begin
+                ohat_s = ohat_s + mu_off*sgn;
+            end else if ($abstime <= 2.3e-3*tscale) begin
+                ohat_s = ohat_s + mu_off*sgn;
+                vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+            end else if ($abstime <= 3.9e-3*tscale) begin
+                ohat_s = ohat_s + mu_off*sgn;
+                rdcc_s = rdcc_s + mu_r*sgn*V(alt);
+            end else if ($abstime <= 5.5e-3*tscale) begin
+                ohat_s = ohat_s + mu_off*sgn;
+                kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:((V(epsc)<0.0)?-1.0:0.0));
+            end else begin
+                ohat_s = ohat_s + mu_off*sgn;
+                vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+                rdcc_s = rdcc_s + mu_r*sgn*V(alt);
+                kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:((V(epsc)<0.0)?-1.0:0.0));
+            end
+        end else if (mode == 2) begin
+            // MATLAB  ( paper_bg):  VCO DCC 20-150s  CKREF DCC 150-250s
+            //  K 250-600s  VCO DCC  600-700s  K  700-950s  
+            //  DSM (offset=0);  frac=0  mu_v=mu_k=0 ( 0)
+            if ($abstime > 20e-6 && $abstime <= 150e-6) begin
+                vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+            end else if ($abstime <= 250e-6) begin
+                rdcc_s = rdcc_s + mu_r*sgn*V(alt);
+            end else if ($abstime <= 600e-6) begin
+                kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:((V(epsc)<0.0)?-1.0:0.0));
+            end else if ($abstime <= 700e-6) begin
+                vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+            end else if ($abstime <= 950e-6) begin
+                kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:((V(epsc)<0.0)?-1.0:0.0));
+            end
+        end else begin
+            ohat_s = ohat_s + mu_off*sgn;
+            vdcc_s = vdcc_s + mu_v*sgn*V(sel);
+            rdcc_s = rdcc_s + mu_r*sgn*V(alt);
+            kdtc_s = kdtc_s + mu_k*sgn*((V(epsc)>0.0)?1.0:((V(epsc)<0.0)?-1.0:0.0));
+        end
+        //  ( MATLAB )
+        if (ohat_s >  200e-12) ohat_s =  200e-12;
+        if (ohat_s < -200e-12) ohat_s = -200e-12;
+        if (vdcc_s >  500e-12) vdcc_s =  500e-12;
+        if (vdcc_s < -500e-12) vdcc_s = -500e-12;
+        if (rdcc_s >  500e-12) rdcc_s =  500e-12;
+        if (rdcc_s < -500e-12) rdcc_s = -500e-12;
+        if (kdtc_s >  1.5) kdtc_s =  1.5;
+        if (kdtc_s <  0.5) kdtc_s =  0.5;
+    end
+    // ----  (vdcc/rdcc: 1V=1ps) ----
+    V(kdtc) <+ transition(kdtc_s, 0.0, 50p, 50p);
+    V(vdcc) <+ transition(vdcc_s*1e12, 0.0, 50p, 50p);
+    V(rdcc) <+ transition(rdcc_s*1e12, 0.0, 50p, 50p);
+    //  DSM : vref = vref0 + (ohat  offset)m_slope
+    // : ohat  vref  s  ohat  ( MATLAB 1:1)
+    V(vref) <+ transition(vref0 + (ohat_s - offset_s)*m_slope, 0.0, 50p, 50p);
+end
+endmodule

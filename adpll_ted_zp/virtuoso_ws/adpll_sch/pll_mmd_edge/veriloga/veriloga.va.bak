@@ -1,0 +1,9 @@
+// VerilogA for adpll_sch, pll_mmd_edge, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_mmd_edge;
+
+
+endmodule

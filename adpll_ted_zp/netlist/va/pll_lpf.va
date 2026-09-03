@@ -1,0 +1,176 @@
+// pll_lpf.va — loop filter (ref3 ADPLL_ALG 图14, reworked from pll_dlf.va)
+// Three-phase handoff driven by the FSM enables (ref2 V4 "DLF slaved to
+// AFC" experience generalized):
+//   en_afc=1  acc = afc_code*8 (6b Pbank code mapped onto the 9b Abank —
+//             stage-A decision C; the spec's separate Pbank/Abank cfg=256
+//             collapses here), kp path off
+//   en_fll=1  acc = afc_base + freq_ctrl (AFC code latched at en_afc fall;
+//             freq_ctrl is the FLL RELATIVE residual -> no jump at handoff)
+//   en_pll=1  acc += ki*phe each update; ctrl_out = acc + kp*phe
+// kp/ki switch with phase_lock (kp1/ki1 before, kp2/ki2 after lock).
+// Outputs: Abank_code = floor(ctrl_out) clamped 0..511 ("LMT 0~511"),
+// lpf_frac = frac(ctrl_out) as fr0..fr25 (u,26,26 binary).
+// Updates on the clk FALLING edge (phe settles after the CKFB measurement
+// edge; same stagger-edge convention as pll_dlf.va against same-edge races).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_lpf(clk, phe, freq_ctrl, en_afc, en_fll, en_pll, phase_lock,
+    a0, a1, a2, a3, a4, a5,
+    ab0, ab1, ab2, ab3, ab4, ab5, ab6, ab7, ab8,
+    fr0, fr1, fr2, fr3, fr4, fr5, fr6, fr7, fr8, fr9, fr10, fr11, fr12, fr13,
+    fr14, fr15,
+    fr16, fr17, fr18, fr19, fr20, fr21, fr22, fr23, fr24, fr25);
+inout clk, phe, freq_ctrl, en_afc, en_fll, en_pll, phase_lock;
+inout a0, a1, a2, a3, a4, a5;
+output ab0, ab1, ab2, ab3, ab4, ab5, ab6, ab7, ab8;
+output fr0, fr1, fr2, fr3, fr4, fr5, fr6, fr7, fr8, fr9, fr10, fr11, fr12,
+    fr13, fr14, fr15;
+output fr16, fr17, fr18, fr19, fr20, fr21, fr22, fr23, fr24, fr25;
+electrical clk, phe, freq_ctrl, en_afc, en_fll, en_pll, phase_lock;
+electrical a0, a1, a2, a3, a4, a5;
+electrical ab0, ab1, ab2, ab3, ab4, ab5, ab6, ab7, ab8;
+electrical fr0, fr1, fr2, fr3, fr4, fr5, fr6, fr7, fr8, fr9, fr10, fr11, fr12,
+    fr13, fr14, fr15;
+electrical fr16, fr17, fr18, fr19, fr20, fr21, fr22, fr23, fr24, fr25;
+
+parameter real kp1 = 8.0;              // before lock (Abank LSB per cycle-phe)
+parameter real ki1 = 1.0;
+parameter real kp2 = 2.0;              // after lock
+parameter real ki2 = 0.25;
+parameter real ctrl_lo = -128.0;       // integrator clamp (keeps Abank in
+parameter real ctrl_hi = 640.0;        // a floor/ceil window around 0..511)
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+
+real acc, ctrl, fracv, kp_v, ki_v, phe_v;
+integer afc_code, afc_base, ab_i, fr26;
+real ab0v, ab1v, ab2v, ab3v, ab4v, ab5v, ab6v, ab7v, ab8v;
+real fr0v, fr1v, fr2v, fr3v, fr4v, fr5v, fr6v, fr7v, fr8v, fr9v, fr10v, fr11v,
+    fr12v, fr13v, fr14v, fr15v;
+real fr16v, fr17v, fr18v, fr19v, fr20v, fr21v, fr22v, fr23v, fr24v, fr25v;
+
+analog begin
+    @(initial_step) begin
+        acc = 256.0;                    // spec: Abank cfg mid value 256
+        ctrl = 256.0; fracv = 0.0;
+        afc_code = 32; afc_base = 256; ab_i = 256; fr26 = 0;
+        ab0v = 0.0; ab1v = 0.0; ab2v = 0.0; ab3v = 0.0; ab4v = 0.0;
+        ab5v = 0.0; ab6v = 0.0; ab7v = 0.0; ab8v = 1.0 * vh;
+        fr0v = 0.0; fr1v = 0.0; fr2v = 0.0; fr3v = 0.0; fr4v = 0.0; fr5v = 0.0;
+        fr6v = 0.0; fr7v = 0.0; fr8v = 0.0; fr9v = 0.0; fr10v = 0.0; fr11v = 0.0;
+        fr12v = 0.0; fr13v = 0.0; fr14v = 0.0; fr15v = 0.0; fr16v = 0.0;
+        fr17v = 0.0; fr18v = 0.0; fr19v = 0.0; fr20v = 0.0; fr21v = 0.0;
+        fr22v = 0.0; fr23v = 0.0; fr24v = 0.0; fr25v = 0.0;
+    end
+
+    @(cross(V(clk) - vth, -1)) begin
+        phe_v = V(phe);
+        if (V(en_afc) > vth) begin
+            afc_code = 0;
+            if (V(a0) > vth) afc_code = afc_code + 1;
+            if (V(a1) > vth) afc_code = afc_code + 2;
+            if (V(a2) > vth) afc_code = afc_code + 4;
+            if (V(a3) > vth) afc_code = afc_code + 8;
+            if (V(a4) > vth) afc_code = afc_code + 16;
+            if (V(a5) > vth) afc_code = afc_code + 32;
+            acc = afc_code * 8.0;       // 6b -> 9b mapping (stage A)
+            afc_base = afc_code * 8;
+            ctrl = acc;
+        end else if (V(en_fll) > vth) begin
+            acc = afc_base + V(freq_ctrl);
+            ctrl = acc;
+        end else if (V(en_pll) > vth) begin
+            if (V(phase_lock) > vth) begin
+                kp_v = kp2; ki_v = ki2;
+            end else begin
+                kp_v = kp1; ki_v = ki1;
+            end
+            acc = acc + ki_v * phe_v;
+            if (acc > ctrl_hi) acc = ctrl_hi;
+            if (acc < ctrl_lo) acc = ctrl_lo;
+            ctrl = acc + kp_v * phe_v;
+        end
+        // output split: integer -> Abank (LMT 0..511), frac -> lpf_frac
+        ab_i = floor(ctrl);
+        if (ab_i > 511) ab_i = 511;
+        if (ab_i < 0) ab_i = 0;
+        fracv = ctrl - floor(ctrl);
+        if (fracv < 0.0) fracv = 0.0;
+        if (fracv >= 1.0) fracv = 0.999999999;
+        fr26 = fracv * 67108864.0;      // 2^26
+        ab0v = (((ab_i      ) % 2) > 0) ? vh : 0.0;
+        ab1v = (((ab_i / 2  ) % 2) > 0) ? vh : 0.0;
+        ab2v = (((ab_i / 4  ) % 2) > 0) ? vh : 0.0;
+        ab3v = (((ab_i / 8  ) % 2) > 0) ? vh : 0.0;
+        ab4v = (((ab_i / 16 ) % 2) > 0) ? vh : 0.0;
+        ab5v = (((ab_i / 32 ) % 2) > 0) ? vh : 0.0;
+        ab6v = (((ab_i / 64 ) % 2) > 0) ? vh : 0.0;
+        ab7v = (((ab_i / 128) % 2) > 0) ? vh : 0.0;
+        ab8v = (((ab_i / 256) % 2) > 0) ? vh : 0.0;
+        fr0v = (((fr26       ) % 2) > 0) ? vh : 0.0;
+        fr1v = (((fr26 / 2   ) % 2) > 0) ? vh : 0.0;
+        fr2v = (((fr26 / 4   ) % 2) > 0) ? vh : 0.0;
+        fr3v = (((fr26 / 8   ) % 2) > 0) ? vh : 0.0;
+        fr4v = (((fr26 / 16  ) % 2) > 0) ? vh : 0.0;
+        fr5v = (((fr26 / 32  ) % 2) > 0) ? vh : 0.0;
+        fr6v = (((fr26 / 64  ) % 2) > 0) ? vh : 0.0;
+        fr7v = (((fr26 / 128 ) % 2) > 0) ? vh : 0.0;
+        fr8v = (((fr26 / 256 ) % 2) > 0) ? vh : 0.0;
+        fr9v = (((fr26 / 512 ) % 2) > 0) ? vh : 0.0;
+        fr10v = (((fr26 / 1024) % 2) > 0) ? vh : 0.0;
+        fr11v = (((fr26 / 2048) % 2) > 0) ? vh : 0.0;
+        fr12v = (((fr26 / 4096) % 2) > 0) ? vh : 0.0;
+        fr13v = (((fr26 / 8192) % 2) > 0) ? vh : 0.0;
+        fr14v = (((fr26 / 16384) % 2) > 0) ? vh : 0.0;
+        fr15v = (((fr26 / 32768) % 2) > 0) ? vh : 0.0;
+        fr16v = (((fr26 / 65536) % 2) > 0) ? vh : 0.0;
+        fr17v = (((fr26 / 131072) % 2) > 0) ? vh : 0.0;
+        fr18v = (((fr26 / 262144) % 2) > 0) ? vh : 0.0;
+        fr19v = (((fr26 / 524288) % 2) > 0) ? vh : 0.0;
+        fr20v = (((fr26 / 1048576) % 2) > 0) ? vh : 0.0;
+        fr21v = (((fr26 / 2097152) % 2) > 0) ? vh : 0.0;
+        fr22v = (((fr26 / 4194304) % 2) > 0) ? vh : 0.0;
+        fr23v = (((fr26 / 8388608) % 2) > 0) ? vh : 0.0;
+        fr24v = (((fr26 / 16777216) % 2) > 0) ? vh : 0.0;
+        fr25v = (((fr26 / 33554432) % 2) > 0) ? vh : 0.0;
+    end
+
+    V(ab0) <+ transition(ab0v, 0, tt);
+    V(ab1) <+ transition(ab1v, 0, tt);
+    V(ab2) <+ transition(ab2v, 0, tt);
+    V(ab3) <+ transition(ab3v, 0, tt);
+    V(ab4) <+ transition(ab4v, 0, tt);
+    V(ab5) <+ transition(ab5v, 0, tt);
+    V(ab6) <+ transition(ab6v, 0, tt);
+    V(ab7) <+ transition(ab7v, 0, tt);
+    V(ab8) <+ transition(ab8v, 0, tt);
+    V(fr0) <+ transition(fr0v, 0, tt);
+    V(fr1) <+ transition(fr1v, 0, tt);
+    V(fr2) <+ transition(fr2v, 0, tt);
+    V(fr3) <+ transition(fr3v, 0, tt);
+    V(fr4) <+ transition(fr4v, 0, tt);
+    V(fr5) <+ transition(fr5v, 0, tt);
+    V(fr6) <+ transition(fr6v, 0, tt);
+    V(fr7) <+ transition(fr7v, 0, tt);
+    V(fr8) <+ transition(fr8v, 0, tt);
+    V(fr9) <+ transition(fr9v, 0, tt);
+    V(fr10) <+ transition(fr10v, 0, tt);
+    V(fr11) <+ transition(fr11v, 0, tt);
+    V(fr12) <+ transition(fr12v, 0, tt);
+    V(fr13) <+ transition(fr13v, 0, tt);
+    V(fr14) <+ transition(fr14v, 0, tt);
+    V(fr15) <+ transition(fr15v, 0, tt);
+    V(fr16) <+ transition(fr16v, 0, tt);
+    V(fr17) <+ transition(fr17v, 0, tt);
+    V(fr18) <+ transition(fr18v, 0, tt);
+    V(fr19) <+ transition(fr19v, 0, tt);
+    V(fr20) <+ transition(fr20v, 0, tt);
+    V(fr21) <+ transition(fr21v, 0, tt);
+    V(fr22) <+ transition(fr22v, 0, tt);
+    V(fr23) <+ transition(fr23v, 0, tt);
+    V(fr24) <+ transition(fr24v, 0, tt);
+    V(fr25) <+ transition(fr25v, 0, tt);
+end
+endmodule

@@ -1,0 +1,1233 @@
+产品名称Product name
+密级Confidentiality level
+Fractional output divider
+
+产品版本Product version
+Total 8 pages 共8页
+
+
+
+
+
+
+
+
+ADPLL算法方案设计说明书
+
+
+
+Prepared by                     Date
+拟制          殷海元           日期              2026/05/15     
+Reviewed by                    Date
+评审人                         日期                            
+Approved by                    Date
+批准                           日期                            
+
+
+Revision Record 修订记录
+
+Date
+日期
+Revision
+Record
+修订版本
+Sec No.
+修改章节
+Change Description
+修改描述
+Author
+作者
+2026/5/20
+V0.95
+初版
+初版方案
+殷海元
+2026/6/10
+V1.00
+第2章节
+修改总体设计框图
+殷海元
+2026/6/10
+V1.00
+第6章节
+新增近整数模式，补充在DSM框图中，新增参数配置。
+殷海元
+2026/6/10
+V1.00
+第9章节
+新增TDC码值归一化处理
+殷海元
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+缩略语
+
+简称
+全称
+释义
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+图 1  ADPLL系统总体设计框图8
+图 2  Pbank校准实现整体框图9
+图 3  AFC计数器实现整体框图10
+图 4  Pbank校准FSM控制框图10
+图 5  FSM整体框图12
+图 6  MMD分频器实现整体框图13
+图 7  分频器计数器详细实现框图13
+图 8  DSM设计实现框图14
+图 9  Dither设计实现框图15
+图 10  DSM设计实现框图16
+图 11  Dither设计实现框图16
+图 12  锁频详细实现框图17
+图 13  鉴相输出详细实现框图18
+图 14  LPF整体实现框图18
+图 15  DTC增益校准实现详细框图19
+图 16  参考倍频校准实现详细框图20
+图 17  DCO占空比校准实现详细框图21
+图 18  Lock Detection实现详细框图22
+
+
+目录
+Revision Record 修订记录2
+目录5
+1 引言7
+1.1 编写目的7
+1.2 背景7
+1.3 参考资料7
+1.4 术语定义及阐明7
+2 设计总体方案8
+2.1 指标要求8
+2.2 系统架构8
+2.3 系统整体需求说明8
+2.4 模拟需求说明8
+3 Pbank校准模块9
+3.1 功能描述9
+3.2 实现框图9
+3.3 输入输出11
+3.4 参数说明11
+4 ADPLL状态机11
+4.1 功能描述11
+4.2 实现框图12
+4.3 输入输出12
+4.4 参数说明12
+5 MMD模块13
+5.1 功能描述13
+5.2 实现框图13
+5.3 输入输出13
+5.4 参数说明14
+6 DCO分频DSM模块14
+6.1 功能描述14
+6.2 实现框图14
+6.3 输入输出15
+6.4 参数说明15
+7 DCO控制DSM模块15
+7.1 功能描述15
+7.2 实现框图16
+7.3 输入输出16
+7.4 参数说明16
+8 FLL模块17
+8.1 功能描述17
+8.2 实现框图17
+8.3 输入输出17
+8.4 参数说明17
+9 PFD模块18
+9.1 功能描述18
+9.2 实现框图18
+9.3 输入输出18
+9.4 参数说明18
+10 LPF模块18
+10.1 功能描述18
+10.2 实现框图18
+10.3 输入输出18
+10.4 参数说明19
+11 DTC增益校准模块19
+11.1 功能描述19
+11.2 实现框图19
+11.3 输入输出19
+11.4 参数说明20
+12 参考倍频占空比校准模块20
+12.1 功能描述20
+12.2 实现框图20
+12.3 输入输出20
+12.4 参数说明20
+13 DCO占空比校准模块21
+13.1 功能描述21
+13.2 实现框图21
+13.3 输入输出21
+13.4 参数说明21
+14 Lock Detection模块21
+14.1 功能描述21
+14.2 实现框图22
+14.3 输入输出22
+14.4 参数说明22
+15 维测22
+15.1 寄存器回读23
+15.2 数据采集23
+
+
+
+引言
+编写目的
+此文档是指导数字设计人员开发数字实现，旨在帮助数字设计人员更好理解实现。
+背景
+此文档是根据项目的需求，对数字需求的细化方案说明。本文只设计数字实现系统中算法功能的实现描述，详细的指标需求见系统方案。
+参考资料
+《xxx.docx》
+术语定义及阐明
+本文中用到定点化，使用(u,M,N)表示，无符号数，总位宽M bit，其中小数位N bit，整数位(M-N)bit；使用（s,M,N）表示有符号数，总位宽M bit，包含符号位，其中小数位N bit，整数位和小数位(M-N)bit。
+本文中用到的一些运算操作符的含义进行了说明，为避免数字实现上起义，详细内容见表格如下：
+操作符
+说明
+示例
+备注
+&lt;&lt;&lt;
+算法左移
+
+
+&gt;&gt;&gt;
+算法右异
+
+
+&lt;&lt;
+逻辑左移
+
+
+&gt;&gt;
+逻辑右移
+
+
+sat
+饱和
+
+
+rnd
+四舍五入
+
+
+nearest
+最近取整
+
+
+floor
+向下取整
+
+
+
+
+设计总体方案
+全数字锁相环（ALL Digital Phase Locked-Loop，ADPLL）采用基于多模分频器架构。主要有MMD、DSM、DTC、TDC、Digital Loop Filter和DCO模块组成，可以实现小数分频比的锁相环（FNPLL），积分噪声&lt;200fs。
+指标要求
+内容
+Spec.
+[unit]
+输入参考
+25
+MHz
+输出频率范围
+4800~5200
+MHz
+DCO频率步长
+50
+kHz
+锁定时间
+200
+us
+RMS-Jittrer
+&lt;200
+fs
+系统架构
+
+图 1  ADPLL系统总体设计框图
+系统整体需求说明
+参考频率1M~25MHz；
+PLL输出时钟频率最大4.8GHz~5.2GHz，频偏1ppt；
+支持Pbank校准;
+支持DSM量化噪声校准；
+支持参考2倍频占空比校准；
+支持DTC增益校准：
+支持DCO占空比校准
+
+Pbank校准模块
+功能描述
+Pbank校准的目的是由于VCO增益小，频率覆盖范围比较大，模拟DCO做了M个交叠的子频段。PLL为了锁定目标频率，必须先选择覆盖该频率的频率子带，这个校准频率子带的过程被称为AFC(Auto Frequency Calibration)。
+此校准方案采用二分法，在PLL开环状下完成校准，校准时DCO输出通过固定分频器实现N分频后得到反馈时钟fdco_divider_N，在参考时钟计数窗口内对反馈时钟的边沿计数，计数值与理论计算值比较找到最优的Pbank码值。初始Pbank码值设置为最大值为64，假设最优的子带为20，二分过程为6432162420。
+为保证子带选择的准确性，采用2分法进行2分法快速选定的同时，在选择过程中记录下偏差最小的控制位，最终将子带确定为偏差最小的控制位。校准部分主要由频率误差检测器、最佳离散频带选择器以及状态机组成。其中参考窗口计数器位宽为11bit，内部计数器位宽14bit。     
+实现框图
+
+图 2  Pbank校准实现整体框图： weidong.
+
+图 3  AFC计数器实现整体框图
+（48,35）》2，（46,35）or (46,37)
+
+图 4  Pbank校准FSM控制框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_afc
+I
+模块异步复位信号，低电平有效
+(u,1,0)
+来自顶层
+pbank_code
+O
+AFC校准输出最优码值
+(u,6,0)
+clk_ref
+afc_finish
+O
+AFC校准完成结束标志
+(u,1,0)
+clk_ref
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+afc_calib_en
+AFC校准使能
+(u,1,0)
+静态
+0
+afc_ref_cnt_thr
+AFC参考窗口计数设置值，实际窗口大小为2^ afc_ref_cnt_thr
+不同参考频率配置是否一样？硬件实现还是开放寄存器配置
+(u,4,0)
+静态
+0
+adpll_fcw
+ADPLL的反馈分频比
+(u,48,35)
+动态
+200*2^35
+ADPLL状态机:weidong
+功能描述
+ADPLL状态机负责环路的状态切换，实现稳定的锁定过程和失锁跳转，下面将详细的描述各个状态的跳转条件和执行动作。
+IDEL：
+上电初始化后进入此状态，需要复位所有的模块寄存器，重新启动状态机。复位动作结束之后状态机跳转进入AFC状态。
+AFC：
+在进入此状态后，配置环路开环状态：Abank_code_cfg_mode=1，配置Abank码值为中间值：Abank_code_cfg=256；配置DCO_DSM不使能：dsm_dco_en=0。然后打开Pbank的校准使能：afc_calib_en=1，释放rstn_afc=1执行Pbank校准，校准结束后，将pbank_code码值保存后续生效使用，在退出状态前将校准使能关闭：afc_calib_en=0，同时配置环路为闭环状态：Abank_code_cfg_mode=0。判断afc_finish=1，FSM跳转到FLL状态。
+FLL：
+在进入FLL此状态后，配置环路为锁频使能：freq_lock_en=1，释放rstn_fll=1锁频环开始工作，当频率误差绝对值小数预设的门限值时，输出freq_lock=1，FSM的状态跳转到PLL状态。
+PLL：
+在进入PLL此状态后，切换到锁相环使用TDC鉴相，在此状态下释放rstn_dsm_fb =1、rstn_mmd=1、 rstn_lpf=1、rstn_calib=1，根据校准使能寄存器配置kdtc_calib_en、ref_double_calib_en、dco_duty_calib_en决定各个校准是否开启，同时释放rstn_lock=1，在此状态下判断phase_lock=1时，FSM跳转到LOCK状态。
+LOCK：
+在进入到LOCK此状态下，判断phase_lock=0，FSM跳转到UNLOCK。
+UNLOCK：
+在进入UNLOCK状态后直接跳转到FLL状态重新锁定。
+实现框图
+
+图 5  FSM整体框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_fsm
+I
+模块异步复位信号，低电平有效
+(u,1,0)
+来自顶层
+afc_finish
+I
+AFC校准完成结束标志
+0：校准未完成  1：校准完成
+(u,1,0)
+clk_ref
+freq_lock
+I
+环路频率锁定标志：
+0：未锁定  1：锁定
+(u,1,0)
+clk_ref
+phase_lock
+I
+环路相位锁定标志：
+0：未锁定  1：锁定
+(u,1,0)
+clk_ref
+fsm_state
+O
+状态机指示标志
+0：IDEL状态
+1：AFC状态
+2：FLL锁频状态
+3：PLL锁相状态
+4：LOCK锁定状态
+5：UNLOCK失锁状态
+(u,3,0)
+clk_ref
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+
+
+
+
+
+
+
+
+
+
+MMD模块:guoqiang
+功能描述
+Multi-modulus divider (MMD)模块是可变整数分频器模块。支持整数分频4~8191。
+实现框图
+
+
+图 6  MMD分频器顶层整体框图
+
+图 7  分频器计数器详细实现框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_div
+I
+模块异步复位信号，低电平有效
+(u,1,0)
+来自顶层
+clk_dco
+I
+DCO输出时钟
+(u,1,0)
+clk_dco
+freq_div_ratio
+I
+DSM模块输出的整数分频比因子
+(u,13,0)
+clk_mmd
+clk_mmd
+O
+PS分频器输出时钟
+(u,1,0)
+clk
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+en_div
+分频器使能信号：
+0：不使能  1：使能
+(u,1,0)
+静态
+1
+DCO分频DSM模块:guoqiang
+功能描述
+此DSM模块的目的是根据需求的频率控制字（Frequency Control Word, FCW）动态控制分频器的分频比系数，以实现小数分频的功能。同时生成反馈时钟多相切换指示信号和量化误差信号。
+支持1/2/3阶可选，支持DSM使能配置，控制DSM输出。
+支持近整数模式配置。Ref calibration
+
+图 8  DSM设计实现框图
+
+
+图 9  Dither设计实现框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_dsm_fb
+I
+复位信号，低电平有效
+(u,1,0)
+来自顶层
+ref_calib_comp
+I
+参考校准补偿系数
+(s,37,31)
+clk_ref
+freq_div_ratio
+O
+输出给MMD模块的整数分频比因子
+(u,13,0)
+clk_mmd
+q_err
+O
+DSM量化误差输出
+(s,36,35)
+clk_ref
+sel_clk_fb
+O
+反馈DCO相位切换信号，送给MUX
+0：DCO的上升沿同步
+1：DCO的下降沿同步
+(u,1,0)
+clk_mmd
+sel_clk_fb_cal
+O
+反馈DCO相位切换信号，校准相关使用
+(u,1,0)
+clk_ref
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+(十进制)
+ref_double_en
+参考倍频使能
+0：参考倍频不使能
+1：参考倍频使能
+(u,1,0)
+静态
+0
+sel_clk_fb_en
+反馈DCO相位是否切换使能
+0：反馈DCO相位不切换，固定选择0
+1：反馈DCO相位切换
+(u,1,0)
+静态
+0
+dsm_fb_en
+反馈分频DSM使能控制
+0：不使能
+1：使能
+(u,1,0)
+静态
+1
+dsm_fb_mode
+反馈分频DSM阶数选择
+0：一阶DSM
+1：二阶DSM
+2：三阶DSM
+(u,2,0)
+静态
+0
+dither_fb_en
+Dither使能信号
+0：不加扰动   1：加入扰动
+(u,1,0)
+静态
+0
+adpll_fcw
+ADPLL的反馈分频比
+(u,48,35)
+动态
+200*2^35
+near_integer_mode
+近整数模式
+0：近整数模式不使能  1：近整数模式使能
+(u,1,0)
+静态
+0
+DCO控制DSM模块:guoqiang
+功能描述
+此处DSM模块的目的是根据需求的频率控制字（Frequency Control Word, FCW）来实现DCO输入小数部分的控制，提高DCO量化精度。
+支持DSM的阶数1/2/3阶可选。
+实现框图
+
+图 10  DSM设计实现框图
+
+图 11  Dither设计实现框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_dsm_dco
+I
+复位信号，低电平有效
+(u,1,0)
+来自顶层
+lpf_frac
+I
+环路滤波器输出小数部分
+(u,26,26)
+clk_ref
+dsm_out_dco
+O
+DSM输出温度计码值控制DCO
+(u,3,0)
+clk_dsm
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+(十进制)
+dsm_dco_en
+在DCO位置处DSM的使能信号
+0：不使能    1：使能
+(u,1,0)
+静态
+1
+dsm_dco_mode
+DSM阶数选择
+0：一阶DSM
+1：二阶DSM
+2：三阶DSM
+(u,2,0)
+静态
+0
+dither_dco_en
+Dither使能信号
+0：不加扰动   1：加入扰动
+(u,1,0)
+静态
+0
+FLL模块:weidong
+功能描述
+PLL在初始锁定阶段，DCO在AFC校准完成之后和目标频率之间存在偏差，PLL环路中只有鉴相功能，因此无法锁定。因此需要FLL环路计算出频差后完成整数个Tckv的相位锁定，即频率锁定。
+实现框图
+
+图 12  锁频详细实现框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_fll
+I
+模块异步复位信号，低电平有效
+(u,1,0)
+来自顶层
+freq_ctrl
+O
+FLL稳定后积分器稳定的值，用作环路滤波器初值使用。
+(s,25,15)
+clk_ref
+freq_lock
+O
+频率锁定标志
+0：未锁定   1：锁定
+(u,1,0)
+clk_ref
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+adpll_fcw
+ADPLL的反馈分频比
+(u,48,35)
+动态
+200*2^35
+freq_lock_en
+FLL环路使能
+0：使能关闭  1：使能打开
+(u,1,0)
+静态
+0
+freq_ref_cnt_thr
+FLL参考窗口计数设置值，实际窗口大小为2^ freq_ref_cnt_thr
+不同参考频率配置是否一样？硬件实现还是开放寄存器配置
+(u,4,0)
+静态
+9
+freq_lock_step
+FLL锁定过程的步长设置，右移实现，实际步长为1/2^ freq_lock_step
+(u,4,0)
+静态
+7
+freq_lock_thr
+频率锁频判断阈值设置
+(u,4,0)
+静态
+0
+PFD模块:weidong
+功能描述
+TDC鉴相输出相位仅在2个Tckv范围内，初始锁定时使用PLL完成锁频后满足，因此环路中的相差信号phe仅仅来自TDC的鉴相输出。
+此模块分两部分功能，一是通过模拟模块ctdc的输出码值查表后再送给模拟以便ftdc选择，查找表如下表所示。
+输入ctdc_out_a/b&lt;15:0&gt;
+输出ctdc_in_ont_hot_a/b
+0xxx xxxx xxxx xxxx
+1000 0000 0000 0000（此条保证CTDC在死区时也能将所需interval传给FTDC）
+10xx xxxx xxxx xxxx
+1000 0000 0000 0000
+110x xxxx xxxx xxxx
+0100 0000 0000 0000
+1110 xxxx xxxx xxxx
+0010 0000 0000 0000
+1111 0xxx xxxx xxxx
+0001 0000 0000 0000
+以此类推...
+....
+1111 1111 1111 1110
+0000 0000 0000 0010
+1111 1111 1111 1111
+0000 0000 0000 0001
+此模块的另一功能是根据模拟提供的码值ctdc_out_a、ctdc_out_b、ftdc_out以及art_out信号归一化TDC的输出生成相差phe。解码方式描述如下：
+ctdc_out_a/b&lt;15:0&gt;=0000 0000 0000 0000，decoder_out_a/b=0;
+ctdc_out_a/b&lt;15:0&gt;=1000 0000 0000 0000，decoder_out_a/b=1;
+ctdc_out_a/b&lt;15:0&gt;=1100 0000 0000 0000，decoder_out_a/b=2;
+…
+ctdc_out_a/b&lt;15:0&gt;=1111 1111 1111 1111，decoder_out_a/b=15;
+ftdc_out解码方式完全一致，不再赘述。
+实现框图
+
+图 13  鉴相输出详细实现框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+arb_out
+I
+模拟arbiter模块输出的方向信号
+(u,1,0)
+来自模拟
+ctdc_out_a
+I
+CTDC1模块输出的码值
+(u,16,0)
+来自模拟
+ctdc_out_b
+I
+CTDC2模块输出的码值
+(u,16,0)
+来自模拟
+ftdc_out
+I
+FTDC模块输出的码值
+(u,16,0)
+来自模拟
+ctdc_in_ont_hot_a
+O
+CTDC1模块码值查找表输出，送给模拟tdc
+(u,16,0)
+clk_ref
+ctdc_in_ont_hot_b
+O
+CTDC2模块码值查找表输出，送给模拟tdc
+(u,16,0)
+clk_ref
+phe_out
+O
+鉴相后的相差信号输出
+(s,18,16)
+clk_ref
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+phe_sh
+环路偏移配置
+(u,16,16)
+静态
+0.5*2^16
+phe_inv_en
+Phe取反使能
+0：不取反   1：取反
+(u,1,0)
+静态
+0
+tdc_norm_coef
+TDC归一化系数
+(u,16,16)
+静态
+1.2/200*2^16
+LPF模块:guoqiang
+功能描述
+环路滤波器，包含比例路径和积分路径的实现，支持环路带宽可配置。
+实现框图:有没有cycle要求，延时尽可能小
+
+图 14  LPF整体实现框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_lpf
+I
+模块异步复位信号，低电平有效
+(u,1,0)
+clk_ref
+phe_out
+I
+鉴相后的相差信号
+(s,18,16)
+clk_ref
+freq_ctrl
+I
+FLL稳定后积分器稳定的值，用作环路滤波器初值使用。
+(s,25,15)
+clk_ref
+lpf_frac
+O
+LPF输出小数部分
+(u,26,26)
+clk_ref
+Abank_code
+O
+LPF输出送给DCO的控制码值
+(u,9,0)
+clk_ref
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+kp1
+环路锁定前比例支路系数
+(u,18,8)
+静态
+0
+kp2
+环路锁定后比例支路系数
+(u,18,8)
+静态
+0
+ki1
+环路锁定前积分支路系数
+(u,20,10)
+静态
+0
+ki2
+环路锁定后积分支路系数
+(u,20,10)
+静态
+0
+Abank_code_cfg_mode
+Abank开环码值配置模式
+0：配置模式关闭    1：配置模式打开
+(u,1,0)
+静态
+0
+Abank_code_cfg
+Abank开环码值配置值
+(u,9,0)
+静态
+0
+DTC增益校准模块：guoqiang，无特殊延时要求
+功能描述 
+参考路径上通过DTC预测相位，但是DTC的增益受到PVT的影响，因此需要对DTC的增益实现后台校准。支持DTC增益校准打开或者关闭。
+实现框图
+
+图 15  DTC增益校准实现详细框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_calib
+I
+复位信号，低电平有效
+(u,1,0)
+来自顶层
+phe_out
+I
+鉴相器输出的相差信号
+(s,18,16)
+clk_ref
+q_err
+I
+DSM模块输出的量化误差
+(s,36,35)
+clk_ref
+dco_dtc_comp
+I
+DCO占空比校准补偿码值
+(s,6,0)
+clk_ref
+dtc_code
+O
+DTC控制码值
+(u,10,0)
+clk_ref
+
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+kdtc_calib_en
+参考倍频校准使能
+(u,1,0)
+静态
+1
+kdtc _calib_step
+参考倍频校准步长右移位数
+(u,4,0)
+静态
+0
+dtc_offset
+DTC码值offset值
+参考不倍频配置：0x7FFFF_FFFF
+参考倍频配置：0x40000_0000
+(u,35,35)
+静态
+0x7FFFF_FFFF
+参考倍频占空比校准模块：guoqiang，
+功能描述 
+提高参考时钟频率可以提高输出相位噪声，但是由于CLKREF时钟的占空比误差，会导致倍频后的时钟CLKREF22的奇数周期和偶数周期不匹配，倍频时钟出现杂散，导致PLL输出出现杂散噪声，因此，采用占空比校准（duty cycle correction，DCC）技术来补偿占空比误差。
+支持参考时钟的2倍频占空比校准，校准功能支持开启或关闭。
+实现框图
+
+图 16  参考倍频校准实现详细框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_calib
+I
+复位信号，低电平有效
+(u,1,0)
+来自顶层
+phe_out
+I
+鉴相器输出的相差信号
+(s,18,16)
+clk_ref
+ref_calib_comp
+O
+参考倍频校准补偿系数
+(s,37,31)
+clk_ref
+
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+ref_double_en
+参考倍频使能
+0：参考倍频不使能
+1：参考倍频使能
+(u,1,0)
+静态
+0
+ref_double_calib_en
+参考倍频校准使能
+(u,1,0)
+静态
+0
+ref_double_calib_step
+参考倍频校准步长右移位数
+(u,4,0)
+静态
+6
+ref_double_calib_sel
+参考倍频校准方向控制
+(u,1,0)
+静态
+0
+DCO占空比校准模块：guoqiang
+功能描述 
+为了降低参考路径DTC的延时覆盖范围，增加DCO的时钟频率可以实现，此处通过反馈选择DCO的上升沿与下降沿触发MMD的输出时钟实现等效2倍DCO的时钟频率。如果DCO的输出时钟频率的占空比不是50%，在切换鉴相过程中会引入额外相差恶化相噪，因此采用环路校准DCO占空比误差引入的相位噪声，
+DCO占空比校准功能支持开启或关闭。
+实现框图
+
+图 17  DCO占空比校准实现详细框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_adpll
+I
+复位信号，低电平有效
+(u,1,0)
+来自顶层
+phe_out
+I
+鉴相器输出的相差信号
+(s,18,16)
+clk_ref
+sel_clk_fb
+I
+DSM模块输出的反馈信号切换指示信号
+0：DCO的上升沿采样MMD输出
+1：DCO的下降沿采样MMD输出
+(u,1,0)
+clk_ref
+dco_dtc_comp
+O
+DCO占空比校准补偿DTC的码值
+(s,6,0)
+clk_ref
+
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+dco_duty_calib_en
+DCO占空比校准使能
+(u,1,0)
+静态
+1
+dco_duty_calib_step
+DCO占空比校准步长右移位数
+(u,4,0)
+静态
+2
+Lock Detection模块：weidong
+功能描述 
+Lock Detection模块用来判断PLL环路锁定和环路失锁的状态，实时监视环路误差来指示锁相环锁定或者失锁。支持锁定和失锁阈值可配置，支持满足阈值后连续数目阈值可配置。
+Phase_lock=0表示失锁，在失锁条件下，锁定检测开始工作，小于等于锁定门限配置值lock_phe_thr时，锁定计数器开始计数，连续满足锁定计数数目达到2^lock_cnt_thr时，phase_lock=1，同时锁定计数器完成清零；
+phase_lock=1表示锁定，在锁定条件下，失锁检测开始工作，大于等于失锁门限配置值unlock_phe_thr时，失锁计数器开始计数，连续满足失锁计数数目达到2^unlock_cnt_thr时，phase_lock=0，同时失锁计数器完成清零；
+实现框图
+
+图 18  Lock Detection实现详细框图
+输入输出
+信号名
+I/O
+说明
+位宽
+大小
+速率
+MHz
+rstn_lock
+I
+复位信号，低电平有效
+(u,1,0)
+来自顶层
+phe_out
+I
+鉴相器输出的相差信号
+(s,18,16)
+clk_ref
+phase_lock
+O
+锁相环锁定状态
+0：失锁
+1：锁定
+(u,1,0)
+clk_ref
+
+参数说明
+参数名
+注释说明
+位宽
+大小
+REG
+类型
+默认值
+lock_phe_thr
+相位锁定时，相差值小于门限设置值
+(u,16,0)
+静态
+655
+lock_cnt_thr
+相位锁定时，相差值小于门限设置值连续个数目，实际数目为2^lock_cnt_thr
+(u,5,0)
+静态
+8
+unlock_phe_thr
+相位失锁时，相差值小于门限设置值
+(u,16,0)
+静态
+6554
+unlock_cnt_thr
+相位失锁时，相差值小于门限设置值连续个数目，实际数目为2^lock_cnt_thr
+(u,5,0)
+静态
+8
+维测
+维测部分包含寄存器回读的结果和数据采集。
+寄存器回读
+信号
+说明
+位宽
+速率
+afc_freq_err
+Pbank校准过过程的频差信号
+(s,15,0)
+clk_ref
+pbank_code
+Pbank校准输出码值
+(u,6,0)
+clk_ref
+afc_finish
+Pbank校准输出完成信号
+(u,1,0)
+clk_ref
+Pcount
+PS分频器的P计数器值
+(u,8,0)
+clk
+clk_mode
+PS分频器的S计数器值
+(u,1,0)
+clk
+dsm_out_fb
+反馈路径DSM的输出值
+(s,4,0)
+clk_mmd
+freq_div_ratio
+DSM送给MMD的整数分频系数
+(u,13,0)
+clk_mmd
+sel_clk_fb
+反馈DCO相位切换信号
+(u,1,0)
+clk_ref
+q_err
+DSM量化误差输出
+(s,36,35)
+clk_ref
+dsm_out_dco
+DSM输出温度计码值控制DCO
+(u,3,0)
+clk_dsm
+fll_freq_err
+锁频检测的计数频差
+(s,17,0)
+clk_ref
+freq_ctrl
+FLL稳定后积分器稳定的值，用作环路滤波器初值使用。
+(s,25,15)
+clk_ref
+freq_lock
+频率锁定标志
+(u,1,0)
+clk_ref
+ctrl_out
+LPF输出包含锁频部分积分
+(s,36,26)
+clk_ref
+Abank_code
+LPF输出送给DCO的控制码值
+(u,9,0)
+clk_ref
+kdtc
+校准的Kdtc增益
+(s,34,24)
+clk_ref
+dtc_code
+DTC控制码值
+(u,10,0)
+clk_ref
+ref_sel
+奇数和偶数延计数
+(u,1,0)
+clk_ref
+ref_calib_coef
+参考倍频校准补偿系数
+(s,37,31)
+clk_ref
+psel
+反馈切换指示
+(u,1,0)
+clk_ref
+dco_calib_coef
+DCO占空比校准系数
+(s,37,31)
+clk_ref
+phase_lock
+锁定和失锁指示信号
+(u,1,0)
+clk_ref
+
+数据采集
+信号
+说明
+位宽
+速率
+Group1
+
+
+
+
+
+
+
+
+
+
+
+

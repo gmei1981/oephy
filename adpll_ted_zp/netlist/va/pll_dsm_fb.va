@@ -1,0 +1,134 @@
+// pll_dsm_fb.va — feedback-path DSM (ref3 ADPLL_ALG 图8-10)
+// FCW (real, e.g. 80.5 @ 100M ref / 8G out) -> MASH with selectable order
+// (dsm_fb_mode 0/1/2 = MASH1 / MASH1-1 / MASH1-1-1; differentiator output
+// form per drawing8's <<1 blocks), 10-bit LFSR dither (x^10+x^7+1, reset
+// state all-ones per drawing9), near-integer PRBS mode (drawing10 —
+// structural only: +-0.5 LSB on the 35-bit fractional word is numerically
+// negligible in this real-valued model, port/parameter fidelity kept).
+// Outputs (updated on every clk rising edge):
+//   p0..p12  freq_div_ratio u,13,0 (full-cycle divide ratio, clamp 4..8191)
+//   q_err    analog, unit = cycles (TCKV), = x1-0.5 in [-0.5,0.5) — the
+//            residual phase the DTC must predict/cancel (DTC code centering
+//            uses the +0.5 offset on the cal side, spec 图15)
+//   sel      sel_clk_fb: 1 -> MMD takes falling-edge retiming (adds TVCO/2,
+//            half-period quantization); = MSB(x1) sampled pre-update,
+//            delayed sel_delay clk cycles (compensates MMD retiming latency)
+//   rcomp    ref_calib_comp input (analog, small FCW fractional correction
+//            from the reference-doubler DCC calibration, spec 图16)
+// Repo conventions: individual ports + unrolled assignments (local ahdlcmi
+// has no bus/V(i) indexing); transition() only in top-level contributions.
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_dsm_fb(clk, rcomp, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11,
+    p12, q_err, sel);
+inout clk, rcomp;
+output p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, q_err, sel;
+electrical clk, rcomp, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12,
+    q_err, sel;
+
+parameter real FCW = 80.5;
+parameter integer dsm_fb_mode = 0;     // 0=MASH1 1=MASH1-1 2=MASH1-1-1
+parameter integer dither_fb_en = 0;
+parameter integer near_int_en = 0;
+parameter integer sel_delay = 2;       // 0..4 (scalar delay line)
+parameter integer seed = 51;
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+
+real x1, x2, x3, f, dith, y, ratio, qerr_v, sel_v, sel_new;
+real c1, c2, c3, c1p, c2p, c3p, c3pp;
+real sd0, sd1, sd2, sd3, sd4;
+integer lfsr, lbit, ri;
+real p0v, p1v, p2v, p3v, p4v, p5v, p6v, p7v, p8v, p9v, p10v, p11v, p12v;
+
+analog begin
+    @(initial_step) begin
+        x1 = 0.0; x2 = 0.0; x3 = 0.0;
+        c1 = 0.0; c2 = 0.0; c3 = 0.0; c1p = 0.0; c2p = 0.0; c3p = 0.0; c3pp = 0.0;
+        lfsr = seed % 1024;
+        if (lfsr <= 0) lfsr = 1023;    // reset-all-ones per drawing9
+        sd0 = 0.0; sd1 = 0.0; sd2 = 0.0; sd3 = 0.0; sd4 = 0.0;
+        sel_v = 0.0; qerr_v = -0.5; ratio = 80.0; ri = 80;
+        p0v = 0.0; p1v = 0.0; p2v = 0.0; p3v = 0.0; p4v = 0.0; p5v = 0.0;
+        p6v = 0.0; p7v = 0.0; p8v = 0.0; p9v = 0.0; p10v = 0.0; p11v = 0.0;
+        p12v = 0.0;
+    end
+
+    @(cross(V(clk) - vth, +1)) begin
+        // 10-bit LFSR advance (taps 10,7)
+        lbit = (((lfsr / 512) % 2) ^ ((lfsr / 64) % 2));
+        lfsr = (lfsr * 2 + lbit) % 1024;
+        dith = 0.0;
+        if (dither_fb_en > 0) dith = lbit - 0.5;
+        f = FCW - floor(FCW);
+        // near-integer mode: PRBS dither on fcw LSB (2^-35), structural
+        if (near_int_en > 0) f = f + (lbit - 0.5) * 2.9103830e-11;
+
+        // sel from MSB(x1) BEFORE this cycle's accumulation
+        sel_new = 0.0;
+        if (x1 >= 0.5) sel_new = 1.0;
+
+        // MASH 1-1-1 core (accumulators mod 1)
+        x1 = x1 + f + dith + V(rcomp);
+        c1 = 0.0;
+        if (x1 >= 1.0) begin x1 = x1 - 1.0; c1 = 1.0; end
+        x2 = x2 + x1;
+        c2 = 0.0;
+        if (x2 >= 1.0) begin x2 = x2 - 1.0; c2 = 1.0; end
+        x3 = x3 + x2;
+        c3 = 0.0;
+        if (x3 >= 1.0) begin x3 = x3 - 1.0; c3 = 1.0; end
+        y = c1;
+        if (dsm_fb_mode >= 1) y = y + c2 - c2p;
+        if (dsm_fb_mode >= 2) y = y + c3 - 2.0 * c3p + c3pp;
+        c2p = c2; c3pp = c3p; c3p = c3;
+
+        ratio = floor(FCW) + y;
+        if (ratio < 4.0) ratio = 4.0;
+        if (ratio > 8191.0) ratio = 8191.0;
+        ri = ratio;                     // integer truncate
+        qerr_v = x1 - 0.5;
+
+        // sel delay line (shift, then tap by sel_delay)
+        sd4 = sd3; sd3 = sd2; sd2 = sd1; sd1 = sd0; sd0 = sel_new;
+        sel_v = sd0;
+        if (sel_delay == 1) sel_v = sd1;
+        if (sel_delay == 2) sel_v = sd2;
+        if (sel_delay == 3) sel_v = sd3;
+        if (sel_delay >= 4) sel_v = sd4;
+
+        // unrolled bit unpack (ri = ratio, integer division truncates)
+        p0v  = (((ri       ) % 2) > 0) ? vh : 0.0;
+        p1v  = (((ri / 2   ) % 2) > 0) ? vh : 0.0;
+        p2v  = (((ri / 4   ) % 2) > 0) ? vh : 0.0;
+        p3v  = (((ri / 8   ) % 2) > 0) ? vh : 0.0;
+        p4v  = (((ri / 16  ) % 2) > 0) ? vh : 0.0;
+        p5v  = (((ri / 32  ) % 2) > 0) ? vh : 0.0;
+        p6v  = (((ri / 64  ) % 2) > 0) ? vh : 0.0;
+        p7v  = (((ri / 128 ) % 2) > 0) ? vh : 0.0;
+        p8v  = (((ri / 256 ) % 2) > 0) ? vh : 0.0;
+        p9v  = (((ri / 512 ) % 2) > 0) ? vh : 0.0;
+        p10v = (((ri / 1024) % 2) > 0) ? vh : 0.0;
+        p11v = (((ri / 2048) % 2) > 0) ? vh : 0.0;
+        p12v = (((ri / 4096) % 2) > 0) ? vh : 0.0;
+    end
+
+    V(p0) <+ transition(p0v, 0, tt);
+    V(p1) <+ transition(p1v, 0, tt);
+    V(p2) <+ transition(p2v, 0, tt);
+    V(p3) <+ transition(p3v, 0, tt);
+    V(p4) <+ transition(p4v, 0, tt);
+    V(p5) <+ transition(p5v, 0, tt);
+    V(p6) <+ transition(p6v, 0, tt);
+    V(p7) <+ transition(p7v, 0, tt);
+    V(p8) <+ transition(p8v, 0, tt);
+    V(p9) <+ transition(p9v, 0, tt);
+    V(p10) <+ transition(p10v, 0, tt);
+    V(p11) <+ transition(p11v, 0, tt);
+    V(p12) <+ transition(p12v, 0, tt);
+    V(q_err) <+ qerr_v;
+    V(sel) <+ transition(sel_v * vh, 0, tt);
+end
+endmodule

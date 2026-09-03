@@ -1,0 +1,194 @@
+// pll_tdc_beh.va — behavioral TDC, analog side (ref3 ADPLL_ALG 图13, stage-A
+// VA model — the spec's CTDC x2 + FTDC + arbiter are "来自模拟"; a transistor
+// TDC is stage-B work, this model carries the interface).
+// At each CKR rising edge records t_ckr; at the next CKFB rising edge
+// computes dt = t_fb - t_ckr, wrapped to (-2*TCKV, +2*TCKV] (the spec's
+// "TDC鉴相输出相位仅在2个Tckv范围内" linear window; FLL guarantees entry).
+//   arb        = 0.8 when fb edge AFTER ckr (positive phe), else 0
+//   coarse     = floor(|dt|/cbin) steps on ctdc_a (positive) / ctdc_b
+//                (negative), as leading-ones thermometer (decode LUT of the
+//                spec counts leading ones; min interval 1 per the dead-zone
+//                LUT row "1000...0 -> 1000...0")
+//   fine       = |dt| mod cbin in fbin steps on ftdc (same thermometer)
+//   cbin = cbin_mult*TCKV (default TCKV/4 -> 16 bins span the +-2TCKV
+//   window), fbin = cbin/16 (~1.95ps @ 8G).
+// Codes hold until the next measurement (S/H semantics). The one-hot
+// feedback inputs oha/ohb are sampled ports only in stage A (interval
+// selection matters for the transistor CTDC, not for this direct-time model).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_tdc_beh(ckr, ckfb,
+    oha0, oha1, oha2, oha3, oha4, oha5, oha6, oha7, oha8, oha9, oha10, oha11,
+    oha12, oha13, oha14, oha15,
+    ohb0, ohb1, ohb2, ohb3, ohb4, ohb5, ohb6, ohb7, ohb8, ohb9, ohb10, ohb11,
+    ohb12, ohb13, ohb14, ohb15,
+    ca0, ca1, ca2, ca3, ca4, ca5, ca6, ca7, ca8, ca9, ca10, ca11, ca12, ca13,
+    ca14, ca15,
+    cb0, cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, cb10, cb11, cb12, cb13,
+    cb14, cb15,
+    f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, arb);
+inout ckr, ckfb;
+inout oha0, oha1, oha2, oha3, oha4, oha5, oha6, oha7, oha8, oha9, oha10, oha11,
+    oha12, oha13, oha14, oha15;
+inout ohb0, ohb1, ohb2, ohb3, ohb4, ohb5, ohb6, ohb7, ohb8, ohb9, ohb10, ohb11,
+    ohb12, ohb13, ohb14, ohb15;
+output ca0, ca1, ca2, ca3, ca4, ca5, ca6, ca7, ca8, ca9, ca10, ca11, ca12, ca13,
+    ca14, ca15;
+output cb0, cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, cb10, cb11, cb12, cb13,
+    cb14, cb15;
+output f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, arb;
+electrical ckr, ckfb;
+electrical oha0, oha1, oha2, oha3, oha4, oha5, oha6, oha7, oha8, oha9, oha10,
+    oha11, oha12, oha13, oha14, oha15;
+electrical ohb0, ohb1, ohb2, ohb3, ohb4, ohb5, ohb6, ohb7, ohb8, ohb9, ohb10,
+    ohb11, ohb12, ohb13, ohb14, ohb15;
+electrical ca0, ca1, ca2, ca3, ca4, ca5, ca6, ca7, ca8, ca9, ca10, ca11, ca12,
+    ca13, ca14, ca15;
+electrical cb0, cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, cb10, cb11, cb12,
+    cb13, cb14, cb15;
+electrical f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    arb;
+
+parameter real tckv = 125p;            // VCO period (8G default)
+parameter real cbin_mult = 0.25;       // coarse bin = TCKV/4
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+
+real t_ckr, dt, dtw, mag, cbin, fbin;
+integer have, cstep, fstep, total;
+real arb_v;
+real cav0, cav1, cav2, cav3, cav4, cav5, cav6, cav7, cav8, cav9, cav10, cav11,
+    cav12, cav13, cav14, cav15;
+real cbv0, cbv1, cbv2, cbv3, cbv4, cbv5, cbv6, cbv7, cbv8, cbv9, cbv10, cbv11,
+    cbv12, cbv13, cbv14, cbv15;
+real fv0, fv1, fv2, fv3, fv4, fv5, fv6, fv7, fv8, fv9, fv10, fv11, fv12, fv13,
+    fv14, fv15;
+
+analog begin
+    @(initial_step) begin
+        t_ckr = -1.0; have = 0; cstep = 1; fstep = 0; total = 0;
+        arb_v = 0.0; dt = 0.0; dtw = 0.0; mag = 0.0;
+        cbin = cbin_mult * tckv; fbin = cbin / 16.0;
+        cav0 = 0.0; cav1 = 0.0; cav2 = 0.0; cav3 = 0.0; cav4 = 0.0; cav5 = 0.0;
+        cav6 = 0.0; cav7 = 0.0; cav8 = 0.0; cav9 = 0.0; cav10 = 0.0; cav11 = 0.0;
+        cav12 = 0.0; cav13 = 0.0; cav14 = 0.0; cav15 = 0.0;
+        cbv0 = 0.0; cbv1 = 0.0; cbv2 = 0.0; cbv3 = 0.0; cbv4 = 0.0; cbv5 = 0.0;
+        cbv6 = 0.0; cbv7 = 0.0; cbv8 = 0.0; cbv9 = 0.0; cbv10 = 0.0; cbv11 = 0.0;
+        cbv12 = 0.0; cbv13 = 0.0; cbv14 = 0.0; cbv15 = 0.0;
+        fv0 = 0.0; fv1 = 0.0; fv2 = 0.0; fv3 = 0.0; fv4 = 0.0; fv5 = 0.0;
+        fv6 = 0.0; fv7 = 0.0; fv8 = 0.0; fv9 = 0.0; fv10 = 0.0; fv11 = 0.0;
+        fv12 = 0.0; fv13 = 0.0; fv14 = 0.0; fv15 = 0.0;
+    end
+
+    @(cross(V(ckr) - vth, +1)) begin
+        t_ckr = $abstime;
+        have = 1;
+    end
+
+    @(cross(V(ckfb) - vth, +1)) begin
+        if (have == 1) begin
+            dt = $abstime - t_ckr;
+            // wrap into (-2*TCKV, +2*TCKV]
+            dtw = dt - 4.0 * tckv * floor(dt / (4.0 * tckv) + 0.5);
+            mag = abs(dtw);
+            total = mag / fbin;                 // integer truncation
+            if (total > 255) total = 255;
+            if (total < 0) total = 0;
+            cstep = total / 16;
+            if (cstep > 15) cstep = 15;
+            if (cstep < 1) cstep = 1;           // LUT dead-zone row: min 1
+            fstep = total % 16;
+            if (dtw >= 0.0) begin
+                arb_v = vh;
+                cav0 = (0 < cstep) ? vh : 0.0; cav1 = (1 < cstep) ? vh : 0.0;
+                cav2 = (2 < cstep) ? vh : 0.0; cav3 = (3 < cstep) ? vh : 0.0;
+                cav4 = (4 < cstep) ? vh : 0.0; cav5 = (5 < cstep) ? vh : 0.0;
+                cav6 = (6 < cstep) ? vh : 0.0; cav7 = (7 < cstep) ? vh : 0.0;
+                cav8 = (8 < cstep) ? vh : 0.0; cav9 = (9 < cstep) ? vh : 0.0;
+                cav10 = (10 < cstep) ? vh : 0.0; cav11 = (11 < cstep) ? vh : 0.0;
+                cav12 = (12 < cstep) ? vh : 0.0; cav13 = (13 < cstep) ? vh : 0.0;
+                cav14 = (14 < cstep) ? vh : 0.0; cav15 = (15 < cstep) ? vh : 0.0;
+                cbv0 = 0.0; cbv1 = 0.0; cbv2 = 0.0; cbv3 = 0.0; cbv4 = 0.0;
+                cbv5 = 0.0; cbv6 = 0.0; cbv7 = 0.0; cbv8 = 0.0; cbv9 = 0.0;
+                cbv10 = 0.0; cbv11 = 0.0; cbv12 = 0.0; cbv13 = 0.0; cbv14 = 0.0;
+                cbv15 = 0.0;
+            end else begin
+                arb_v = 0.0;
+                cbv0 = (0 < cstep) ? vh : 0.0; cbv1 = (1 < cstep) ? vh : 0.0;
+                cbv2 = (2 < cstep) ? vh : 0.0; cbv3 = (3 < cstep) ? vh : 0.0;
+                cbv4 = (4 < cstep) ? vh : 0.0; cbv5 = (5 < cstep) ? vh : 0.0;
+                cbv6 = (6 < cstep) ? vh : 0.0; cbv7 = (7 < cstep) ? vh : 0.0;
+                cbv8 = (8 < cstep) ? vh : 0.0; cbv9 = (9 < cstep) ? vh : 0.0;
+                cbv10 = (10 < cstep) ? vh : 0.0; cbv11 = (11 < cstep) ? vh : 0.0;
+                cbv12 = (12 < cstep) ? vh : 0.0; cbv13 = (13 < cstep) ? vh : 0.0;
+                cbv14 = (14 < cstep) ? vh : 0.0; cbv15 = (15 < cstep) ? vh : 0.0;
+                cav0 = 0.0; cav1 = 0.0; cav2 = 0.0; cav3 = 0.0; cav4 = 0.0;
+                cav5 = 0.0; cav6 = 0.0; cav7 = 0.0; cav8 = 0.0; cav9 = 0.0;
+                cav10 = 0.0; cav11 = 0.0; cav12 = 0.0; cav13 = 0.0; cav14 = 0.0;
+                cav15 = 0.0;
+            end
+            fv0 = (0 < fstep) ? vh : 0.0; fv1 = (1 < fstep) ? vh : 0.0;
+            fv2 = (2 < fstep) ? vh : 0.0; fv3 = (3 < fstep) ? vh : 0.0;
+            fv4 = (4 < fstep) ? vh : 0.0; fv5 = (5 < fstep) ? vh : 0.0;
+            fv6 = (6 < fstep) ? vh : 0.0; fv7 = (7 < fstep) ? vh : 0.0;
+            fv8 = (8 < fstep) ? vh : 0.0; fv9 = (9 < fstep) ? vh : 0.0;
+            fv10 = (10 < fstep) ? vh : 0.0; fv11 = (11 < fstep) ? vh : 0.0;
+            fv12 = (12 < fstep) ? vh : 0.0; fv13 = (13 < fstep) ? vh : 0.0;
+            fv14 = (14 < fstep) ? vh : 0.0; fv15 = (15 < fstep) ? vh : 0.0;
+            have = 0;
+        end
+    end
+
+    V(arb) <+ transition(arb_v, 0, tt);
+    V(ca0) <+ transition(cav0, 0, tt);
+    V(ca1) <+ transition(cav1, 0, tt);
+    V(ca2) <+ transition(cav2, 0, tt);
+    V(ca3) <+ transition(cav3, 0, tt);
+    V(ca4) <+ transition(cav4, 0, tt);
+    V(ca5) <+ transition(cav5, 0, tt);
+    V(ca6) <+ transition(cav6, 0, tt);
+    V(ca7) <+ transition(cav7, 0, tt);
+    V(ca8) <+ transition(cav8, 0, tt);
+    V(ca9) <+ transition(cav9, 0, tt);
+    V(ca10) <+ transition(cav10, 0, tt);
+    V(ca11) <+ transition(cav11, 0, tt);
+    V(ca12) <+ transition(cav12, 0, tt);
+    V(ca13) <+ transition(cav13, 0, tt);
+    V(ca14) <+ transition(cav14, 0, tt);
+    V(ca15) <+ transition(cav15, 0, tt);
+    V(cb0) <+ transition(cbv0, 0, tt);
+    V(cb1) <+ transition(cbv1, 0, tt);
+    V(cb2) <+ transition(cbv2, 0, tt);
+    V(cb3) <+ transition(cbv3, 0, tt);
+    V(cb4) <+ transition(cbv4, 0, tt);
+    V(cb5) <+ transition(cbv5, 0, tt);
+    V(cb6) <+ transition(cbv6, 0, tt);
+    V(cb7) <+ transition(cbv7, 0, tt);
+    V(cb8) <+ transition(cbv8, 0, tt);
+    V(cb9) <+ transition(cbv9, 0, tt);
+    V(cb10) <+ transition(cbv10, 0, tt);
+    V(cb11) <+ transition(cbv11, 0, tt);
+    V(cb12) <+ transition(cbv12, 0, tt);
+    V(cb13) <+ transition(cbv13, 0, tt);
+    V(cb14) <+ transition(cbv14, 0, tt);
+    V(cb15) <+ transition(cbv15, 0, tt);
+    V(f0) <+ transition(fv0, 0, tt);
+    V(f1) <+ transition(fv1, 0, tt);
+    V(f2) <+ transition(fv2, 0, tt);
+    V(f3) <+ transition(fv3, 0, tt);
+    V(f4) <+ transition(fv4, 0, tt);
+    V(f5) <+ transition(fv5, 0, tt);
+    V(f6) <+ transition(fv6, 0, tt);
+    V(f7) <+ transition(fv7, 0, tt);
+    V(f8) <+ transition(fv8, 0, tt);
+    V(f9) <+ transition(fv9, 0, tt);
+    V(f10) <+ transition(fv10, 0, tt);
+    V(f11) <+ transition(fv11, 0, tt);
+    V(f12) <+ transition(fv12, 0, tt);
+    V(f13) <+ transition(fv13, 0, tt);
+    V(f14) <+ transition(fv14, 0, tt);
+    V(f15) <+ transition(fv15, 0, tt);
+end
+endmodule

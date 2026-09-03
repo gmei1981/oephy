@@ -1,0 +1,255 @@
+
+Spectre (R) Circuit Simulator
+Version 25.1.0.393.isr10 64bit -- 9 Jun 2026
+Copyright (C) 1989-2026 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: mei   Host: dell5860   HostID: A8C0156E   PID: 1714804
+Memory  available: 260.2532 GB  physical: 269.1193 GB
+Linux   : Rocky Linux release 8.10 (Green Obsidian)
+CPU Type: Intel(R) Xeon(R) w7-2495X
+        Socket: Processors [Frequency] (Hyperthreaded Processor)
+        0:       0 [3300.0] ( 24 ),  1 [3300.0] ( 25 ),  2 [3300.0] ( 26 )
+                 3 [2500.0] ( 27 ),  4 [2500.0] ( 28 ),  5 [2500.0] ( 29 )
+                 6 [2500.0] ( 30 ),  7 [3300.0] ( 31 ),  8 [2500.0] ( 32 )
+                 9 [2500.0] ( 33 ), 10 [3300.0] ( 34 ), 11 [3300.0] ( 35 )
+                12 [2500.0] ( 36 ), 13 [3300.0] ( 37 ), 14 [2500.0] ( 38 )
+                15 [2500.0] ( 39 ), 16 [2500.0] ( 40 ), 17 [2500.0] ( 41 )
+                18 [3247.8] ( 42 ), 19 [2500.0] ( 43 ), 20 [2500.0] ( 44 )
+                21 [2500.0] ( 45 ), 22 [2500.0] ( 46 ), 23 [3300.0] ( 47 )
+        
+System load averages (1min, 5min, 15min) : 19.2 %, 13.3 %, 7.4 %
+Hyperthreading is enabled
+HPC is enabled
+
+
+Simulating `/tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/3ff69825/tb_B_480.scs' on dell5860 at 3:35:14 PM, Tue Aug 25, 2026 (process id: 1714804).
+Current working directory: /home/mei
+Environment variable:
+    SPECTRE_DEFAULTS=-E
+Command line:
+    /edatool/cadence/spectre2510.10.393/tools.lnx86/bin/spectre -64  \
+        /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/3ff69825/tb_B_480.scs  \
+        +escchars +log  \
+        /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/3ff69825/spectre.out  \
+        -format psfascii -raw  \
+        /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/3ff69825/tb_B_480.raw  \
+        +preset=ax +mt +lqtimeout 900 -maxw 5 -maxn 5 +logstatus
+
+Licensing Information:
+[15:35:14.199065] Configured Lic search path (24.01-s002): 5280@192.168.110.18
+
+Licensing Information:
+[15:35:15.066416] Periodic Lic check successful
+
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libinfineon_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libphilips_I_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libphilips_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libsparam_sh.so ...
+Loading /edatool/cadence/spectre2510.10.393/tools.lnx86/cmi/lib/64bit/5.0/libstmodels_sh.so ...
+Reading file:  /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/3ff69825/tb_B_480.scs
+
+Notice from spectre during circuit read-in.
+    Pre_Configuration file used: /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/configs/preset.precfg
+    Configuration file used: `/edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/configs/preset.cfg'.
+
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/configs/spectre.cfg
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/configs/preset.precfg
+Reading file:  /usr/include/stdc-predef.h
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/tmi.cfg
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_aux.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/crn12ffcll_lct_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/res_metal.scs
+Reading file:  /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/3ff69825/dtc_B.scs
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/configs/preset.cfg
+Time for NDB Parsing: CPU = 629.432 ms, elapsed = 598.575 ms.
+Time accumulated: CPU = 692.738 ms, elapsed = 598.576 ms.
+Peak resident memory used = 211 Mbytes.
+
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_dir/RH_64/libTMImodel.so
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_age_dir/RH_64/libTMImodel.so
+Reading link:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/discipline.h
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/disciplines.vams
+Reading link:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/constants.h
+Reading file:  /edatool/cadence/spectre2510.10.393/tools.lnx86/spectre/etc/ahdl/constants.vams
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_dir
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_age_dir
+
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+WARNING (SFE-884): A warning was found in a protected block while reading the circuit. Contact the third-party provider of the protected block to correct it.
+        Further occurrences of this warning will be suppressed.
+
+Created directory ./tb_B_480.ahdlSimDB/ (775)
+Created directory ./tb_B_480.ahdlSimDB//bsource_rhim_fn_686359.va.bsource_rhim_fn_686359.ahdlcmi/ (775)
+Reading file:  /home/mei/run_smoke.ahdlSimDB/bsource_rhim_fn_686359.va.bsource_rhim_fn_686359.ahdlcmi/Linux-64/obj/optimize/5.0/libahdlcmi_bsource_rhim_fn_686359.so
+Created directory ./tb_B_480.ahdlSimDB//bsource_rhim_fn_686359.va.bsource_rhim_fn_686359.ahdlcmi/Linux-64/obj/optimize/5.0 
+Copying files from directory /home/mei/run_smoke.ahdlSimDB/bsource_rhim_fn_686359.va.bsource_rhim_fn_686359.ahdlcmi/Linux-64/ to directory ./tb_B_480.ahdlSimDB//bsource_rhim_fn_686359.va.bsource_rhim_fn_686359.ahdlcmi/Linux-64/
+Finished copying files from /home/mei/run_smoke.ahdlSimDB/bsource_rhim_fn_686359.va.bsource_rhim_fn_686359.ahdlcmi/Linux-64/ to ./tb_B_480.ahdlSimDB//bsource_rhim_fn_686359.va.bsource_rhim_fn_686359.ahdlcmi/Linux-64/.
+The simulator has reused the existing Verilog-A libraries for this simulation run. If you do not want to use these libraries, set the 'CDS_AHDL_REUSE_LIB' environment variable to 'NO' and rerun the simulation.
+Existing shared object for module bsource_rhim_fn_686359 is up to date.
+Installed compiled interface for bsource_rhim_fn_686359.
+Time for Elaboration: CPU = 1.02626 s, elapsed = 519.227 ms.
+Time accumulated: CPU = 1.71906 s, elapsed = 1.11787 s.
+Peak resident memory used = 260 Mbytes.
+
+
+Time for EDB Visiting: CPU = 20.131 ms, elapsed = 10.169 ms.
+Time accumulated: CPU = 1.73927 s, elapsed = 1.12811 s.
+Peak resident memory used = 267 Mbytes.
+
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/tmi.cfg
+  *********************************************************
+  ** TMI Share Library             Version is V116091.090007 (Nov  1 2018 19:33:12)
+  ** Built OS                      Version is Red Hat Enterprise Linux Server release 5.8 (Tikanga)
+  ** Built compiler                Version is gcc version 4.1.2 20080704 (Red Hat 4.1.2-52)
+  *********************************************************
+
+Warning from spectre during initial setup.
+    WARNING (SPECTRE-8281): The node or instance 'VDLY' will not be saved because it is an invalid node or instance name.
+
+
+Netlist title:
+        
+
+
+Warning from spectre during initial setup.
+    WARNING (SPECTRE-592): Following parameters are disabled because they are ignored or redefined in Spectre X:
+        
+        Tran Parameters:
+          errpreset
+          maxstep
+          method
+        
+
+
+Global user options:
+             tmiage = 1
+          tmioutput = /home/mei/./tb_B_480
+            degfile = /home/mei/./tb_B_480
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 2053
+bsource_rhim_fn_686359 1     
+          capacitor 1023  
+           resistor 3     
+         tmibsimcmg 1025  
+            vsource 1026  
+
+Analysis and control statement inventory:
+               tran 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 1     
+
+
+Notice from spectre during initial setup.
+    2 resistors are shorted because their absolute value is less than or equal to 'rabsshort'.
+    544 vsources are shorted because their absolute value is less than or equal to 'vabsshort'.
+    Spectre X preset=ax enabled.
+    10 warnings suppressed.
+
+Licensing Information:
+[15:35:16.158202] Periodic Lic check successful
+
+
+Notice from spectre.
+    Multithreading enabled: 8 threads in the system with 48 available processors.
+
+Time for parsing: CPU = 477.205 ms, elapsed = 240.906 ms.
+Time accumulated: CPU = 2.21652 s, elapsed = 1.36906 s.
+Peak resident memory used = 278 Mbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+   -   (Spectre X) Multi-threading. The recommended number of threads is [2, 4], consider adding +mt=2 or +mt=4 on command line.
+~~~~~~~~~~~~~~~~~~~~~~
+
+***************************************************
+Transient Analysis `plltran': time = (0 s -> 40 ns)
+***************************************************
+
+Opening the PSFASCII file /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/3ff69825/tb_B_480.raw/plltran.tran.tran ...
+Important parameter values:
+    start = 0 s
+    outputstart = 0 s
+    stop = 40 ns
+    step = 40 ps
+    maxstep = 800 ps
+    ic = all
+    useprevic = no
+    skipdc = yes
+    reltol = 1e-03
+    abstol(V) = 1 uV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    errpreset = moderate
+    method = trap
+    lteratio = 3.5
+    relref = sigglobal
+    cmin = 0 F
+    gmin = 1 pS
+    rabsshort = 1 mOhm
+
+
+Output and IC/nodeset summary:
+                 save   2       (voltage)
+
+......9......8......7......6......5......4......3......2......1......0
+Number of accepted tran steps =             341
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Post-Transient Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+During simulation, the CPU load for active processors is :
+         0 (94.1 %)      1 (41.3 %)      2 (59.3 %)      3 (10.4 %)
+         7 (93.6 %)      8 (54.2 %)      9 (7.9 %)      10 (99.5 %)
+        11 (94.7 %)     12 (45.5 %)     13 (97.3 %)     14 (34.9 %)
+        15 (37.4 %)     16 (36.3 %)     17 (23.9 %)     18 (75.4 %)
+        19 (23.8 %)     20 (30.0 %)     21 (41.1 %)     22 (21.7 %)
+        23 (99.5 %)     31 (1.6 %)      
+        Total: 1125.2%
+Initial condition solution time: CPU = 0 s, elapsed = 0 s.
+Intrinsic tran analysis time:    CPU = 4.29871 s, elapsed = 563.122 ms.
+
+Maximum value achieved for any signal of each quantity: 
+V: V(c479) = 800 mV
+I: I(Vvdd:p) = 655.4 uA
+Total time required for tran analysis `plltran': CPU = 4.30448 s, elapsed = 565.225 ms, util. = 762%.
+Time accumulated: CPU = 6.54271 s, elapsed = 1.94793 s.
+Peak resident memory used = 290 Mbytes.
+
+TMI results xml file begins to generate at Tue Aug 25 15:35:16 2026
+
+TMI results xml file /home/mei/./tb_B_480.tmideg0.xml generated at Tue Aug 25 15:35:16 2026
+
+Licensing Information:
+Lic Summary:
+[15:35:16.279185] Cdslmd servers: IC_EDA
+[15:35:16.803486] Feature usage summary:
+[15:35:16.803487] spectre_X_sc
+[15:35:16.803492] spectre_X_cpu_accelerator
+
+
+Aggregate audit (3:35:16 PM, Tue Aug 25, 2026):
+Time used: CPU = 6.68 s, elapsed = 2.02 s, util. = 331%.
+Time spent in licensing: elapsed = 240 ms, percentage of total = 11.9%.
+Peak memory used = 292 Mbytes.
+Simulation started at: 3:35:14 PM, Tue Aug 25, 2026, ended at: 3:35:16 PM, Tue Aug 25, 2026, with elapsed time (wall clock): 2.02 s.
+spectre completes with 0 errors, 7 warnings, and 9 notices.

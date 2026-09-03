@@ -1,0 +1,194 @@
+
+Spectre (R) Circuit Simulator
+Version 20.1.0.068 64bit -- 23 Sep 2020
+Copyright (C) 1989-2020 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: gmei   Host: ubuntu   HostID: 7F0101   PID: 26711
+Memory  available: 19.9359 GB  physical: 33.6281 GB
+Linux   : Ubuntu 20.04.6 LTS
+CPU Type: 13th Gen Intel(R) Core(TM) i7-13800H
+All processors running at 2918.4 MHz
+        Socket: Processors
+        0:       0
+        2:       1
+        4:       2
+        6:       3
+        8:       4
+        10:      5
+        12:      6
+        14:      7
+        
+System load averages (1min, 5min, 15min) : 1.9 %, 1.6 %, 2.5 %
+This is a virtual machine
+
+
+Simulating `spd_sample.scs' on ubuntu at 3:24:45 PM, Mon Aug 31, 2026 (process id: 26711).
+Current working directory: /home/gmei/git/oephy/adpll_ted/sim/tb_spd_x_baseline
+Command line:
+    /opt/cadence/SPECTRE201/tools.lnx86/bin/spectre -64 -format  \
+        psfascii spd_sample.scs +log sample.log
+
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libinfineon_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libphilips_o_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libphilips_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libsparam_sh.so ...
+Loading /opt/cadence/SPECTRE201/tools.lnx86/cmi/lib/64bit/5.0/libstmodels_sh.so ...
+Reading file:  /home/gmei/git/oephy/adpll_ted/sim/tb_spd_x_baseline/spd_sample.scs
+Reading file:  /opt/cadence/SPECTRE201/tools.lnx86/spectre/etc/configs/spectre.cfg
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/tmi.cfg
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_aux.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/crn12ffcll_lct_1d8_sp_v1d0_2p4.scs
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/res_metal.scs
+Reading file:  /home/gmei/git/oephy/adpll_ted/sim/tb_spd_x_baseline/spd_cmp_gm.scs
+Time for NDB Parsing: CPU = 752.127 ms, elapsed = 504.116 ms.
+Time accumulated: CPU = 817.199 ms, elapsed = 504.12 ms.
+Peak resident memory used = 115 Mbytes.
+
+Reading link:  /opt/cadence/SPECTRE201/tools.lnx86/spectre/etc/ahdl/discipline.h
+Reading file:  /opt/cadence/SPECTRE201/tools.lnx86/spectre/etc/ahdl/disciplines.vams
+Reading link:  /opt/cadence/SPECTRE201/tools.lnx86/spectre/etc/ahdl/constants.h
+Reading file:  /opt/cadence/SPECTRE201/tools.lnx86/spectre/etc/ahdl/constants.vams
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_dir
+Reading file:  /home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_age_dir
+
+
+Created directory spd_sample.ahdlSimDB/ (775)
+Created directory spd_sample.ahdlSimDB//bsource_rhim_fn_686359.va.bsource_rhim_fn_686359.ahdlcmi/ (775)
+Created directory spd_sample.ahdlSimDB//bsource_rhim_fn_686359.va.bsource_rhim_fn_686359.ahdlcmi/Linux-64/ (775)
+Compiling ahdlcmi module library for bsource_rhim_fn_686359.
+Finished compilation in 1.75 s (elapsed) for bsource_rhim_fn_686359.
+Installed compiled interface for bsource_rhim_fn_686359.
+Existing shared object for module bsource_72cbce is up to date.
+Installed compiled interface for bsource_72cbce.
+Existing shared object for module bsource_e2a846 is up to date.
+Installed compiled interface for bsource_e2a846.
+Time for Elaboration: CPU = 1.47749 s, elapsed = 2.07854 s.
+Time accumulated: CPU = 2.29485 s, elapsed = 2.58282 s.
+Peak resident memory used = 155 Mbytes.
+
+
+Time for EDB Visiting: CPU = 1.021 ms, elapsed = 1.0221 ms.
+Time accumulated: CPU = 2.29597 s, elapsed = 2.58395 s.
+Peak resident memory used = 156 Mbytes.
+
+  *********************************************************
+  ** TMI Share Library             Version is V116091.090007 (Nov  1 2018 19:33:12)
+  ** Built OS                      Version is Red Hat Enterprise Linux Server release 5.8 (Tikanga)
+  ** Built compiler                Version is gcc version 4.1.2 20080704 (Red Hat 4.1.2-52)
+  *********************************************************
+
+Notice from spectre during topology check.
+    Only one connection to node `VBSPD'.
+
+
+Global user options:
+             tmiage = 1
+          tmioutput = /home/gmei/git/oephy/adpll_ted/sim/tb_spd_x_baseline/spd_sample
+            degfile = /home/gmei/git/oephy/adpll_ted/sim/tb_spd_x_baseline/spd_sample
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 17
+              bsim4 1     
+     bsource_72cbce 1     
+     bsource_e2a846 2     
+bsource_rhim_fn_686359 1     
+          capacitor 1     
+           resistor 6     
+         tmibsimcmg 4     
+               vcvs 2     
+            vsource 6     
+
+Analysis and control statement inventory:
+               tran 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 1     
+
+Time for parsing: CPU = 42.794 ms, elapsed = 44.0412 ms.
+Time accumulated: CPU = 2.33881 s, elapsed = 2.62803 s.
+Peak resident memory used = 161 Mbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+
+***************************************************
+Transient Analysis `plltran': time = (0 s -> 30 ns)
+***************************************************
+
+Opening the PSFASCII file spd_sample.raw/plltran.tran.tran ...
+Important parameter values:
+    start = 0 s
+    outputstart = 0 s
+    stop = 30 ns
+    step = 30 ps
+    maxstep = 10 ps
+    ic = all
+    useprevic = no
+    skipdc = yes
+    reltol = 10e-03
+    abstol(V) = 1 uV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    errpreset = liberal
+    method = gear2only
+    lteratio = 3.5
+    relref = sigglobal
+    cmin = 0 F
+    gmin = 1 pS
+
+
+Output and IC/nodeset summary:
+                 save   4       (voltage)
+
+......9......8......7......6......5......4......3......2......1......0
+Number of accepted tran steps =             3158
+
+Maximum value achieved for any signal of each quantity: 
+V: V(Xspd.MIR:int_si) = 802.3 mV
+I: I(Vvss:p) = 139.1 mA
+If your circuit contains signals of the same quantity that are vastly different in size (such as high voltage circuitry combined with low voltage control circuitry), you should consider specifying global option `bin_relref=yes'.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Post-Transient Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   -   To further speed up simulation, consider
+          add ++aps on command line
+   -   Non-default settings that could significantly slow down simulation
+          maxstep = 10 ps, default 600 ps
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+During simulation, the CPU load for active processors is :
+         0 (43.6 %)      1 (23.6 %)      2 (74.0 %)      3 (26.9 %)
+         4 (9.6 %)       5 (19.5 %)      6 (10.8 %)      7 (17.1 %)
+        Total: 225.1%
+Initial condition solution time: CPU = 0 s, elapsed = 0 s.
+Intrinsic tran analysis time:    CPU = 124.755 ms, elapsed = 124.822 ms.
+Total time required for tran analysis `plltran': CPU = 125.271 ms, elapsed = 125.336 ms.
+Time accumulated: CPU = 2.46676 s, elapsed = 2.75824 s.
+Peak resident memory used = 164 Mbytes.
+
+TMI results xml file begins to generate at Mon Aug 31 15:24:48 2026
+
+TMI results xml file /home/gmei/git/oephy/adpll_ted/sim/tb_spd_x_baseline/spd_sample.tmideg0.xml generated at Mon Aug 31 15:24:48 2026
+
+
+Aggregate audit (3:24:48 PM, Mon Aug 31, 2026):
+Time used: CPU = 2.48 s, elapsed = 2.77 s, util. = 89.4%.
+Time spent in licensing: elapsed = 12.6 ms.
+Peak memory used = 165 Mbytes.
+Simulation started at: 3:24:45 PM, Mon Aug 31, 2026, ended at: 3:24:48 PM, Mon Aug 31, 2026, with elapsed time (wall clock): 2.77 s.
+spectre completes with 0 errors, 0 warnings, and 2 notices.

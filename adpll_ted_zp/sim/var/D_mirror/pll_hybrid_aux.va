@@ -1,0 +1,48 @@
+// pll_hybrid.va — 混合仿真辅助 VA: 倍频器 (ref→2x) + clk_lms 生成 + XO 噪声注入
+// 倍频器: 76.8M 参考沿 → 153.6M CKDTC 触发 (XOR 等效: 双沿)
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_doubler_edge(ref_in, ck2x);
+inout ref_in;
+output ck2x;
+electrical ref_in, ck2x;
+parameter real vth = 0.4;
+parameter real thalf = 3.25n;  // 1/4 REF 周期 -> 2x 时钟 50% 占空比
+real ck_v, t_fire;
+analog begin
+    @(initial_step) begin ck_v = 0.0; t_fire = 0.0; end
+    // XOR 型倍频: 每个 REF 沿(升/降)输出高电平, thalf 后回落
+    // 边沿距 3.25ns + 3.25ns -> CK2X = 153.6M, 50% 占空比
+    // (旧实现: 每沿翻转 ck_v -> 只是 76.8M 延迟复制, 斜坡周期错误 13ns 的根因)
+    @(cross(V(ref_in) - vth, +1)) begin
+        ck_v = 1.0; t_fire = $abstime + thalf;
+    end
+    @(cross(V(ref_in) - vth, -1)) begin
+        ck_v = 1.0; t_fire = $abstime + thalf;
+    end
+    @(timer(t_fire, 100.0)) begin
+        ck_v = 0.0;
+    end
+    V(ck2x) <+ transition(ck_v, 0.0, 5p, 5p);
+end
+endmodule
+
+// clk_lms: CKFB 采样事件后 300ps 的 LMS 更新时钟
+module pll_clk_lms(ckfb, clk_lms);
+inout ckfb;
+output clk_lms;
+electrical ckfb, clk_lms;
+parameter real vth = 0.4;
+real clk_v, t_fire;
+analog begin
+    @(initial_step) begin clk_v = 0.0; t_fire = 300p; end
+    @(cross(V(ckfb) - vth, +1)) begin
+        t_fire = $abstime + 300p;
+    end
+    @(timer(t_fire, 100.0)) begin
+        clk_v = 1.0 - clk_v;
+    end
+    V(clk_lms) <+ transition(clk_v, 0.0, 5p, 5p);
+end
+endmodule

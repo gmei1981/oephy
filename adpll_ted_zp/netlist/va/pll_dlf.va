@@ -1,0 +1,93 @@
+// pll_dlf.va — PI digital loop filter (ref2 SS-BB-ADPLL)
+// On each CKR falling edge (half period after the BBPD samples at the rising
+// edge — avoids same-edge event-order races): acc += ki*bb; code = acc + kp*bb.
+// While afc_done is LOW the DLF is SLAVED to the AFC: acc tracks the live AFC
+// code (afc_code<<9) and bb integration is suspended — the coarse DAC follows
+// the AFC binary search, and the done edge hands off without a jump.
+// c0..c15 16-bit digital output (0.8V logic): high 7 bits (c9..c15) -> coarse
+// DAC1, low 9 bits (c0..c8) -> fine DAC2 (decision point A default).
+// When afc_done rises, the accumulator is loaded with afc_code<<9 (coarse base).
+// kp/ki are read from analog inputs (driven by the GS module, gear shifting).
+// Individual ports + unrolled assignments (bus/V(i) loop access not supported
+// by the local ahdlcmi — same constraint as the 1023-port decoder).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_dlf(ckr, bb, afc_done, a0, a1, a2, a3, a4, a5, a6, kp_in, ki_in,
+    c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15);
+inout ckr, bb, afc_done, a0, a1, a2, a3, a4, a5, a6, kp_in, ki_in;
+output c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15;
+electrical ckr, bb, afc_done, a0, a1, a2, a3, a4, a5, a6, kp_in, ki_in;
+electrical c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15;
+
+parameter real vth = 0.4;
+
+real acc, code_v, kp, ki, bb_v;
+integer afc_prev, code_i;
+
+analog begin
+    @(initial_step) begin
+        acc = 32768.0;      // mid-scale: DAC1=64 -> VC1=0.25V, DAC2=0
+        code_v = 32768.0;
+        afc_prev = 0;
+    end
+    @(cross(V(ckr) - vth, -1)) begin
+        if (V(afc_done) <= vth) begin
+            // Slaved to the AFC search: acc tracks the LIVE AFC code so the
+            // coarse DAC actually follows the binary search (otherwise the
+            // AFC measures a frequency it does not control and never hits).
+            // bb integration suspended; seamless handoff at the done edge.
+            code_i = 0;
+            if (V(a0) > vth) code_i = code_i + 1;
+            if (V(a1) > vth) code_i = code_i + 2;
+            if (V(a2) > vth) code_i = code_i + 4;
+            if (V(a3) > vth) code_i = code_i + 8;
+            if (V(a4) > vth) code_i = code_i + 16;
+            if (V(a5) > vth) code_i = code_i + 32;
+            if (V(a6) > vth) code_i = code_i + 64;
+            acc = code_i * 512.0;
+            code_v = acc;
+            afc_prev = 0;
+        end else begin
+            if (afc_prev == 0) begin
+                // done edge with no slaving history (done already high at
+                // t=0): load the AFC base once
+                code_i = 0;
+                if (V(a0) > vth) code_i = code_i + 1;
+                if (V(a1) > vth) code_i = code_i + 2;
+                if (V(a2) > vth) code_i = code_i + 4;
+                if (V(a3) > vth) code_i = code_i + 8;
+                if (V(a4) > vth) code_i = code_i + 16;
+                if (V(a5) > vth) code_i = code_i + 32;
+                if (V(a6) > vth) code_i = code_i + 64;
+                acc = code_i * 512.0;
+            end
+            afc_prev = 1;
+            bb_v = (V(bb) > vth) ? 1.0 : -1.0;
+            kp = V(kp_in);
+            ki = V(ki_in);
+            acc = acc + ki * bb_v;
+            code_v = acc + kp * bb_v;
+            if (code_v > 65535.0) code_v = 65535.0;
+            if (code_v < 0.0) code_v = 0.0;
+        end
+    end
+    code_i = floor(code_v);
+    V(c0)  <+ (((code_i >> 0) & 1) != 0) ? 0.8 : 0.0;
+    V(c1)  <+ (((code_i >> 1) & 1) != 0) ? 0.8 : 0.0;
+    V(c2)  <+ (((code_i >> 2) & 1) != 0) ? 0.8 : 0.0;
+    V(c3)  <+ (((code_i >> 3) & 1) != 0) ? 0.8 : 0.0;
+    V(c4)  <+ (((code_i >> 4) & 1) != 0) ? 0.8 : 0.0;
+    V(c5)  <+ (((code_i >> 5) & 1) != 0) ? 0.8 : 0.0;
+    V(c6)  <+ (((code_i >> 6) & 1) != 0) ? 0.8 : 0.0;
+    V(c7)  <+ (((code_i >> 7) & 1) != 0) ? 0.8 : 0.0;
+    V(c8)  <+ (((code_i >> 8) & 1) != 0) ? 0.8 : 0.0;
+    V(c9)  <+ (((code_i >> 9) & 1) != 0) ? 0.8 : 0.0;
+    V(c10) <+ (((code_i >> 10) & 1) != 0) ? 0.8 : 0.0;
+    V(c11) <+ (((code_i >> 11) & 1) != 0) ? 0.8 : 0.0;
+    V(c12) <+ (((code_i >> 12) & 1) != 0) ? 0.8 : 0.0;
+    V(c13) <+ (((code_i >> 13) & 1) != 0) ? 0.8 : 0.0;
+    V(c14) <+ (((code_i >> 14) & 1) != 0) ? 0.8 : 0.0;
+    V(c15) <+ (((code_i >> 15) & 1) != 0) ? 0.8 : 0.0;
+end
+endmodule

@@ -1,0 +1,730 @@
+3756                                                                                IEEE JOURNAL OF SOLID-STATE CIRCUITS, VOL. 56, NO. 12, DECEMBER 2021
+
+
+
+
+ A 14-nm Ultra-Low Jitter Fractional-N PLL Using
+      a DTC Range Reduction Technique and
+         a Reconfigurable Dual-Core VCO
+   Wanghua Wu , Member, IEEE, Chih-Wei Yao, Chengkai Guo , Pei-Yuan Chiang, Lei Chen, Pak-Kim Lau,
+            Zhanjun Bai, Sang Won Son, Member, IEEE, and Thomas Byunghak Cho , Senior Member, IEEE
+
+   Abstract— This work presents a 6-GHz low-jitter and high
+figure-of-merit (FoM) fractional-N phase-locked loop (PLL).
+It uses a digital-to-time converter (DTC)-based sampling PLL
+architecture. To achieve ultra-low jitter in fractional-N mode,
+a phase detector range reduction technique is used to halve the
+required DTC delay range (DR), resulting in lower thermal noise
+and better DTC linearity. Moreover, a reconfigurable dual-core
+voltage-controlled oscillator (VCO) provides extra freedom in
+power and jitter tradeoff. It achieves 83.4-fs rms jitter in
+fractional-N mode, integrated from 10 kHz to 100 MHz, with
+a 76.8-MHz crystal oscillator (XO) reference. In the low-power
+mode, the rms jitter degrades to 96.3 fs and the PLL FoM
+improves from −250.1 to −251.2 dB, as the PLL power con-
+sumption reduces from 14.2 to 8.2 mW. The measured fractional
+spurs are less than −70 dBc for near-integer channels. The PLL
+rms jitter remains within 100 fs across the 5–7-GHz output
+frequency band, thanks to the digital background calibrations.
+It is implemented in a 14-nm FINFET process and occupies
+0.31 mm2 .
+   Index Terms— Delta–sigma modulator (DSM), digital-to-time
+converter (DTC), fractional-N phase-locked loop (PLL),
+frequency synthesis, low jitter, multi-modulus divider (MMD),
+sampling phase detector (SPD), voltage-controlled oscillator
+                                                                                     Fig. 1.   Jitter variance versus power for state-of-the-art low-jitter PLLs.
+(VCO).
+                             I. I NTRODUCTION
+
+T     HE ever-growing demand on higher data rates and low
+      latency has driven the latest and emerging wireless com-
+munication protocols to deploy higher modulation scheme,
+                                                                                     aims to support up to 30-Gb/s throughput using 4096-QAM
+                                                                                     and MIMO enhancement in the 2.4-, 5-, and 6-GHz frequency
+multi-input–multi-output (MIMO) transceiver configuration,                           bands [3]. These emerging communication standards demand
+and wider aggregated channel bandwidth (BW) to deliver tens                          ultra-low jitter fractional-N phase-locked loops (PLLs) to gen-
+of gigabits per second (Gb/s) throughput. The 5G New Radio                           erate local oscillator (LO) with sub-100 fs rms jitter to meet the
+(NR) uses both the sub-6 GHz and mm-wave frequency bands,                            stringent error vector magnitude (EVM) requirement [3], [4].
+i.e., 24.25–52.6 GHz, with up to 256-quadrature amplitude                            This is much more demanding than that is required
+modulation (QAM) to deliver 10 Gb/s and beyond [1], [2].                             for 4G LTE and Wi-Fi 802.11ax standard specifications
+The next-generation wireless local area network standard IEEE                        (i.e., 150 fsrms ) [5], [6].
+802.11be-Extremely High Throughput, also known as Wi-Fi 7,                               Recently, numerous works on integer-N PLLs using a
+                                                                                     sub-sampling phase detector (SSPD) have demonstrated inte-
+  Manuscript received May 2, 2021; revised August 9, 2021; accepted                  grated jitter of less than 100 fs or even below 50 fs, with a
+August 31, 2021. Date of publication September 21, 2021; date of current             jitter power figure-of-merit (FoM) as low as −256 dB [7]–[13],
+version November 24, 2021. This article was approved by Associate Editor
+Jeffrey Sean Walling. (Corresponding author: Wanghua Wu.)                            as shown in Fig. 1. The SSPD offers very high gain so
+  Wanghua Wu, Chih-Wei Yao, Chengkai Guo, Pei-Yuan Chiang, Lei                       that the noise contribution from following circuit stages is
+Chen, Pak-Kim Lau, Zhanjun Bai, and Sang Won Son are with                            largely suppressed (e.g., charge pump and loop filter) [14].
+Samsung Semiconductor, San Jose, CA 95134 USA (e-mail: wanghua.wu@
+samsung.com).                                                                        As a contrary, only a few fractional-N PLLs reported to
+  Thomas Byunghak Cho is with Samsung Electronics, Hwaseong-si,                      date have achieved sub-100 fsrms jitter (see Fig. 1), and their
+Gyeonggi-do 445-330, South Korea.                                                    jitter performance at near-integer channels were not reported
+  Color versions of one or more figures in this article are available at
+https://doi.org/10.1109/JSSC.2021.3111134.                                           in [15]–[17], which could increase significantly due to in-band
+  Digital Object Identifier 10.1109/JSSC.2021.3111134                                fractional spurs.
+                          0018-9200 © 2021 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+                                        See https://www.ieee.org/publications/rights/index.html for more information.
+
+       Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+WU et al.: 14-nm ULTRA-LOW JITTER FRACTIONAL-N PLL USING A DTC RANGE REDUCTION TECHNIQUE                                                                       3757
+
+
+
+                                                                                  lower bound on the size of a planar inductor below which sig-
+                                                                                  nificant quality factor (Q) degradation occurs, limiting VCO
+                                                                                  PN [25]–[27]. To mitigate this issue, a dual-core VCO is used
+                                                                                  in this design, which improves VCO PN by 3 dB at the cost of
+                                                                                  doubled current consumption. To support a low-power mode,
+                                                                                  the VCO can be reconfigured to a single core to trade jitter for
+                                                                                  power consumption. Using the above techniques, the 5–7-GHz
+                                                                                  fractional-N PLL achieves rms jitter as low as 83.6 fsrms
+                                                                                  (integrated from 10 kHz to 100 MHz) with a 76.8-MHz
+                                                                                  crystal oscillator (XO) reference [24]. The PLL integrated jitter
+Fig. 2.   Block diagram of a DTC-based sampling fractional-N PLL.
+                                                                                  remains below 100 fs even at near-integer channels due to low
+                                                                                  fractional spurs achieved. In the low-power mode, it achieves
+                                                                                  96.3 fs rms jitter while consuming merely 8.2 mW, resulting
+    Compared with its integer-N counterpart, the major design                     in an FoM of −251.2 dB. This design is a good candidate for
+challenge of a fractional-N PLL lies in the phase detection                       emerging high-throughput wireless applications, including and
+path. A typical phase error between reference clock (CKREF)                       not limiting to 5G NR 256-QAM at mm-wave frequencies and
+and feedback clock (CKFB) in steady-state is up to a few                          Wi-Fi 7.
+nano-seconds (versus a few pico-seconds at integer-N mode)                           This article is organized as follows. Section II describes
+due to the accumulated phase quantization error (QE), intro-                      the phase error range reduction technique. Section III elabo-
+duced by the delta–sigma modulator (DSM) for fractional-N                         rates the ultra-low jitter fractional-N PLL design. Section IV
+synthesis [18]. This hinders the use of a high-gain sampling                      discusses the dual-core VCO design. Section V presents the
+or SSPD in a fractional-N PLL due to its small linear                             experimental results and Section VI draws conclusions.
+operation range (i.e., a few ps). Recent works in [16], [17],
+and [19]–[21] used a digital-to-time converter (DTC) in refer-
+                                                                                       II. P HASE E RROR R ANGE R EDUCTION T ECHNIQUE
+ence clock path to compensate the QE so that a near-zero
+                                                                                                   FOR F RACTIONAL - N PLL S
+phase error is presented at the phase detector input after
+locking (similar to an integer-N case). Fig. 2 shows the                             MMD controlled by a digital DSM is commonly used for
+block diagram of a DTC-based sampling PLL, which has                              fractional-N synthesis to achieve fine frequency resolution
+demonstrated lower jitter and better FoM than other state-                        while converting QE into colored noise instead of discrete
+of-the-art fractional-N PLLs using charge pumps or time-to-                       spurious tones [18], [28]. For a first-order DSM, the accumu-
+digital converters (TDCs) for phase detection [2], [5]. The                       lated phase error, e , on CKFB is up to one quantization
+sampling phase detector (SPD) in Fig. 2 can be implemented                        step size, i.e., the period of the MMD input clock, TVCO
+in either an analog form as in [16] and [17] or in a digital                      (see Fig. 2). The variation in e due to QE increases with
+form as in [19]. However, there are still some performance                        the order of DSM, as there are more quantization levels in
+gaps between the fractional- and integer-N modes in both                          the frequency division ratio, NDIV. The amplitude of e
+jitter and FoM (see Fig. 1), due to the extra random jitter,                      for a second- and a third-order DSM is 2 × TVCO and
+quantization noise (QN), and power consumption introduced                         4 × TVCO , respectively. Although using a first-order DSM
+by DTC [20]–[22]. Moreover, the nonlinearity of DTC cir-                          can relax the dynamic range requirement of DTC or any other
+cuit results in fractional spurious tones and noise-folding,                      phase detectors drastically [29], a second-order or third-order
+contributing significant amount of integrated jitter, especially                  DSM is usually required to provide sufficient scrambling
+at near-integer channels [20], [23]. Thus, DTC remains the                        for near-integer channels to avoid strong in-band fractional
+bottleneck in such a PLL architecture, as it needs to pro-                        spurs to achieve sub-100 fs rms jitter [5], [23]. Consequently,
+vide a wide linear delay range (DR) to cancel the QE due                          the required DTC DR doubles and a more linear DTC is
+to DSM.                                                                           needed to avoid increasing phase intermodulation noise due
+    To alleviate the aforementioned challenge, this work uses                     to its nonlinearity over a larger variation in e . To achieve a
+a modified multi-modulus divider (MMD) and the DSM that                           linear DTC, both analog linearization techniques and digital
+controls it to reduce the accumulated phase QE by half for any                    pre-distortion were studied in literature, which demonstrated
+given order of DSM [24], [34]. This technique is demonstrated                     in-band fractional spur below −60 dBc at the cost of higher
+in a DTC-based analog sampling PLL to reduce DTC thermal                          power consumption due to hundreds of μA bleeding current
+noise and improve its linearity, resulting in lower in-band                       used in [16], doubled chip area using a replica branch in [21]
+phase noise (PN) and lower fractional spurs. Moreover, several                    and [22], or an additional 32-bit lookup table used in [20] for
+background digital calibrations are used in this design to                        pre-distortion.
+ensure the ultra-low jitter performance over process, voltage,                       Alternatively, in this work, we use a phase error range reduc-
+and temperature (PVT) variations. These calibrations include                      tion technique depicted in Fig. 3 to reduce the accumulated
+DTC gain, K DTC , calibration, reference clock duty-cycle cor-                    e on CKFB by half for a given order of DSM so that the
+rection (DCC), and the voltage-controlled oscillator (VCO)                        maximum DR required in DTC is halved, reducing its integral
+DCC. In addition, low PN oscillator is always needed for low-                     non-linearity (INL). In addition, a smaller DR also helps
+jitter PLLs, despite the PLL architecture. There, however, is a                   reduce DTC random jitter and power consumption, which
+
+    Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+3758                                                                                IEEE JOURNAL OF SOLID-STATE CIRCUITS, VOL. 56, NO. 12, DECEMBER 2021
+
+
+
+
+                                                                                     Fig. 5.   Simulated e and SEL_CKFB for (a) MASH1 and (b) MASH1-1.
+Fig. 3. (a) Reduce e by doubling MMD input clock rate. (b) Modified
+MMD to reduce e on CKFB by half.
+
+                                                                                     whose carry out, co, is added to the rest integer part to form
+                                                                                     the new NDIV. A delayed version (Z −n ) of the 1-bit sum
+                                                                                     is used as SEL_CKFB to account for the circuit delay in an
+                                                                                     MMD. When SEL_CKFB is “1,” an additional phase shift of
+                                                                                     TVCO /2 is introduced on the final CKFB by selecting CKFB2.
+                                                                                     As a result, the phase quantization step size of the new MMD
+                                                                                     is reduced to TVCO /2, which is equivalent to doubling the input
+                                                                                     clock frequency of a conventional MMD. The accumulated
+                                                                                     quantization phase error, e , can also be derived from the
+                                                                                     DSM (see Fig. 4), and then scaled by K DTC to generate
+Fig. 4.    Implementation of the modified digital DSM.
+                                                                                     the DTC code in a DTC-based sampling PLL, as shown
+                                                                                     in Fig. 2. Since the proposed e range reduction is achieved
+                                                                                     by reducing the equivalent quantization step size of an MMD,
+will be elaborated in Section III. As the amplitude of e is                         its effectiveness is independent of the order and the topology
+proportional to TVCO , a brute-force way is to double the MMD                        of DSM. As to the MMD, it can also be any topology, e.g.,
+input clock rate to reduce the quantization step size to TVCO /2,                    2/3 prescaler or pulse swallow. Compared with the conven-
+as shown in Fig. 3(a). Accordingly, the frequency command                            tional case, the achieved division ratio and fractional frequency
+word (FCW = f vco / fref ) also needs to be doubled, and then                        resolution remain the same. The simulation waveforms of e
+fed to the DSM to maintain the same division ratio. However,                         and SEL_CKFB for an MASH1 and an MASH1-1 DSM are
+practical implementation is limited by the maximum operation                         illustrated in Fig. 5(a) and (b), respectively (fractional part
+frequency of MMD (e.g., <12 GHz across PVT, with 0.8-V                               is 0.1). The resulted variation in e is reduced by half for
+supply voltage in a 14-nm FINFET process). Moreover, it is                           both cases.
+not easy to double the multi-gigahertz VCO clock, CKVCO,                                To extend this idea, quadrature phases of CKVCO could
+using logic gates. Alternatively, two D flip-flops (DFFs) are                        be used to further reduce the equivalent quantization step size
+added after the MMD in Fig. 3(b) to retime the divide-down                           to TVCO /4. However, they are not readily available in most of
+clock by rising and falling edges of CKVCO, respectively.                            the low-jitter PLLs, using an LC-VCO. A phase interpolator
+Consequently, CKFB1 leads CKFB2 by TVCO /2. The final                                may be used to generate multiple phases, which increases the
+phase of CKFB is dithered between CKFB1 and CKFB2 via                                design complexity and its nonlinearity results in additional
+a 2-to-1 mux to obtain the same benefit as doubling the MMD                          fractional spurs [30], [31].
+input frequency. A similar technique was used in [34] for a
+digital bang-bang PLL and in [21] for a digital SSPLL without                        III. D ESIGN OF A L OW-J ITTER S AMPLING F RACTIONAL - N
+an MMD. It can also be applied to charge-pump analog PLLs                                       PLL W ITH DTC R ANGE R EDUCTION
+or multi-bit TDC-based digital PLLs to ease the phase detector
+circuit design.                                                                      A. PLL Architecture
+   Fig. 4 shows the generation circuitry for NDIV and the                                Fig. 6 shows the block diagram of the presented low-
+mux selection, SEL_CKFB. The FCW is first right shifted                              jitter PLL. It is based on the form of a DTC-based sampling
+by 1 bit (i.e., ×2), and then sent to a conventional DSM.                            analog PLL [16]. A DTC in the reference path cancels the
+To obtain the same feedback division ratio, the output of DSM                        accumulated QE, e , on the feedback clock, CKFB. As a
+is divided by 2 (i.e., left shift by 1 bit), which results in a                      result, the required phase detector linear operation range after
+fractional bit. Since an MMD can only support the integer                            locking is reduced to a few picoseconds so that a high-gain
+division ratio, this fractional bit is sent to a 1-bit accumulator                   SPD can be used. An SPD maintains the same advantages
+
+       Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+WU et al.: 14-nm ULTRA-LOW JITTER FRACTIONAL-N PLL USING A DTC RANGE REDUCTION TECHNIQUE                                                                       3759
+
+
+
+
+Fig. 6.   (a) Block diagram of the presented fractional-N sampling PLL. (b) Schematic of SPD and G M . (c) Timing diagram of SPD.
+
+
+
+of an SSPD (no MMD) while reducing the detector power                             and power consumption requirements in a cost-sensitive wire-
+consumption and lowering the reference spur. As shown                             less device, e.g., a mobile phone. Therefore, this work uses
+in Fig. 6(b) and (c), the rising edge of DTC output clock                         a 76.8-MHz off-the-shelf XO designed for mobile commu-
+(CKDTC) triggers a well-defined voltage ramp, which is                            nications. An ON-chip clock doubler is added prior to DTC
+sampled by CKFB, converting the phase error into a sampled                        to double the PLL sampling rate when even lower integrated
+voltage, Vsmp . Vsmp tunes the VCO directly, providing a pro-                     jitter is needed. Similar to [16], a CKREF DCC loop runs
+portional gain, K VCO_P . The integral path is formed via a G M                   in the background to pull-in/push-back the phase of CKFB
+circuit [see Fig. 6(b)], followed by an integration capacitor,                    alternatively to cancel the period error in CKDTC before the
+C I , forming a type-II PLL. Keeping the signal path in the                       SPD. In addition, the VCO in this PLL can also be switched
+analog domain simplifies circuit complexity by eliminating the                    from one core to two cores to reduce the out-of-band PN by
+high-resolution TDC and digitally controlled oscillator (DCO),                    3 dB to further lower PLL integrated jitter. Compared with
+which consists of a fine-tuning switched-capacitor bank that                      using two PLLs in parallel as in [2], a dual-core VCO achieves
+contributes additional routing parasitics and QN.                                 similar benefits with less chip area and power consumption
+   In contrast to the classic DSM and MMD used in [15]–[17]                       penalty. Because the PLL in-band PN is usually dominated by
+and [19], this work uses a modified MMD described in                              CKREF in an optimized design, and thus they are almost fully
+Section II to reduce the required DTC DR by half for given                        correlated, diminishing the benefits of using multiple copies
+VCO frequency and order of DSM. This helps alleviate the                          to improve the signal-to-noise ratio.
+DTC design challenges. Without this technique, a total DR of                          Two well-known disadvantages of an analog PLL compared
+larger than 400 ps is required for a 5-GHz VCO to support                         with a digital one are larger loop filter size and difficulties in
+a second-order DSM. Meanwhile, DTC also provides a fine                           applying digital calibrations. Both are mitigated in this design.
+delay resolution (e.g., 0.3 ps) to avoid its QN degrading                         To minimize chip area overhead due to analog loop filter,
+in-band PN, resulting in a design of more than 10 bits. With                      a small value of G M (e.g., 0.5 μS) can be used to reduce C I
+the modified MMD, for the same DTC resolution, 1 less bit is                      required for a given loop BW (e.g., 15 pF for 500-kHz loop
+needed compared with [16], leading to a smaller chip area                         BW). Although the noise contribution of G M circuit increases
+and better linearity. Moreover, a smaller propagation delay                       with a smaller G M value, it is still suppressed sufficiently
+results in less accumulated random jitter on CKDTC, which                         by the high-gain SPD in this architecture. Moreover, G M is
+also contributes to PLL in-band PN. In addition, a sign-                          only in the integral path, and thus the loop BW is insensitive
+least-mean-square (sign-LMS) loop is added in this PLL to                         to G M variation so that a small G M value can be used in
+correct the residue phase error due to VCO duty-cycle error                       spite of large PVT variations. Alternatively, a type-I PLL
+(i.e., τ = TVCO /2) by dithering DTC delay [vco_dcc                              was used in [17] to eliminate C I . However, to overcome
+in Fig. 6(a)] without increasing the required linear operation                    the narrow PLL locking range due to the limited range of
+range of SPD.                                                                     SPD, combined with the tuning-dependent phase error in a
+   To further reduce PLL in-band PN, a reference clock of                         type-I PLL, a second DTC and a 1-bit TDC with a digital
+higher frequency is preferred, which increases the system                         phase error correction circuit were added to limit the phase
+sampling rate and reduces the noise multiplication factor of                      error at SPD [17], which increases the design complexity.
+the reference path. However, the choice of CKREF is subject                       In this work, a type-II PLL is chosen for simplicity and C I is
+to multiple system considerations, as one common reference                        programmable from 2 to 62 pF, occupying 0.005 mm2 (i.e.,
+clock is often used to drive multiple PLLs of different jitter                    1.6% of the PLL core area). To facilitate the digital calibration,
+
+    Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+3760                                                                                IEEE JOURNAL OF SOLID-STATE CIRCUITS, VOL. 56, NO. 12, DECEMBER 2021
+
+
+
+
+                                                                                     Fig. 8.   Simulated K DTC transient with and without VCO duty-cycle error.
+
+
+
+
+Fig. 7.    Modified MMD circuit implementation.
+
+
+
+one voltage comparator converts Vsmp into 1-bit phase error
+polarity data, e[k], which are then used for multiple-sign-LMS-
+based background calibrations, as shown in Fig. 6(a). The
+reference voltage of the comparator is adjusted dynamically
+by a first-order digital DSM to track the G M threshold voltage
+so that the dc offset in e[k] is removed [16], enabling K DTC                        Fig. 9.   LMS-based digital background calibrations in the presented analog
+calibration, reference clock DCC, and VCO DCC in this                                PLL.
+analog PLL.
+                                                                                     the residue phase error is 24 ps, which is only a fraction
+B. Modified MMD                                                                      of the 200-ps reduction achieved for a second-order DSM.
+   In a classic MMD, the divide-down clock, CKDIV, is usu-                           Although this extra phase error is much smaller than TVCO ,
+ally retimed by its input clock, CKVCO, (i.e., DFF1 in Fig. 7)                       it can be comparable to the linear operation range of an SPD,
+to remove the accumulated jitter on CKFB due to asynchro-                            which is typically <30 ps. Moreover, it results in dc offset
+nous stages used for high-speed and low-power operation [32].                        in the 1-bit phase error polarity data, e[k], which are used for
+A half TVCO delay can be introduced conceptually by adding                           K DTC calibration. In simulation, a terr of 20 ps is sufficient to
+DFF2 in parallel to sample CKDIV by inverted CKVCO,                                  disrupt the DTC gain calibration, as shown in Fig. 8. The VCO
+as shown in Fig. 3(b). However, it is difficult to satisfy the                       duty-cycle error not only slows down the K DTC convergence
+stringent timing requirement for both DFFs to avoid metasta-                         but also results in a static gain error. To resolve this, a VCO
+bility. The sum of setup and hold time needs to be less than                         DCC loop is added in this design, which is shown in Fig. 9.
+TVCO /2 (e.g., 66 ps for CKVCO at 7.5 GHz), which is only half                       A sign-extended version of SEL_CKFB is used to correlate
+of the time allowed for DFF1 only case. One way to resolve                           with e[k] by a sign-LMS regression. The calibration result,
+this is by cascading DFF2 after DFF1, as shown in Fig. 7.                            vco_dcc, is added to the DTC code to pull-in or push-back the
+The inverter delay, tinv , is designed to be close to the clock-                    phase of CKDTC accordingly to compensate the phase error
+to-output propagation delay in DFF1 so that DFF2 has the                             due to VCO duty-cycle error at the expense of a fractional
+same timing margin as DFF1 on the first order. The resultant                         increase in DTC delay (<10%).
+phase relationship of CKFB1 and CKFB2 with respect to the                               In addition to VCO DCC, the aforementioned K DTC calibra-
+rising edge of CKVCO is plotted in Fig. 7 as τ1 and τ2 ,                             tion and CKREF DCC are also elaborated in Fig. 9. All these
+respectively, in which t H is the time difference between the                        background calibrations rely on sign-LMS regression [35]
+rising and falling edges of CKVCO. Consequently, the delay                           and share the same phase error input, e[k], from a single
+between CKFB1 and CKFB2 is exactly half of the VCO period                            voltage comparator output. The other data used for correla-
+in the absence of device mismatches and CKVCO duty-cycle                             tion vary. For DTC gain calibration, it is the accumulated
+error. As to the MMD, this work uses a classic cascaded                              phase QE from DSM, e [n]. For CKREF DCC, it is a bit
+÷2/3 prescaler topology to achieve a programmable division                           stream alternating between +1 and −1, representing even
+ratio from 16 to 255 [33].                                                           and odd cycles of CKDTC, respectively. For VCO DCC,
+                                                                                     it is SEL_CKFB as explained above. To ensure the stability
+                                                                                     of each adaptation loop and minimize the potential fighting
+C. VCO DCC and Other Digital Calibrations                                            among them, different step size, μ, is used in each LMS
+   The duty-cycle error in CKVCO results in phase error,                             loop to control its convergence speed, as shown in Fig. 9.
+terr , as illustrated in Fig. 7. More errors come from the                          The simulated convergence transient for MASH1-1 with FCW
+inverter delay and the DFF propagation delay mismatches                              of 45.104 is plotted in Fig. 10(a), in which VCO DCC
+between the two paths. For a 5-GHz LC-VCO with a 2%                                  loop converges first despite DTC gain error and CKREF
+duty-cycle error, and a delay mismatch of 20 ps in DFFs,                             duty-cycle error, both acting as interference. The CKREF DCC
+
+       Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+WU et al.: 14-nm ULTRA-LOW JITTER FRACTIONAL-N PLL USING A DTC RANGE REDUCTION TECHNIQUE                                                                       3761
+
+
+
+
+Fig. 10.    (a) Digital calibration convergence transient (FCW = 45.104,
+MASH1-1). (b) Comparison of K DTC and DTC code with and without DTC
+range reduction.
+
+                                                                                  Fig. 11. (a) Schematic of the DTC with a clock double at input. (b) Simulated
+                                                                                  DTC PN and INL.
+[i.e., CKREF dcc_err in Fig. 10(a)] converges next and is
+followed by K DTC eventually. All the calibrations converge
+within 40 μs despite large initial errors, e.g., 32-mV com-                       improving DTC INL. Moreover, the charging time required
+parator offset, 10% K DTC error, 20 ps VCO duty-cycle error,                      by the DTC core is also reduced with DR so that a higher
+and CKREF of 57% duty cycle used in this simulation.                              CKDTC (i.e., f ref ) can be supported. In addition, a sharper
+Moreover, all three calibrations run in background simul-                         slope reduces the short current consumed by both DTC core
+taneously and converge robustly at both integer and near-                         and inverter buffer, decreasing DTC power consumption. The
+integer channels when DSM is second-order or higher. For                          single-side band (SSB) PN of a DTC at mid-code due to its
+a first-order DSM, these calibrations have difficulty to con-                     core stage was derived in [16], and it can be rewritten to (1)
+verge in both simulation and measurement, as e [n] could                         as a function of DR
+exhibit very low-frequency idle tones at near-integer channels.                                                                          
+                                                                                          ∼                                    DR2
+Consequently, the LMS loop must be much slower than the                                L = 10 · log10 2kT · f ref (2π) ·
+                                                                                                                      2
+                                                                                                                                           . (1)
+                                                                                                                         ln 2 · 2n · CLSB
+period of e [n] to operate properly according to the adaptive
+filter theory [35]. Fig. 10(b) compares the convergence tra-                          According to (1), DTC PN is 6 dB lower with 1/2 DR, for
+jectories of K DTC for the cases with and without DTC range                       a given n-bit design with unit capacitor size of CLSB . Besides,
+reduction. Using the modified MMD and DSM reduces DTC                             the sharper input slope also results in less voltage noise to
+code variation by half, without compromising background                           jitter conversion due to the inverter buffer. Both help reduce
+calibration speed and accuracy.                                                   the random jitter of CKDTC significantly.
+                                                                                      Compared with the DTC in [16], this design reduces Tres
+                                                                                  from 650 to 350 fs. A 10-bit design is sufficient to cancel the
+D. Digital-to-Time Converter                                                      QE due to a MASH1-1 DSM for a 5–7-GHz VCO. Both QN
+   Fig. 11(a) shows the simplified schematic of the DTC with                      and thermal noise of the DTC are reduced by 6 dB due to
+a clock doubler at input. The DTC consists of an RC delay                         the 1/2 DR, as explained above. The simulated DTC PN at
+core and an inverter buffer that acts as a voltage comparator.                    153.6-MHz sampling rate is shown in Fig. 11(b). At 1-MHz
+The DTC code controls the n-bit switched-capacitor bank to                        frequency offset, the DTC PN is 8 dB lower than the external
+realize a unit delay of Tres = ln 2 · R · C LSB , and a total                     XO reference clock used in this PLL (PN = −160 dBc/Hz at
+DR of 2n · Tres . This topology is simple and can operate                         1-MHz offset for the 76.8-MHz XO). The DTC PN increases
+under low supply voltage (e.g., 0.8 V after supply regulation                     at lower offset frequency due to the flicker noise from the
+in this 14-nm design). As a contrary, a constant-slope DTC                        DTC core circuit and supply regulator.
+(slope = I /C) [36] may require a much higher supply voltage                          DTC INL is simulated with actual DSM sequence operating
+(e.g., 1.5 V) to minimize the current source variation over the                   at 153.6 MHz to capture both static and dynamic distortion
+required DR. However, in an RC delay-based DTC, the slope-                        in the circuit. The INL curves are plotted in Fig. 12(b)
+dependent (i.e., code-dependent) propagation delay due to the                     for various process corners and temperature. Since only
+inverter buffer, tcmp , results in intrinsic nonlinearity, which                 50% of the full range is exercised with the range reduction
+typically limits the INL [22], as illustrated in Fig. 11(a).                      technique, the effective INL is reduced from 4 to 1 LSB,
+Thanks to the range reduction technique, the slope of Vdly                        which results in less noise folding and lower fractional
+is steeper and it also varies less across the DTC code, thus                      spurs when used in a fractional-N PLL. To maintain INL
+
+    Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+3762                                                                                IEEE JOURNAL OF SOLID-STATE CIRCUITS, VOL. 56, NO. 12, DECEMBER 2021
+
+
+
+
+                                                                                     Fig. 13.   Layout implementation of the dual-core VCO.
+
+
+
+                                                                                     doubled current consumption, as explained in [27]. Different
+                                                                                     from the multi-core design in [25] and [26], the second core
+                                                                                     can be powered down to improve PLL power jitter FoM with
+Fig. 12.     Schematic of the reconfigurable dual-core VCO.                          negligible impact on oscillation frequency.
+                                                                                         The complete oscillator system is shown in Fig. 13. Each
+                                                                                     core is a thin-oxide NMOS cross-coupled VCO with noise
+within 1 LSB over PVT variations, the programmable resistor
+                                                                                     filtering inductor, L s . An NMOS-only topology is chosen
+R is adjusted to minimize the Tres variation over process
+                                                                                     so that the VCO can operate under 1-V supply shared by
+corners. Besides, a master–slave source follower regulation
+                                                                                     the entire PLL, taking into account the voltage headroom
+scheme speeds up supply settling to within 2 ns even at slow
+                                                                                     needed for supply regulation. The tail inductor generates a
+process corner, reducing memory effect due to supply settling
+                                                                                     high impedance around 2 × f osc , which, in turn, prevents the
+errors, as explained in [16]. Moreover, since a doubled clock,
+                                                                                     differential pair transistors from conducting while in triode
+CKREF2X (at 153.6 MHz), is used in this DTC, its duty cycle
+                                                                                     and degrading Q of the tank [38]. Both VCO cores are
+could vary by ±25% over PVT due to the delay variation in the
+                                                                                     identical and are coupled together by shorting their outputs via
+frequency doubler according to circuit simulation. In addition,
+                                                                                     thick-oxide NMOS switches (ON-resistance is 10). Thus, the
+CKREF also has duty-cycle error (e.g., ±5%). These may
+                                                                                     equivalent tank inductance is halved and the tank Q remains
+result in insufficient time for either Vdly to charge to Vth or for
+                                                                                     the same. The discrete tuning in each core consists of a thin-
+the supply to settle before the next rising edge of CKREFX2
+                                                                                     oxide switched-capacitor bank segmented into 5-binary bits
+(e.g., less than 1.5 ns is available in worst case), which
+                                                                                     and 31 thermometer bits. A 5-bit and a 3-bit bank of tunable
+ultimately limits the DTC operating frequency. To resolve this,
+                                                                                     varactors, VAR_P and VAR_I, provide continuous tuning with
+a proportional to absolute temperature (PTAT) current is fed
+                                                                                     a programmable VCO gain for proportional (K VCO_P ) and
+to a replica delay stage to generate the supply voltage for the
+                                                                                     integral path (K VCO_I ), respectively. K VCO_I is reconfigurable
+delay logic of the doubler. With this biasing scheme, the duty
+                                                                                     from 0 to 80 MHz/V in steps of 20 MHz/V. K VCO_P has
+cycle of CKREFX2 varies <5% over process corners and a
+                                                                                     a finer step size of 0.5 MHz/V to fine-tune the PLL BW
+wide temperature range (−40 ◦ C–125 ◦ C), which is crucial for
+                                                                                     for jitter optimization. Each VCO core is fed with the same
+maintaining superior linearity over PVT variations at higher
+                                                                                     control line for frequency tuning. A third bank of varactors,
+clock rate. Compared with [16], this work achieves similar
+                                                                                     VAR_T, connected to a PTAT reference, provides temperature
+effective INL at higher clock rate without using large bleeding
+                                                                                     compensation, which can correct up to 2 MHz of frequency
+current in supply regulation (0.4 mA in [16]).
+                                                                                     drift per degree from −40 ◦ C to +125 ◦ C. The simulated
+                                                                                     maximum single-ended oscillation swing is 1.05 Vpp , which
+                     IV. D UAL -C ORE VCO D ESIGN                                    is controlled by the VCO core supply voltage to meet the
+  Low-PN VCO is always needed despite PLL topology.                                  thin-oxide device reliability requirement (i.e., ≤1.134 V in
+Phase noise in an LC oscillator is largely determined by                             the 14-nm FINFET process).
+the inductor size and quality factor (Q). Leeson’s PN                                    An ON-chip low-dropout regulator (LDO) generates 0.5 V
+equation [37] can be rewritten to show that                                          for VCO cores from a 1-V supply voltage (see Fig. 12).
+                                                                                     It consists of two stages, STG1 and STG2, to achieve >50 dB
+                                          3
+                                       f osc ·L
+                                L∝       2 · Q
+                                                .                            (2)     power supply rejection (PSR) to suppress the voltage noise and
+                                      Vosc                                           ripple from OFF-chip switching regulator and other ON-chip
+  Accordingly, for a given oscillation frequency, f osc , and                        PLL and transceiver circuits, operating under the same supply.
+oscillation swing, Vosc (determined by the VCO topology                              STG1 uses a folded-cascode error amplifier with a quies-
+and device reliability constrain), to reduce noise, one must                         cent current of 100 μA to obtain a unity gain bandwidth
+scale the inductance (L) while maintaining its Q. However,                           of 100 MHz for better PSR and low noise. STG2 uses a
+there is a limit as to how small an inductor can be drawn                            master–slave topology, in which an RC low-pass filter with
+before Q-degradation occurs, which diminishes the return on                          low cut-off frequency (e.g., 1 MHz) largely suppresses the
+inductor scaling. To mitigate this issue, a dual-core VCO is                         thermal noise from the master branch. The intrinsic noise from
+used in this design to lower the PN by 3 dB at the cost of                           STG1 could leak to LDO output, VDDOSC , in the absence of
+
+       Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+WU et al.: 14-nm ULTRA-LOW JITTER FRACTIONAL-N PLL USING A DTC RANGE REDUCTION TECHNIQUE                                                                       3763
+
+
+
+
+Fig. 14.   Chip photomicrograph.
+
+
+
+a closed-loop regulation in STG2. To mitigate it, the reference
+bandgap voltage, VBGR , is pre-filtered. Besides, the bleeding
+resistance is reduced to 20 k, and the feedback ratio is                         Fig. 15.   Measured VCO phase noise at one-core and dual-core modes.
+designed to be unity to reduce the thermal noise due to error
+amplifier and resistive feedback in STG1. Overall, the LDO
+achieves a PSR higher than 55 dB up to 10-MHz frequency
+offset, while contributing 10% of the VCO PN at 100-kHz
+frequency offset. Its contribution reduces to <2% at 1-MHz
+offset frequency.
+   Fig. 13 depicts the top view of the LC-tank layout includ-
+ing the tail inductors. The two cores are fully symmetric
+and star connected in the middle. Such a tank orientation
+minimizes the magnetic coupling between the two cores so
+that <1% difference in f osc is observed between one-core
+and dual-core modes according to circuit simulation. It also
+prevents concurrent oscillation and ensures robust startup
+at the dual-core mode. For each core, the main inductor
+(L 1 and L 2 ) uses a single turn to maximize Q. The tail
+inductor, L s , is folded inside the main inductor without
+additional chip area. It is designed as an 8-shape [39] to
+minimize crosstalk and Q-degradation to the main inductor.
+This folded layout style also facilities placing local bypass
+capacitors between the local supply (i.e., center-tap of L 1 )
+and ground, providing ac-shorts at the common-mode har-
+monics. This ensures that the common-mode path is localized
+and well-defined, which is the key to suppress flicker noise
+up-conversion.
+
+
+                   V. E XPERIMENTAL R ESULTS                                      Fig. 16. Measured PLL phase noise at (a) f vco = 6200 MHz = 40.36458 ×
+                                                                                  153.6 MHz and (b) f vco = 6451.3 MHz = 42 × 153.6 MHz + 100 kHz.
+   The fractional-N PLL is implemented in a 14-nm FIN-
+FET process. Fig. 14 shows the chip micrograph. The PLL,
+excluding the output driver, occupies 0.31 mm2 . It synthesizes                   offset when both VCO cores are enabled (close to the the-
+frequencies from 5 to 7 GHz from a 76.8-MHz XO reference.                         oretical 3-dB improvement). Fig. 16 depicts the closed-loop
+The complete PLL draws 14.2 mW, in which the dual-core                            phase noise spectrum for reference clock doubler mode.
+VCO and DTC draw 12 and 1.2 mW, respectively. The MMD                             In Fig. 16(a), for a fractional channel of fvco = 6.2 GHz,
+consumes 0.5 mW and the rest of the circuits together draw                        the measured integrated phase noise (IPN) at 3.1-GHz output
+0.5 mW, including SPD, G M , and the digital calibration                          is −58.8 dBc or 83.4 fsrms with the dual-core VCO, integrated
+circuitries. Analog circuits share a 1-V supply and the digital                   from 10 kHz to 100 MHz. The fractional spurs are located
+circuits operate at 0.8 V. At the one-core VCO mode, the PLL                      outside of the loop bandwidth, which are sufficiently low-pass
+power consumption is reduced to 8.2 mW.                                           filtered to contribute negligible IPN. As a contrary, Fig. 16(b)
+   The PLL performance is measured at the divide-by-2 test                        shows the PLL PN spectrum of a near-integer channel
+output. Fig. 15 shows the measured open-loop VCO phase                            ( f vco = 6451.3 MHz = 42 × 153.6 MHz + 100 kHz). The
+noise at 3-GHz output frequency ( f vco = 6 GHz), which                           rms jitter increases from 83.4 fs to 94.3 fs due to the in-band
+improves from −98.1 to −101 dBc/Hz at 100-kHz frequency                           fractional spurs although they are all below −73 dBc. When
+
+    Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+3764                                                                                IEEE JOURNAL OF SOLID-STATE CIRCUITS, VOL. 56, NO. 12, DECEMBER 2021
+
+
+
+
+Fig. 17.     Measured PLL output spectrum for f vco = 6451.3 MHz.
+
+
+configured to one-core VCO, the IPN degrades by 1.3 dB,
+and the PLL FoM improves from −250.1 dB (dual-core VCO)
+to −251.2 dB, as the PLL power consumption reduces from
+14.2 to 8.2 mW. The phase noise spectrum of the external
+76.8-MHz XO is also plotted in Fig. 16(a) for reference.
+The PLL in-band PN is dominated by the external XO and
+the ON-chip reference clock buffer, which indicates that the
+DTC PN performance is close to the simulation results shown
+in Fig. 11.                                                                          Fig. 18. (a) Worst case fractional spur measured at half of f vco versus
+   The measured DTC resolution is 330 fs, reference clock                            f vco . (b) Measured PLL rms jitter with and without DTC range reduction
+                                                                                     across f vco . (c) Measured PLL rms jitter over temperatures.
+duty cycle error is 180 ps, and VCO duty cycle error is 12 ps
+according to the calibration results. The measured worst case
+reference spur is −69.6 dBc from the PLL output spectrum
+shown in Fig. 17 for a near-integer channel of 6451.3 MHz.                           to <100 fs including spurs, demonstrating the necessity of
+The measured fractional spur across fractional codes are                             this background calibration in a DTC-based sampling PLL
+plotted in Fig. 18(a) for MASH1-1 case, which is close to the                        architecture, as explained in Section III.
+spur level predicted by system simulation using the DTC INL                             Fig. 18(c) shows the PLL rms jitter measured from −25 ◦ C
+curve shown in Fig. 11(b). The worst case spur is <−70 dBc                           to 100 ◦ C, which degrades only 20 fs, thanks to the digital
+without DTC nonlinearity calibration and negligible supply                           background calibrations. It also indicates good DTC linearity
+bleeding current.                                                                    over temperature variation. In this test, PLL is first locked
+   To reveal the benefits of the DTC range reduction technique,                      at 25 ◦ C, and then heated up or cooled down to different tem-
+the PLL integrated jitter including spurs is measured with                           peratures without relock. This demonstrates the wide temper-
+and without it, as shown in Fig. 18(b). The 10-bit DTC                               ature tracking capability due to the use of a dedicated varactor
+offers a 320-ps full range, which is not enough to support                           bank that is controlled by a PTAT voltage to compensate the
+a conventional MASH1-1 DSM for fvco less than 6.25 GHz.                              VCO frequency drift over temperature.
+Thus, the rms jitter degrades severely when f vco is less than                          Table I shows the performance summary and comparison
+6 GHz. For a higher f vco , although DTC range is sufficient                         to state-of-the-art fractional-N PLLs with external reference
+for both cases, using the range reduction still helps decrease                       clock lower than 100 MHz. This PLL achieves sub-100 fs
+the integrated jitter from 120 to 90 fs due to lower fractional                      integrated jitter, and the best power jitter FoM (<−250 dB)
+spurs and noise folding caused by DTC nonlinearity. The                              among them. Compared with [16], it obtains similar rms jitter
+background VCO DCC loop is disabled intentionally to check                           with much lower power consumption, as both DTC thermal
+its effectiveness, and the measured PLL rms jitter is also                           noise and QN are lower due to DTC range reduction technique
+plotted in Fig. 18(b). For some channel frequencies, the DTC                         so that a wider loop bandwidth (1.2 MHz versus 800 kHz
+gain fails to converge when VCO DCC is disabled and                                  in [16]) can be used to suppress VCO PN. In addition, using
+the resulting integrated jitter is high (e.g., 180 fs). Once                         a higher reference clock reduces the noise multiplication factor
+enabling the VCO DCC, the integrated jitter is always reduced                        of the reference path.
+
+       Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+WU et al.: 14-nm ULTRA-LOW JITTER FRACTIONAL-N PLL USING A DTC RANGE REDUCTION TECHNIQUE                                                                       3765
+
+
+
+                                                                           TABLE I
+                                         P ERFORMANCE S UMMARY OF S TATE - OF - THE -A RT F RACTIONAL - N PLL
+
+
+
+
+                          VI. C ONCLUSION                                         [10] Y. Hu et al., “17.6 A 21.7-to-26.5GHz charge-sharing locking quadrature
+                                                                                       PLL with implicit digital frequency-tracking loop achieving 75fs jitter
+    This work presents a 6-GHz fractional-N sampling PLL                               and –250dB FoM,” in IEEE Int. Solid-State Circuits Conf. (ISSCC) Dig.
+with a DTC range reduction technique and a dual-core VCO                               Tech. Papers, Feb. 2020, pp. 276–278.
+in a 140 nm FINFET process. It achieves sub-100 fs integrated                     [11] J. Gong, F. Sebastiano, E. Charbon, and M. Babaie, “A 10-to-12 GHz
+                                                                                       5 mW charge-sampling PLL achieving 50 fsec RMS jitter, -258.9 dB
+jitter with a 76.8-MHz crystal reference, while consuming                              FOM and -65 dBc reference spur,” in Proc. IEEE Radio Freq. Integr.
+14.2 mW. Compared with prior work, it further reduces the                              Circuits Symp. (RFIC), Aug. 2020, pp. 15–18.
+performance gap between integer-N and fractional-N PLLs in                        [12] Z. Zhang, G. Zhu, and C. P. Yue, “A 0.65-V 12-16-GHz sub-sampling
+                                                                                       PLL With 56.4-fsrms integrated jitter and –256.4-dB FoM,” IEEE J.
+terms of jitter power product and it is a good candidate for                           Solid-State Circuits, vol. 55, no. 6, pp. 1665–1683, Jun. 2020.
+emerging high-throughput wireless applications.                                   [13] Z. Yang, Y. Chen, S. Yang, P.-I. Mak, and R. P. Martins, “16.8 A 25.4-
+                                                                                       to-29.5GHz 10.2 mW isolated sub-sampling PLL achieving -252.9dB
+                                                                                       jitter-power FoM and -63dBc reference spur,” in IEEE Int. Solid-State
+                              R EFERENCES                                              Circuits Conf. (ISSCC) Dig. Tech. Papers, Feb. 2019, pp. 270–272.
+                                                                                  [14] X. Gao, E. A. M. Klumperink, M. Bohsali, and B. Nauta, “A low noise
+ [1] Study on Support of NR Downlink 256 Quadrature Amplitude Modula-                  sub-sampling PLL in which divider noise is eliminated and PD/CP noise
+     tion (QAM) for Frequency Range 2 (FR2), Standard 38.883, Release 16,              is not multiplied by N2 ,” IEEE J. Solid-State Circuits, vol. 44, no. 12,
+     3GPP, Tech. Rep., Jul. 2020.                                                      pp. 3253–3263, Dec. 2009.
+ [2] S. Ek et al., “A 28-nm FD-SOI 115-fs jitter PLL-based LO system for          [15] A. Santiccioli et al., “A 66-fs-rms jitter 12.8-to-15.2-GHz fractional-N
+     24–30-GHz sliding-IF 5G transceivers,” IEEE J. Solid-State Circuits,              bang–bang PLL with digital frequency-error recovery for fast locking,”
+     vol. 53, no. 7, pp. 1988–2000, Jul. 2018.                                         IEEE J. Solid-State Circuits, vol. 55, no. 12, pp. 3349–3361, Dec. 2020.
+ [3] C. Deng et al., “IEEE 802.11be Wi-Fi 7: New challenges and oppor-            [16] W. Wu et al., “A 28-nm 75-fsrms analog fractional-N sampling PLL with
+     tunities,” IEEE Commun. Surveys Tuts., vol. 22, no. 4, pp. 2136–2166,             a highly linear DTC incorporating background DTC gain calibration
+     4th Quart., 2020.                                                                 and reference clock duty cycle correction,” IEEE J. Solid-State Circuits,
+ [4] W. El-Halwagy, A. Nag, P. Hisayasu, F. Aryanfar, P. Mousavi, and                  vol. 54, no. 5, pp. 1254–1265, May 2019.
+     M. Hossain, “A 28-GHz quadrature fractional-N frequency synthesizer          [17] M. Mercandelli et al., “17.5 A 12.5GHz fractional-N type-I sampling
+     for 5G transceivers with less than 100-fs jitter based on cascaded                PLL achieving 58fs integrated jitter,” in IEEE Int. Solid-State Circuits
+     PLL architecture,” IEEE Trans. Microw. Theory Techn., vol. 65, no. 2,             Conf. (ISSCC) Dig. Tech. Papers, Feb. 2020, pp. 274–276.
+     pp. 396–413, Feb. 2017.
+                                                                                  [18] T. A. D. Riley, M. A. Copeland, and T. A. Kwasniewski, “Delta-sigma
+ [5] C.-W. Yao et al., “A 14-nm 0.14-psrms fractional-N digital PLL with
+                                                                                       modulation in fractional-N frequency synthesis,” IEEE J. Solid-State
+     a 0.2-ps resolution ADC-assisted coarse/fine-conversion chopping TDC
+                                                                                       Circuits, vol. 28, no. 5, pp. 553–559, May 1993.
+     and TDC nonlinearity calibration,” IEEE J. Solid-State Circuits, vol. 52,
+     no. 12, pp. 3446–3457, Dec. 2017.                                            [19] X. Gao et al., “A 2.7-to-4.3GHz 0.16 ps rms jitter, –246.8 dB
+ [6] G. Vlachogiannakis et al., “A self-calibrated fractional-N PLL for WiFi           FOM digital fractional-N sampling PLL in 28nm CMOS,” in IEEE
+     6 / 802.11ax in 28nm FDSOI CMOS,” in Proc. IEEE 45th Eur. Solid                   Int. Solid-State Circuits Conf. (ISSCC) Dig. Tech. Papers, Jan. 2016,
+     State Circuits Conf. (ESSCIRC), Sep. 2019, pp. 105–108.                           pp. 174–175.
+ [7] E. Thaller et al., “32.6 A K-band 12.1-to-16.6GHz subsampling ADPLL          [20] N. Markulic et al., “A DTC-based subsampling PLL capable of self-
+     with 47.3fsrms jitter based on a stochastic flash TDC and coupled dual-           calibrated fractional synthesis and two-point modulation,” IEEE J. Solid-
+     core DCO in 16nm FinFET CMOS,” in IEEE Int. Solid-State Circuits                  State Circuits, vol. 51, no. 12, pp. 3078–3092, Dec. 2016.
+     Conf. (ISSCC) Dig. Tech. Papers, Feb. 2021, pp. 451–453.                     [21] L. Bertulessi et al., “A 30-GHz digital sub-sampling fractional-N PLL
+ [8] D. Turker et al., “A 7.4-to-14GHz PLL with 54fsrms jitter in                      with –238.6-dB jitter-power figure of merit in 65-nm LP CMOS,” IEEE
+     16nm FinFET for integrated RF-data-converter SoCs,” in IEEE Int.                  J. Solid-State Circuits, vol. 54, no. 12, pp. 3493–3502, Dec. 2019.
+     Solid-State Circuits Conf. (ISSCC) Dig. Tech. Papers, Feb. 2018,             [22] N. Markulic, K. Raczkowski, P. Wambacq, and J. Craninckx, “A 10-bit,
+     pp. 378–380.                                                                      550-fs step digital-to-time converter in 28nm CMOS,” in Proc. 40th
+ [9] J. Kim et al., “16.2 A 76fsrms jitter and –40dBc integrated-phase-noise           Eur. Solid-State Circuits Conf. (ESSCIRC), Venice, Italy, Feb. 2014,
+     28-to-31GHz frequency synthesizer based on digital sub-sampling PLL               pp. 79–82.
+     using optimally spaced voltage comparators and background loop-gain          [23] S. Levantino, G. Marzin, and C. Samori, “An adaptive pre-distortion
+     optimization,” in IEEE Int. Solid-State Circuits Conf. (ISSCC) Dig. Tech.         technique to mitigate the DTC nonlinearity in digital PLLs,” IEEE
+     Papers, Feb. 2019, pp. 258–259.                                                   J. Solid-State Circuits, vol. 49, no. 8, pp. 1762–1772, Aug. 2014.
+
+    Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+3766                                                                                IEEE JOURNAL OF SOLID-STATE CIRCUITS, VOL. 56, NO. 12, DECEMBER 2021
+
+
+
+[24] W. Wu et al., “32.2 A 14nm analog sampling fractional-N PLL with                                           Chih-Wei Yao was born in Taipei, Taiwan, in 1972.
+     a digital-to-time converter range-reduction technique achieving 80fs                                       He received the B.S. degree in electrical engineering
+     integrated jitter and 93fs at near-integer channels,” in IEEE Int. Solid-                                  from the University of California at Santa Barbara,
+     State Circuits Conf. (ISSCC) Dig. Tech. Papers, Feb. 2021, pp. 444–446.                                    Santa Barbara, CA, USA, in 1994, and the M.S. and
+[25] D. Murphy and H. Darabi, “A 27-GHz quad-core CMOS oscillator                                               Ph.D. degrees from the University of California at
+     with no mode ambiguity,” IEEE J. Solid-State Circuits, vol. 53, no. 11,                                    Los Angeles, Los Angeles, CA, USA, in 2004 and
+     pp. 3208–3216, Nov. 2018.                                                                                  2012, respectively.
+[26] F. Padovan, F. Quadrelli, M. Bassi, M. Tiebout, and A. Bevilacqua,                                           He was with Sun Microsystems, Santa Clara, CA,
+     “A quad-core 15GHz BiCMOS VCO with –124dBc/Hz phase noise at                                               USA, where he was involved with microprocessor
+     1MHz offset, –189dBc/Hz FOM, and robust to multimode concurrent                                            circuit design from 1997 to 2000 and with Sili-
+     oscillations,” in IEEE Int. Solid-State Circuits Conf. (ISSCC) Dig. Tech.                                  con Bridge, CA, USA, working on optical serial-
+     Papers, Feb. 2018, pp. 376–378.                                                 izer/deserialier design, from 2000 to 2002. He was an RFIC Design Engineer
+[27] B. Razavi, “A study of phase noise in CMOS oscillators,” IEEE J. Solid-         with Marvell Semiconductor, Santa Clara, CA, focusing on high-performance
+     State Circuits, vol. 31, no. 3, pp. 331–343, Mar. 1996.                         frequency synthesizers for Wi-Fi a/b/g/n/ac from 2008 to 2012. Since 2012,
+[28] B. Miller and R. J. Conley, “A multiple modulator fractional divider,”          he has been with Samsung Semiconductor Inc., San Jose, CA, USA. He is cur-
+     IEEE Trans. Instrum. Meas., vol. 40, no. 3, pp. 578–583, Jun. 1991.             rently an RFIC Senior Director developing cellular RF transceiver solutions.
+[29] H. Liu, D. Tang, Z. Sun, W. Deng, H. C. Ngo, and K. Okada, “A sub-
+     mW fractional-N ADPLL with FOM of –246 dB for IoT applications,”
+     IEEE J. Solid-State Circuits, vol. 53, no. 12, pp. 3540–3552, Dec. 2018.
+[30] A. T. Narayanan et al., “A fractional-N sub-sampling PLL using a
+     pipelined phase-interpolator with an FoM of -250 dB,” IEEE J. Solid-
+     State Circuits, vol. 51, no. 7, pp. 1630–1640, Jul. 2016.
+[31] D. Liao, F. F. Dai, B. Nauta, and E. Klumperink, “Multi-phase sub-                                       Chengkai Guo received the B.S. degree in electrical
+     sampling fractional-N PLL with soft loop switching for fast robust lock-                                 engineering from Zhejiang University, Hangzhou,
+     ing,” in Proc. IEEE Custom Integr. Circuits Conf. (CICC), Apr. 2017,                                     China, in 2014, and the M.S. degree from the Uni-
+     pp. 1–4.                                                                                                 versity of California at Los Angeles, Los Angeles,
+[32] Q. J. Gu and Z. Gao, “A CMOS high speed multi-modulus divider with                                       CA, USA, in 2016.
+     retiming for jitter suppression,” IEEE Microw. Wireless Compon. Lett.,                                     In 2015, he was an Intern with RF Group, Maxim
+     vol. 23, no. 10, pp. 554–556, Oct. 2013.                                                                 Integrated, Portland, OR, USA, where he was
+[33] C. S. Vaucher, I. Ferencic, M. Locher, S. Sedvallson, U. Voegeli, and                                    designing analog anti-aliasing filter. From 2016 to
+     Z. Wang, “A family of low-power truly modular programmable dividers                                      2018, he was a Hardware Design Engineer with Sun
+     in standard 0.35-/spl mu/m CMOS technology,” IEEE J. Solid-State                                         Microsystem, Santa Clara, CA, USA, where he was
+     Circuits, vol. 35, no. 7, pp. 1039–1045, Jul. 2000.                                                      working on DDR4 transceiver circuitry and channel
+[34] D. Tasca, M. Zanuso, G. Marzin, S. Levantino, C. Samori, and                    characterization. Since 2018, he has been with Samsung Semiconductor,
+     A. L. Lacaita, “A 2.9–4.0-GHz fractional-N digital PLL with bang-bang           San Jose, CA, USA, where he is currently a Staff Research and Devel-
+     phase detector and 560-fsrms integrated jitter at 4.5-mW power,” IEEE           opment Engineer, developing high-frequency circuitry for cellular PLL and
+     J. Solid-State Circuits, vol. 46, no. 12, pp. 2745–2758, Dec. 2011.             5G millimeter-wave application.
+[35] A. H. Sayed, Adaptive Filters. Hoboken, NJ, USA: Wiley, 2008.
+[36] J. Z. Ru, C. Palattella, P. Geraedts, E. Klumperink, and B. Nauta,
+     “A high-linearity digital-to-time converter technique: Constant-slope
+     charging,” IEEE J. Solid-State Circuits, vol. 50, no. 6, pp. 1412–1423,
+     Jun. 2015.
+[37] D. B. Leeson, “A simple model of feedback oscillator noise spectrum,”                                   Pei-Yuan Chiang received the B.S. and M.S.
+     Proc. IEEE, vol. 54, no. 2, pp. 329–330, Feb. 1966.                                                     degrees in electrical and computer engineering
+[38] E. Hegazi, H. Sjoland, and A. A. Abidi, “A filtering technique to lower                                 from the National Chiao Tung University, Hsinchu,
+     LC oscillator phase noise,” IEEE J. Solid-State Circuits, vol. 36, no. 12,                              Taiwan, in 2006 and 2008, respectively, and the
+     pp. 1921–1930, Dec. 2001.                                                                               Ph.D. degree in electrical engineering from the Uni-
+[39] O. Tesson, “High quality monolithic 8-shaped inductors for silicon RF                                   versity of California at Irvine, Irvine, CA, USA,
+     IC design,” in Proc. IEEE Topical Meeting Silicon Monolithic Integr.                                    in 2014.
+     Circuits RF Syst., Jan. 2008, pp. 94–97.                                                                  From 2014 to 2016, he was with Marvell Semi-
+[40] F. Song, Y. Zhao, B. Wu, L. Tang, L. Lin, and B. Razavi, “16.5 A                                        conductor Inc., Santa Clara, CA, USA, as a Senior
+     fractional-N synthesizer with 110fsrms jitter and a reference quadrupler                                RFIC Design Engineer, where he was working on
+     for wideband 802.11ax,” in IEEE Int. Solid-State Circuits Conf. (ISSCC)                                 Wi-Fi/IoT circuit. He is currently with the Samsung
+     Dig. Tech. Papers, Feb. 2019, pp. 264–266.                                      Semiconductor Modem Research and Development Group, San Jose, CA,
+[41] D. Yang et al., “A calibration-free triple-loop bang-bang PLL achieving         USA, focusing on advanced cellular RFIC design. His research interests
+     131fsrms jitter and -70dBc fractional spurs,” in IEEE Int. Solid-State          include millimeter wave (MMW) and terahertz integrated circuit design for
+     Circuits Conf. (ISSCC) Dig. Tech. Papers, San Francisco, CA, USA,               wireless and high-speed data communication.
+     Feb. 2019, pp. 266–268.
+
+
+                         Wanghua Wu (Member, IEEE) received the B.Sc.
+                         degree (Hons.) from Fudan University, Shanghai,
+                         China, in 2004, and the M.Sc. (cum laude) and Ph.D.
+                         degrees from Delft University of Technology, Delft,                                   Lei Chen received the B.S. degree in electrical engi-
+                         The Netherlands, in 2007 and 2013, respectively, all                                  neering from Beijing Jiaotong University, Beijing,
+                         in electrical engineering.                                                            China, in 2008, and the M.S. degree in electrical
+                           From 2013 to 2016, she was an RFIC Design Engi-                                     engineering from Southern Methodist University,
+                         neer at Marvell Semiconductor, Santa Clara, CA,                                       Dallas, TX, USA, in 2012. He is currently pursu-
+                         USA, developing high-performance frequency syn-                                       ing the Ph.D. degree in electrical engineering with
+                         thesizers for wireless local area network (WLAN)                                      the University of Texas at Dallas, Richardson, TX,
+                         transceivers. Since 2016, she has been with Samsung                                   USA.
+Semiconductor Inc., San Jose, CA, USA. She is currently a Principal Engineer,                                    He is currently with Samsung Semiconductor
+focusing on advanced cellular RFIC design.                                                                     Power Management IC Group, San Jose, CA, USA,
+  Dr. Wu is currently the Technical Program Committee Member of IEEE                                           where he is involved in advanced power manage-
+International Solid-State Circuits Conference (ISSCC), Custom Integrated             ment integrated circuit (PMIC) for 5G module. His current research interests
+Circuits Conference (CICC), and Radio Frequency Integrated Circuits (RFIC)           include switched-capacitor power converter, high-frequency dc–dc power
+Symposium.                                                                           converter, and fully integrated power converter.
+
+       Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+WU et al.: 14-nm ULTRA-LOW JITTER FRACTIONAL-N PLL USING A DTC RANGE REDUCTION TECHNIQUE                                                                       3767
+
+
+
+                         Pak-Kim (Frank) Lau received the B.S. and M.S.                                   Sang Won Son (Member, IEEE) received the B.S.,
+                         degrees in electrical and computer engineering from                              M.S., and Ph.D. degrees in electrical engineering and
+                         the University of California at Davis, Davis, CA,                                computer science from the University of California
+                         USA, in 2000 and 2003, respectively.                                             at Berkeley, Berkeley, CA, USA, in 1995, 1998, and
+                           From 2004 to 2017, he was a Staff Engineer                                     2002, respectively.
+                         with the Timing Solutions Group, Integrated Device                                 From 2002 to 2010, he was with Marvell Tech-
+                         Technology Inc., San Jose, CA, USA. Since 2018,                                  nology Group, Santa Clara, CA, USA, where he
+                         he has been with Samsung Semiconductor Inc.,                                     worked on multiple generations of wireless local
+                         San Jose, CA, where he is currently a Senior Staff                               area network (WLAN) transceiver products. From
+                         Engineer working on phase-locked loop (PLL) for                                  2010 to 2012, he was a Senior Department Manager
+                         5G millimeter-wave application.                                                  with Mediatek, San Jose, CA, USA, where he devel-
+                                                                                  oped RF and analog circuits for cellular and connectivity applications. He is
+                                                                                  currently a Vice President at Samsung Semiconductor Inc., San Jose, CA,
+                                                                                  where he is developing the next-generation cellular chipset solutions.
+
+                                                                                                            Thomas Byunghak Cho (Senior Member, IEEE)
+                                                                                                            received the B.S. degree from the University of
+                                                                                                            California at Los Angeles, Los Angeles, CA, USA,
+                                                                                                            in 1989, and the M.S. and Ph.D. degrees from the
+                                                                                                            University of California at Berkeley, Berkeley, CA,
+                                                                                                            USA, in 1991 and 1995, respectively, all in electrical
+                                                                                                            engineering.
+                         Zhanjun Bai received the B.Eng., M.A.Sc.,                                            In 1996, he joined Level One Communications,
+                         and Ph.D. degrees in electrical engineering from                                   San Francisco, CA, USA, developing CMOS RF
+                         Carleton University, Ottawa, ON, Canada, in 2007,                                  transceiver products for cordless phone applications.
+                         2010, and 2014, respectively.                                                      In 2000, he cofounded Wireless Interface Technolo-
+                           His Ph.D. project was in collaboration with Analog     gies, Dublin, CA, USA, developing CMOS RF transceivers for wireless
+                         Devices Inc., Ottawa, ON. From 2015 to 2017,             personal area network (WPAN)/wireless local area network (WLAN) appli-
+                         he was an Analog/Mixed Signal Integrated Cir-            cations. In 2004, he joined Marvell Semiconductor, Santa Clara, CA, USA,
+                         cuit (IC) Design Engineer with Kapik Integration,        developing CMOS RF and analog IC products for various wired and wireless
+                         Toronto, ON, Canada. In 2018, he joined the              connectivity applications. Since 2012, he has been with Samsung Electronics,
+                         Samsung Semiconductor Modem Research and                 Hwaseong-si, South Korea. He is currently the Executive Vice President
+                         Development Group, San Jose, CA, USA, where he           of Infra and Design Technology Center in charge of cellular/connectivity
+is involved in advanced cellular RFIC design. His research interest is focused    RF transceiver development, digital physical implementation, and design
+on high-frequency clock generation and clock distribution networks.               verification.
+
+
+
+
+    Authorized licensed use limited to: Universita degli Studi di Genova. Downloaded on August 13,2026 at 01:08:02 UTC from IEEE Xplore. Restrictions apply.
+

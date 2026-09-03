@@ -1,0 +1,120 @@
+// pll_afc6.va — Pbank AFC, 6-bit rework (ref3 ADPLL_ALG 图2-4, from the
+// validated ref2 pll_afc.va)
+// Binary search on the 6-bit Pbank code (stage-A mapping: code*8 -> Abank,
+// i.e. one Pbank step = 9.6MHz). V1 fix: counts the FIXED-divided tap
+// ckfb16 (= fVCO/16) over 2^thr REF periods, target = floor(FCW*2^thr/16)
+// — same counting basis as pll_fll (drawing1-2's 反馈分频器 + 14-bit fb_cnt;
+// counting the MMD output ~fref would give a useless 1-edge resolution).
+// Robustness inherited from ref2 V3:
+//   - skipwins: first N windows discarded (VCO/LDO startup transient)
+//   - window geometry: eval edge = next window start; window 1 spans K+1
+//     edges (off-by-one fix)
+//   - step exhausted + persistent miss -> re-arm step = |d|*lsb_per_cnt
+//     (bounded walk, always reaches the target bin; rail codes park)
+//   - hit parks step at 0; afc_done after 2 hit windows
+// ref3 additions per 图3/4: minimum-error tracking — every evaluated window
+// records the code with the smallest |err| (pre-move code); if the walk
+// re-arms more than max_rearm times without a hit, finish on the best code
+// (spec: "最终将子带确定为偏差最小的控制位"). en gates all counting (FSM).
+// Direction: cnt < target (f low) -> code up (Abank up -> VC1 up -> f up).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_afc6(ref, ckfb16, en, p0, p1, p2, p3, p4, p5, afc_done, cnt_out);
+inout ref, ckfb16, en;
+output p0, p1, p2, p3, p4, p5, afc_done, cnt_out;
+electrical ref, ckfb16, en, p0, p1, p2, p3, p4, p5, afc_done, cnt_out;
+
+parameter real FCW = 80.0;
+parameter integer thr = 8;         // window = 2^thr REF periods (256@100M = 2.56us;
+                                   // 1 edge = 16/2.56us = 6.25MHz < 9.6MHz step)
+parameter integer D = 16;          // fixed divider ratio of the counted tap
+parameter integer tol = 1;         // +-edges (6.25MHz < one 9.6MHz Pbank step)
+parameter integer skipwins = 2;
+parameter integer lsb_per_cnt = 1; // code LSBs per edge (~9.6/6.25 = 1.5 -> 1)
+parameter integer code0 = 63;      // spec 图3: start at max code
+parameter integer step0 = 32;
+parameter integer max_rearm = 8;   // finish on best code after this many re-arms
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+
+integer cnt, ref_cnt, code_i, step_i, hit_cnt, first_win, d, skipped;
+integer min_err, best_code, rearm_cnt, done_l, target, win_len;
+real afcd_v;
+
+analog begin
+    @(initial_step) begin
+        cnt = 0; ref_cnt = 0; code_i = code0; step_i = step0; hit_cnt = 0;
+        first_win = 1; skipped = 0; min_err = 9999999; best_code = code0;
+        rearm_cnt = 0; done_l = 0;
+        target = 0;
+    end
+    @(cross(V(ckfb16) - vth, +1)) begin
+        if ((V(en) > vth) && (done_l == 0)) cnt = cnt + 1;
+    end
+    @(cross(V(ref) - vth, +1)) begin
+        if ((V(en) > vth) && (done_l == 0)) begin
+            ref_cnt = ref_cnt + 1;
+            win_len = pow(2.0, thr);
+            if (first_win == 1) win_len = win_len + 1;
+            if (ref_cnt >= win_len) begin
+                first_win = 0;
+                ref_cnt = 0;
+                if (skipped < skipwins) begin
+                    skipped = skipped + 1;
+                    cnt = 0;
+                end else begin
+                    target = floor(FCW * pow(2.0, thr) / D);
+                    d = cnt - target;
+                    // minimum-error tracking (pre-move code produced this count)
+                    if (abs(d) < min_err) begin
+                        min_err = abs(d);
+                        best_code = code_i;
+                    end
+                    if (d < -tol)
+                        code_i = code_i + step_i;
+                    else if (d > tol)
+                        code_i = code_i - step_i;
+                    else begin
+                        hit_cnt = hit_cnt + 1;
+                        step_i = 0;
+                    end
+                    if ((d < -tol) || (d > tol)) begin
+                        if (step_i > 1)
+                            step_i = step_i / 2;
+                        else if (((d > tol) && (code_i > 0)) || ((d < -tol) && (code_i < 63)))
+                            step_i = abs(d) * lsb_per_cnt;
+                        else
+                            step_i = 0;
+                        if (step_i > 32) step_i = 32;
+                        if (step_i > 0) rearm_cnt = rearm_cnt + 1;
+                    end
+                    cnt = 0;
+                    if (code_i < 0) code_i = 0;
+                    if (code_i > 63) code_i = 63;
+                    // finish: two hit windows, or best-code fallback
+                    // (V1 fix: outputs follow code_i LIVE during the search —
+                    //  the Pbank must move for the windows to measure it)
+                    if ((hit_cnt >= 2) || (rearm_cnt >= max_rearm)) begin
+                        done_l = 1;
+                        if (hit_cnt < 2) code_i = best_code;
+                    end
+                end
+            end
+        end
+    end
+    if (done_l == 1)
+        afcd_v = vh;
+    else
+        afcd_v = 0.0;
+    V(afc_done) <+ transition(afcd_v, 0, 10p);
+    V(p0) <+ (((code_i >> 0) & 1) != 0) ? vh : 0.0;
+    V(p1) <+ (((code_i >> 1) & 1) != 0) ? vh : 0.0;
+    V(p2) <+ (((code_i >> 2) & 1) != 0) ? vh : 0.0;
+    V(p3) <+ (((code_i >> 3) & 1) != 0) ? vh : 0.0;
+    V(p4) <+ (((code_i >> 4) & 1) != 0) ? vh : 0.0;
+    V(p5) <+ (((code_i >> 5) & 1) != 0) ? vh : 0.0;
+    // debug: internal edge count as voltage (1V = 100 edges)
+    V(cnt_out) <+ cnt * 0.01;
+end
+endmodule
