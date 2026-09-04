@@ -1,0 +1,305 @@
+// UCIe-AP RX AFE golden netlist -- generated from the afe_sch schematics
+// (si export of tb_afe_tran) by scripts/gen_golden_netlist.py; run scripts bake __X__ values.
+simulator lang=spectre
+
+__MODELS__
+
+ahdl_include "afe_ber_chk.va"
+ahdl_include "afe_clk_gen.va"
+ahdl_include "afe_pingpong.va"
+ahdl_include "afe_prbs23_gen.va"
+ahdl_include "afe_samp.va"
+// Library name: afe_sch
+// Cell name: afe_tx_drv
+// View name: schematic
+subckt afe_tx_drv din pad vccio vdd vss
+    Mp3d (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp3c (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp3b (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp3a (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp2c (n2 n1 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp2b (n2 n1 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp2a (n2 n1 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp1 (n1 din vdd vdd) pch_svt_mac l=16n nfin=4
+    Mn3c (n3 n2 vss vss) nch_svt_mac l=16n nfin=16
+    Mn3b (n3 n2 vss vss) nch_svt_mac l=16n nfin=16
+    Mn3a (n3 n2 vss vss) nch_svt_mac l=16n nfin=16
+    Mn2b (n2 n1 vss vss) nch_svt_mac l=16n nfin=16
+    Mn2a (n2 n1 vss vss) nch_svt_mac l=16n nfin=16
+    Mn1 (n1 din vss vss) nch_svt_mac l=16n nfin=2
+    Mpu16 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu15 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu14 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu13 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu12 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu11 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu10 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu09 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu08 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu07 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu06 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu05 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu04 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu03 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu02 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu01 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpd6 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+    Mpd5 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+    Mpd4 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+    Mpd3 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+    Mpd2 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+    Mpd1 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+ends afe_tx_drv
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: afe_bias
+// View name: schematic
+subckt afe_bias vbias vdd vss
+    Mbb (vbias vbias vss vss) nch_lvt_mac l=16n nfin=16
+    Mba (vbias vbias vss vss) nch_lvt_mac l=16n nfin=16
+Rb (vdd vbias ) rhim l=2.35u w=360.0n multi=(1)
+    Cdec16 (vbias vss) cfmom_2t_p80
+    Cdec15 (vbias vss) cfmom_2t_p80
+    Cdec14 (vbias vss) cfmom_2t_p80
+    Cdec13 (vbias vss) cfmom_2t_p80
+    Cdec12 (vbias vss) cfmom_2t_p80
+    Cdec11 (vbias vss) cfmom_2t_p80
+    Cdec10 (vbias vss) cfmom_2t_p80
+    Cdec9 (vbias vss) cfmom_2t_p80
+    Cdec8 (vbias vss) cfmom_2t_p80
+    Cdec7 (vbias vss) cfmom_2t_p80
+    Cdec6 (vbias vss) cfmom_2t_p80
+    Cdec5 (vbias vss) cfmom_2t_p80
+    Cdec4 (vbias vss) cfmom_2t_p80
+    Cdec3 (vbias vss) cfmom_2t_p80
+    Cdec2 (vbias vss) cfmom_2t_p80
+    Cdec1 (vbias vss) cfmom_2t_p80
+ends afe_bias
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: afecmp_bank
+// View name: schematic
+subckt afecmp_bank az eval gp outn outp vbias vdd vin vref vss
+    C2 (vref gn) capacitor c=80f
+    C1 (pA gp) capacitor c=80f
+    Rbgn (gn vss) resistor r=1T
+    Rbgp (gp vss) resistor r=1T
+    RbpA (pA vss) resistor r=1T
+    MN2n (outp s1n t2 vss) nch_ulvt_mac l=16n nfin=6
+    MN2p (outn s1p t2 vss) nch_ulvt_mac l=16n nfin=6
+    MazGn (gn az vbias vss) nch_ulvt_mac l=16n nfin=8
+    MazGp (gp az vbias vss) nch_ulvt_mac l=16n nfin=8
+    MazA (pA az vref vss) nch_ulvt_mac l=16n nfin=8
+    Msw (pA eval vin vss) nch_ulvt_mac l=16n nfin=8
+    MNn (s1p gn tA vss) nch_lvt_mac l=16n nfin=8
+    MNp (s1n gp tA vss) nch_lvt_mac l=16n nfin=8
+    ML2n (outn outn vdd vdd) pch_svt_mac l=16n nfin=2
+    ML2p (outp outp vdd vdd) pch_svt_mac l=16n nfin=2
+    MLn (s1n s1n vdd vdd) pch_svt_mac l=16n nfin=2
+    MLp (s1p s1p vdd vdd) pch_svt_mac l=16n nfin=2
+    Msh (outp az outn vss) nch_svt_mac l=16n nfin=2
+    Mtail2 (t2 eval vss vss) nch_svt_mac l=16n nfin=6
+    Mtail (tA eval vss vss) nch_svt_mac l=16n nfin=8
+ends afecmp_bank
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: afe_tb_tran
+// View name: schematic
+subckt afe_tb_tran bit_cnt ck8 codeb0 codeb1 codeb2 codeb3 codeb4 codeb5  codeb6 codeb7 d_even d_odd err_cnt lock pclk rx_in tx_pad vccio  vdd vref vss
+    G2 (aggr vdd) afe_prbs23_gen fbit=16e9 seed=19
+    G1 (din vdd) afe_prbs23_gen fbit=16e9 seed=3
+    CK (ck8 pclk pi_in vdd) afe_clk_gen tpclk_ph=17.5p
+    PP (pclk a_eval a_az b_eval b_az vdd) afe_pingpong
+    SMP (act_p act_n ck8 d_even d_odd vdd) afe_samp
+    CHK (d_even d_odd ck8 lock err_cnt bit_cnt vdd) afe_ber_chk n_shift=__NS__ start_bit=200
+    DRV (din tx_pad vccio vdd vss) afe_tx_drv
+    BIAS (vbias vdd vss) afe_bias
+    BB (b_az_g b_eval gp_b cmp_b_n cmp_b_p vbias vdd rx_in vref vss)  afecmp_bank
+    BA (a_az_g a_eval gp_a cmp_a_n cmp_a_p vbias vdd rx_in vref vss)  afecmp_bank
+    Rser (tx_pad ntx) resistor r=1.5
+    TL (ntx vss rx_in vss) tline z0=30 td=9p
+    Crx (rx_in vss) capacitor c=50f
+    Cxt (aggr rx_in) capacitor c=8f
+    Vcb7 (codeb7 0) vsource dc=__CB7__
+    Vcb6 (codeb6 0) vsource dc=__CB6__
+    Vcb5 (codeb5 0) vsource dc=__CB5__
+    Vcb4 (codeb4 0) vsource dc=__CB4__
+    Vcb3 (codeb3 0) vsource dc=__CB3__
+    Vcb2 (codeb2 0) vsource dc=__CB2__
+    Vcb1 (codeb1 0) vsource dc=__CB1__
+    Vcb0 (codeb0 0) vsource dc=__CB0__
+    Vpi (pi_in 0) vsource dc=__PCV__
+    EazB (b_az_g 0 b_az 0) vcvs gain=__AZEN__
+    EazA (a_az_g 0 a_az 0) vcvs gain=__AZEN__
+    Idr (0 gp_a) isource dc=__DRIFT__
+    MtgBn (cmp_b_n b_eval act_n vss) nch_svt_mac l=16n nfin=4
+    MtgBp (cmp_b_p b_eval act_p vss) nch_svt_mac l=16n nfin=4
+    MtgAn (cmp_a_n a_eval act_n vss) nch_svt_mac l=16n nfin=4
+    MtgAp (cmp_a_p a_eval act_p vss) nch_svt_mac l=16n nfin=4
+    MpgBn (cmp_b_n a_eval act_n vdd) pch_svt_mac l=16n nfin=4
+    MpgBp (cmp_b_p a_eval act_p vdd) pch_svt_mac l=16n nfin=4
+    MpgAn (cmp_a_n b_eval act_n vdd) pch_svt_mac l=16n nfin=4
+    MpgAp (cmp_a_p b_eval act_p vdd) pch_svt_mac l=16n nfin=4
+ends afe_tb_tran
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: afe_dac_r2r
+// View name: schematic
+subckt afe_dac_r2r b0 b1 b2 b3 b4 b5 b6 b7 vccio vdd vref vss
+    Mdn7pb (m7 b0 vss vdd) pch_svt_mac l=16n nfin=16
+    Mdn7pa (m7 b0 vss vdd) pch_svt_mac l=16n nfin=16
+    Mup7pb (m7 b0n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mup7pa (m7 b0n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mdn6pb (m6 b1 vss vdd) pch_svt_mac l=16n nfin=16
+    Mdn6pa (m6 b1 vss vdd) pch_svt_mac l=16n nfin=16
+    Mup6pb (m6 b1n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mup6pa (m6 b1n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mdn5pb (m5 b2 vss vdd) pch_svt_mac l=16n nfin=16
+    Mdn5pa (m5 b2 vss vdd) pch_svt_mac l=16n nfin=16
+    Mup5pb (m5 b2n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mup5pa (m5 b2n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mdn4pb (m4 b3 vss vdd) pch_svt_mac l=16n nfin=16
+    Mdn4pa (m4 b3 vss vdd) pch_svt_mac l=16n nfin=16
+    Mup4pb (m4 b3n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mup4pa (m4 b3n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mdn3pb (m3 b4 vss vdd) pch_svt_mac l=16n nfin=16
+    Mdn3pa (m3 b4 vss vdd) pch_svt_mac l=16n nfin=16
+    Mup3pb (m3 b4n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mup3pa (m3 b4n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mdn2pb (m2 b5 vss vdd) pch_svt_mac l=16n nfin=16
+    Mdn2pa (m2 b5 vss vdd) pch_svt_mac l=16n nfin=16
+    Mup2pb (m2 b5n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mup2pa (m2 b5n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mdn1pb (m1 b6 vss vdd) pch_svt_mac l=16n nfin=16
+    Mdn1pa (m1 b6 vss vdd) pch_svt_mac l=16n nfin=16
+    Mup1pb (m1 b6n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mup1pa (m1 b6n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mdn0pb (m0 b7 vss vdd) pch_svt_mac l=16n nfin=16
+    Mdn0pa (m0 b7 vss vdd) pch_svt_mac l=16n nfin=16
+    Mup0pb (m0 b7n vccio vdd) pch_svt_mac l=16n nfin=16
+    Mup0pa (m0 b7n vccio vdd) pch_svt_mac l=16n nfin=16
+    Minv7 (b7n b7 vdd vdd) pch_svt_mac l=16n nfin=4
+    Minv6 (b6n b6 vdd vdd) pch_svt_mac l=16n nfin=4
+    Minv5 (b5n b5 vdd vdd) pch_svt_mac l=16n nfin=4
+    Minv4 (b4n b4 vdd vdd) pch_svt_mac l=16n nfin=4
+    Minv3 (b3n b3 vdd vdd) pch_svt_mac l=16n nfin=4
+    Minv2 (b2n b2 vdd vdd) pch_svt_mac l=16n nfin=4
+    Minv1 (b1n b1 vdd vdd) pch_svt_mac l=16n nfin=4
+    Minv0 (b0n b0 vdd vdd) pch_svt_mac l=16n nfin=4
+    Mdn7nb (m7 b0n vss vss) nch_svt_mac l=16n nfin=16
+    Mdn7na (m7 b0n vss vss) nch_svt_mac l=16n nfin=16
+    Mup7nb (m7 b0 vccio vss) nch_svt_mac l=16n nfin=16
+    Mup7na (m7 b0 vccio vss) nch_svt_mac l=16n nfin=16
+    Mdn6nb (m6 b1n vss vss) nch_svt_mac l=16n nfin=16
+    Mdn6na (m6 b1n vss vss) nch_svt_mac l=16n nfin=16
+    Mup6nb (m6 b1 vccio vss) nch_svt_mac l=16n nfin=16
+    Mup6na (m6 b1 vccio vss) nch_svt_mac l=16n nfin=16
+    Mdn5nb (m5 b2n vss vss) nch_svt_mac l=16n nfin=16
+    Mdn5na (m5 b2n vss vss) nch_svt_mac l=16n nfin=16
+    Mup5nb (m5 b2 vccio vss) nch_svt_mac l=16n nfin=16
+    Mup5na (m5 b2 vccio vss) nch_svt_mac l=16n nfin=16
+    Mdn4nb (m4 b3n vss vss) nch_svt_mac l=16n nfin=16
+    Mdn4na (m4 b3n vss vss) nch_svt_mac l=16n nfin=16
+    Mup4nb (m4 b3 vccio vss) nch_svt_mac l=16n nfin=16
+    Mup4na (m4 b3 vccio vss) nch_svt_mac l=16n nfin=16
+    Mdn3nb (m3 b4n vss vss) nch_svt_mac l=16n nfin=16
+    Mdn3na (m3 b4n vss vss) nch_svt_mac l=16n nfin=16
+    Mup3nb (m3 b4 vccio vss) nch_svt_mac l=16n nfin=16
+    Mup3na (m3 b4 vccio vss) nch_svt_mac l=16n nfin=16
+    Mdn2nb (m2 b5n vss vss) nch_svt_mac l=16n nfin=16
+    Mdn2na (m2 b5n vss vss) nch_svt_mac l=16n nfin=16
+    Mup2nb (m2 b5 vccio vss) nch_svt_mac l=16n nfin=16
+    Mup2na (m2 b5 vccio vss) nch_svt_mac l=16n nfin=16
+    Mdn1nb (m1 b6n vss vss) nch_svt_mac l=16n nfin=16
+    Mdn1na (m1 b6n vss vss) nch_svt_mac l=16n nfin=16
+    Mup1nb (m1 b6 vccio vss) nch_svt_mac l=16n nfin=16
+    Mup1na (m1 b6 vccio vss) nch_svt_mac l=16n nfin=16
+    Mdn0nb (m0 b7n vss vss) nch_svt_mac l=16n nfin=16
+    Mdn0na (m0 b7n vss vss) nch_svt_mac l=16n nfin=16
+    Mup0nb (m0 b7 vccio vss) nch_svt_mac l=16n nfin=16
+    Mup0na (m0 b7 vccio vss) nch_svt_mac l=16n nfin=16
+    Mdnv7 (b7n b7 vss vss) nch_svt_mac l=16n nfin=2
+    Mdnv6 (b6n b6 vss vss) nch_svt_mac l=16n nfin=2
+    Mdnv5 (b5n b5 vss vss) nch_svt_mac l=16n nfin=2
+    Mdnv4 (b4n b4 vss vss) nch_svt_mac l=16n nfin=2
+    Mdnv3 (b3n b3 vss vss) nch_svt_mac l=16n nfin=2
+    Mdnv2 (b2n b2 vss vss) nch_svt_mac l=16n nfin=2
+    Mdnv1 (b1n b1 vss vss) nch_svt_mac l=16n nfin=2
+    Mdnv0 (b0n b0 vss vss) nch_svt_mac l=16n nfin=2
+Rterm (n7 vss ) rhim l=7.01u w=360.0n multi=(1)
+Rarm7 (m7 n7 ) rhim l=7.01u w=360.0n multi=(1)
+Rarm6 (m6 n6 ) rhim l=7.01u w=360.0n multi=(1)
+Rarm5 (m5 n5 ) rhim l=7.01u w=360.0n multi=(1)
+Rarm4 (m4 n4 ) rhim l=7.01u w=360.0n multi=(1)
+Rarm3 (m3 n3 ) rhim l=7.01u w=360.0n multi=(1)
+Rarm2 (m2 n2 ) rhim l=7.01u w=360.0n multi=(1)
+Rarm1 (m1 n1 ) rhim l=7.01u w=360.0n multi=(1)
+Rarm0 (m0 vref ) rhim l=6.95u w=360.0n multi=(1)
+Rs6 (n7 n6 ) rhim l=3.51u w=360.0n multi=(1)
+Rs5 (n6 n5 ) rhim l=3.51u w=360.0n multi=(1)
+Rs4 (n5 n4 ) rhim l=3.51u w=360.0n multi=(1)
+Rs3 (n4 n3 ) rhim l=3.51u w=360.0n multi=(1)
+Rs2 (n3 n2 ) rhim l=3.51u w=360.0n multi=(1)
+Rs1 (n2 n1 ) rhim l=3.51u w=360.0n multi=(1)
+Rs0 (n1 vref ) rhim l=3.51u w=360.0n multi=(1)
+ends afe_dac_r2r
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: afe_pad_esd
+// View name: schematic
+subckt afe_pad_esd pad vdd vss
+    Xpd (pad vdd) pdio_hia18_mac l=118n nfin=12 w=346n nf=100 multi=(1)
+    Xnd (vss pad) ndio_hia18_mac l=118n nfin=12 w=346n nf=100 multi=(1)
+ends afe_pad_esd
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: tb_afe_tran
+// View name: schematic
+Xtb (bit_cnt ck8 codeb0 codeb1 codeb2 codeb3 codeb4 codeb5 codeb6 codeb7  d_even d_odd err_cnt lock pclk rx_in tx_pad vccio vdd vref vss)  afe_tb_tran
+Vvccio (vcciosrc 0) vsource dc=0.45
+Vnvdd (vddsrc vddpkg) vsource type=sine sinedc=0 ampl=__AMPL__ freq=__FN__
+Vvdd (vddsrc 0) vsource dc=0.8
+Rvss (vss vssext) resistor r=__RS__
+Rvccio (vcciosrc vcciopkg) resistor r=__RS__
+Rvdd (vddpkg vddi) resistor r=__RS__
+Lvss (vssext 0) inductor l=__LS__
+Lvccio (vcciopkg vccio) inductor l=__LS__
+Lvdd (vddi vdd) inductor l=__LS__
+Xdac (codeb0 codeb1 codeb2 codeb3 codeb4 codeb5 codeb6 codeb7 vccio vdd  vref vss) afe_dac_r2r
+Xesd_tx (tx_pad vdd vss) afe_pad_esd
+Xesd_rx (rx_in vdd vss) afe_pad_esd
+Xpc (vdd vss vss vss) nch_hia18_mac l=150n nfin=20
+Cdvref2 (vref vss) cfmom_2t_p80
+Cdvref1 (vref vss) cfmom_2t_p80
+Cdvccio4 (vccio vss) cfmom_2t_p80
+Cdvccio3 (vccio vss) cfmom_2t_p80
+Cdvccio2 (vccio vss) cfmom_2t_p80
+Cdvccio1 (vccio vss) cfmom_2t_p80
+Cdvdd4 (vdd vss) cfmom_2t_p80
+Cdvdd3 (vdd vss) cfmom_2t_p80
+Cdvdd2 (vdd vss) cfmom_2t_p80
+Cdvdd1 (vdd vss) cfmom_2t_p80
+
+// ---- directives (verbatim from tb_afe_tran.scs) ----
+nodeset Xtb.BA.gp=0.4 Xtb.BA.gn=0.4 Xtb.BA.pA=0.225
+nodeset Xtb.BB.gp=0.4 Xtb.BB.gn=0.4 Xtb.BB.pA=0.225
+// replica bias + DAC outputs: the decap x Zout time constants are >> sim
+// length (nodeset ignored on these driven nodes; ic works). Supplies need
+// ic too: the VA blocks latch V(vdd) at initial_step and the package L/R
+// ramps vdd over ~2 ns (measured: all VA swings collapsed to 0.245 V).
+ic Xtb.vbias=__VBIC__ vref=__VREFV__ vdd=0.8 vccio=0.45
+
+// temp on a named options statement — analysis-level temp= was silently
+// ignored (all pre-2026-09-03 "TEMP=25" runs actually simulated at 27C)
+simOpts options temp=__TEMP__
+tran tran stop=__STOP__ maxstep=2.5p method=gear2only skipdc=yes __NOISE_OPTS__ annotate=status
+
+saveOptions options save=selected
+save rx_in tx_pad vref ck8 pclk d_even d_odd lock err_cnt bit_cnt
+save vdd vccio vss
+save Xtb.act_p Xtb.act_n Xtb.cmp_a_p Xtb.cmp_a_n Xtb.cmp_b_p Xtb.cmp_b_n
+save Xtb.a_eval Xtb.a_az Xtb.b_eval Xtb.din Xtb.n3
+save Xtb.BA.gp Xtb.BA.gn Xtb.BA.pA Xtb.BA.tA Xtb.BA.tAp
+save Xtb.BA.az Xtb.vbias Xtb.BA:MazGp:1
+save Xtb.BA.s1p Xtb.BA.s1n Xtb.BA.t2 Xtb.BB.s1p Xtb.BB.s1n
+save Xtb.BA:pwr Xtb.BB:pwr Xtb.DRV:pwr Xdac:pwr

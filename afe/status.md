@@ -4,7 +4,7 @@
 > 从「关键标定参数」恢复仿真配置,从「关键技术要点」避开已踩过的坑。
 > 详细报告见 `docs/report.md`,论文规格提取见 `docs/spec_extracted.md`。
 
-## 1. 当前状态（2026-09-03：P5 全部恢复完成）
+## 1. 当前状态（2026-09-04：n2s 顶层组装+全链 golden 闭环中）
 
 **补电路（P0-P4）全部完成,验证闭环（P5）部分完成。** 目标:在功能验证基础上补电路+验证,向流片准备推进(版图/DRC/LVS 与数字综合仍在本期范围外)。
 
@@ -23,6 +23,9 @@
 | P5 电源 | ✅ 9-3 | 10/10 **BER=0**;100mV@400M 注入 vss_pk≈35mV(去耦+封装吸收);LS=1nH 键合线 vss_pk=398mV(PDN 振荡仍在,要点 13)但零误码 |
 | P5 MC 失调重验 | ✅ 9-3 | 200/200 第 1 轮全过:**mean=-2.51mV σ=23.61mV**,与 9-2(σ=24.6mV)一致 → 要点 20④ 混合样本疑虑解除;6σ=142mV < 眼窗 194mV;旧结果备份 `tran_mc_offset_0902_backup.json` |
 | P6 收尾 | ✅ 9-3 | 终跑有效(link BER=0/639 bits、眼图 194mV);plot_tran.py 扩展完成(tran_corners/tran_mc_offset/tran_mc_ron/tran_supply/dac_linearity 共 8 图);docs/report.md 已更新至流片准备版(§1/§3/§5/§6/§7) |
+| n2s 顶层组装 | ✅ 9-4 | 除数字行为级 5 个 VA leaf(symbol+stub schematic+磁盘 veriloga 源三件套)外全原理图化:afe_tb_tran 结构层(34 实例:6 VA+DRV/BIAS/BA/BB+8 TG MOS+信道 Rser/TL/Cxt/Crx+胶水源 12 个)+tb_afe_tran 顶层(24 实例:Xtb+电源/封装 R/L+cfmom 去耦×10+Xdac+Xesd×2+Xpc),schCheck 全 0 错;gate=si 导出对 golden 逐行(见要点 22-26) |
+| 全链 golden link | ✅ 9-4 | **BER=0/639 bits、lock=0.801、vbias=0.3614**,功率对齐基线(DRV 326 vs 327µW;BA/BB 41.8 vs 43.9µW,vhi 微差级);网表=si 导出+组装归一(`output/n2s_top/golden_tb_template.scs`,scripts/gen_golden_netlist.py),仿真走服务器 21 |
+| 全链 golden 眼图 | ✅ 9-4 | **90-180 码 × 全部 8 相位 BER=0**(基线内沿逐点一致,130/140 处 8/8 优于基线 7/8);190/200 码相位无关小误码(8/639、63/639)、210 码 8 点 SSH 限流失败(窗外,未重跑)——上边沿内缩 20 码的机制=golden vhi 锁存 0.770 vs 基线 0.968(din/ck 摆幅∝vhi,要点 24);vhi 硬化列入未来工作 |
 
 **当前链路基准(最新,含 ESD+真实偏置+封装模型)**:BER=0(639 bits),**眼窗 90-200 码 = 159-353mV,眼高 194mV ≥ 180mV 目标**。
 
@@ -63,6 +66,11 @@
 19. **检查点纪律**:每步电路改动必须链路 BER=0 + 眼图重扫;改动 tran/va/template 文件前确认没有后台任务在跑(它们按任务逐个上传 include 文件,中途改文件=混合结果,踩过一次)。
 20. **9-2 下午偏置事件与 P5 假失败**(2026-09-03 复查定位):corners/mcron/noise 运行期间 `afe_bias.scs` 处于坏/旧版本(偏置 DC 探针平衡点 0.458-0.499V,而非 0.362 设计点),17:15 修复后 biasdc_v3 验证 0.3621V、link/eye 终跑 BER=0。由此:①**每次 P5 批量跑之前先用 biasdc 探针确认平衡点=0.362**;②偏置 DC 探针 TB 不施加温度(tt@25 与 tt@125 结果逐位相同),温度角前须把 temp 写进 dc 分析;③bridge 对 mc1 包裹的 DC 结果提取失败(mcron 200 seed 服务器端全 PASS 但 `res.data` 取不到值),raw 已在本地 `output/mcron_*.raw/`,直接本地重解析;④`afecmp_bank.scs` 15:43 的改动落在 MC 失调运行中途(结果 15:53 出,include 按任务逐个上传)→ σ=24.6mV 疑混合样本,必要时重验。
 21. **分析级 temp= 无效(2026-09-03 实证)**:dc/tran 分析行上的 `temp=` 参数对这些 TMI binned 模型**被静默忽略**——`dc1 dc temp=125` 结果与 25°C 逐位相同、psf 头部恒 27°C;正确机制是**命名 options 语句** `simOpts options temp=__TEMP__`(实证:-40/25/125°C 探针平衡点 0.3854/0.3627/0.3295V,头部温度正确)。两个模板已改;**此前所有标 TEMP=25 的跑实际都在 27°C**(差异可忽略,但温度角在新机制生效前从未真正跑过)。另:design 0.362 是 27°C 值,25°C 下为 0.3627(VBIC=0.362 烘焙仍然有效)。
+22. **CDF 发射参数 DC-中性≠瞬态-中性(2026-09-04,全链 golden 首败根因)**:MOS/cfmom 的 CDF extras(w/multi/nf/sd/sa/sb/ploda/spot…)对 DC 探针全部中性(bias 0.36272V 逐位/dac 半码 23nV/esd IV 4e-16),但 Xpc 带 CDF 回调派生的 multi=20/nf=40(800 倍钳位)时 golden link **BER=0.34**:t=0+ 首步解被拖偏(vdd 0.8→0.404)→ VA `initial_step` 锁存 vhi=0.404 而非基线 0.968 → PI 相位 `tpi=125p×V(pi)/vhi` 偏 >¼UI → 全错码。处置:`gen_golden_netlist.py` 步骤 0 全局裸写归一(142 MOS+26 cfmom)。
+23. **VA 支路地=全局 0 节点**:旧 afe_tb_tran.va 的 `V(codeb)/V(pi_in)/V(a_az_g)/I(gp_a)` 支路地是**全局 0**,不是 vss;胶水改用 analogLib 原语(vsource/vcvs/isource)时参考端必须接 0(组装层打点),接 vss 会改 t=0+ 回流路径(vss 首步 −0.1V vs 基线 +0.17V)。
+24. **首步振铃平台相关,本机冒烟≠基线数值**:同网表 spectre 20.1(本机)/25.1(服务器)的 t=0+ 首步解不同(vdd[1] +0.075 vs +0.168);VA 的 vhi 锁存使全链对首步敏感。**混合对撞实验**(golden TB 层+旧 VA 包装=旧版本机逐位一致)是隔离差异层的手段;本机冒烟只验语法/收敛。
+25. **si/符号机制(2026-09-04 沉淀)**:①veriloga 视图是 DM 文本视图,dbOpenCellViewByType 返 nil 属正常——VA leaf 三件套=「stub schematic(仅 pin,网表器可解析)+ symbol + 磁盘 veriloga 源」;②si 实例行按 stub subckt 头(字母序)发射,组装时重排为 module 声明序+注参数(G1 fbit/seed、CHK n_shift/start_bit 等);③afe_sch 无 tech→bind basic 后 pin/drawing、label purpose 可用(symbol 层无 symbol/drawing 层,	body=slection box);④label stub 方向=pin 对符号中心 |dx|vs|dy| 判定,密集符号必须锥区安全(X=y1+0.5,否则垂直 stub 跨脚短路);⑤si 导出前必须释放活会话 cv 写锁(关窗+dbClose),改过 cellview 必须 schCheck+dbSave(否则 OSSHNL-108/109);⑥hia18 MOS 的网表 nf 取 CDF `fingers`、multi 取 `m`——裸写 fingers=1/m=1/multi=1 后才与省略态一致;⑦analogLib vsource/vdc/idc/tline 的实例参数 CDF 通道写不进网表——TB 级激励值全部由组装脚本在导出网表上打点(与旧模板 __X__ 烘焙同构)。
+26. **ESD nf_dio 参数化在原理图流丢失**:源 subckt `parameters nf_dio=50`+实例覆盖 100;n2s 把 subparam 默认 50 烧死。`n2s_tb.py fix_esd_nf` 按 golden 设计点烧 100(源默认 50 从未被任何 run 用过);NFDIO 扫描仍走旧网表流。
 
 ## 5. 文件地图（新增部分）
 
@@ -92,7 +100,11 @@ afe/
 │   ├── run_tran_mc_ron.py     TX Ron MC(200 seeds)
 │   ├── run_tran_corners.py    7 配置 × 2-pi × 13-vref(自带偏置 DC 探测)
 │   ├── run_tran_noise.py      噪声冒烟+链路 noise=yes
-│   └── run_tran_supply.py     电源注入扫描+LS 扫描
+│   ├── run_tran_supply.py     电源注入扫描+LS 扫描
+│   ├── n2s_top.py         afe_tb_tran 结构层构建(34 实例+21 pin,从 /tmp 跑本地桥)
+│   ├── n2s_tb.py          tb_afe_tran 顶层构建(24 实例+ESD nf=100 烧入)
+│   ├── gen_golden_netlist.py  si 导出→golden 模板(归一+VA 重排+胶水打点+directives)
+│   └── run_golden_link.py / run_golden_eye.py  全链 golden 跑批(VA 5 文件为唯一 include)
 └── output/
     ├── tran_eye.json       最新眼图:90-200 码(159-353mV)
     ├── dac_dnl.json        DNL 1.0 / INL 1.85 LSB
@@ -106,3 +118,16 @@ afe/
 2. **P6 已完成(2026-09-03)**:plot_tran.py 扩展 + docs/report.md 更新均落地。**P0-P6 全部闭环**,项目回到流片准备基线;下一阶段工作见 §1 表与 docs/report.md §7(ss 慢角优化/双 bank 训练/StrongARM 采样器/版图 DRC LVS)。
    **里程碑已存档**:提交「afe: UCIe-AP RX AFE 流片准备 P0-P6 全闭环（状态存档）」(70 文件;afe/.gitignore 白名单放行 10 图+11 个最终 json,raw/临时网表/大体积调试 json 留本地)。
 3. 未来工作(已记录):双 bank 失调差的训练策略(σ≈35mV);真实 StrongARM 采样器(tran/afe_sampler.scs 复用);PDN 振荡的阻尼方案(LS=1n 下的 LC 腔);比较器在自然偏置点的再优化(如放弃 0.362 设计点);版图/DRC/LVS。
+4. **网表→原理图重建(2026-09-04 试点+全量铺开+顶层组装+全链 golden)**:客户端 virtuoso 技能 `references/netlist-to-schematic.md` 工作流(解析→CDF参数映射→确定性摆放→网络标号→三重验证门);**全部 7 个 subckt 建入 afe_sch 库(本机 IC618+tsmcN12,数据在 afe/virtuoso_ws/)**,逐 cell schCheck(0 0)+Gate B 回读+Gate C 回导网表逐设备位置节点元组一致:
+
+   | cell | 实例 | golden |
+   |---|---|---|
+   | afe_bias | 19 | DC 探针 vbias=0.36272V 与源逐位一致 |
+   | afe_pad_esd | 2 | IV 扫描(-0.5~0.85V)最大相对偏差 4.4e-16 |
+   | afe_tx_drv | 36 | 网表级(超额参数均为已证中性类) |
+   | afe_strongarm / afe_dlatch | 10 / 6 | 同上 |
+   | afecmp_bank | 20 | 同上(analogLib cap/res 原语) |
+   | afe_dac_r2r | 96 | code=128 半满码 vref 差 23nV |
+
+   脚本 `scripts/n2s_afe_bias.py`(试点)+`scripts/n2s_cells.py`(批量,分块创建),产物 `output/n2s_*/`(netlist+bias 图)。**关键机制(全部固化进技能文档)**:①CDF 权威参数命名——MOS 是 `nFin`(网表 nfin/w 为推导值,直写被回调弹回),hia18 二极管是裸写 `nf`+`nfin=12`(模型省略态默认;摆放默认 8 非中性→电流 0.643×;w/l/multi 中性);②MOS 必须裸写 `sa=0/sb=0`(CDF 发射 sa/sb=90n 的 LOD 应力,+10.9mV 移动 0.362V 工作点;0=无应力哨兵,大值饱和不归零);③si 网表器不重算存量 prop;`set_instance_params` 的 geGetEditCellView 会漂(用显式 cv 批量更新);④Gate C 判据=位置节点元组;导出平铺网表+`\`续行+自带模型 include(外部 TB 勿重复 include);⑤>~200 行批量 SKILL 触发字面量栈溢出→分块创建(create+modify);⑥daemon 中断留下的半成品 cell 会引发会话恢复 SIGSEGV 崩溃循环(重启前删损坏 cell;afe/ 现有自含 cds.lib;.cdsinit 已修到 .local/state 新路径);⑦本机 spectre 20.1 可直接跑 12FFC 模型(golden 无需服务器)。
+5. **顶层组装+全链 golden(2026-09-04 完成)**:afe_tb_tran 结构层+tb_afe_tran 顶层全原理图化(用户要求:除数字行为级外每模块原理图、顶层/测试程序均原理图);全链 golden link **BER=0/639** 与基线一致,眼图扫描见 §1 表;golden 模板 `output/n2s_top/golden_tb_template.scs`(si 导出+`gen_golden_netlist.py` 归一/重排/打点;MOS/cfmom 裸写、Xpc 裸写、胶水 gnd 参考、VA 实例重排+参数注入、directives 逐字);**要点 22-26 是本阶段全部新坑**。Virtuoso 会话中 afe_sch 库现含:7 cell(sch+sym)+5 VA(stub sch+sym+veriloga 源)+afe_tb_tran(sch+sym)+tb_afe_tran(sch)+va_probe/alib_probe(试验残留,可删)。

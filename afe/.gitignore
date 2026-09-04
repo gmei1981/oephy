@@ -14,3 +14,8 @@ output/*
 !output/va_eye.json
 # Python 缓存
 __pycache__/
+!output/golden_link.json
+!output/golden_eye.json
+!output/n2s_top/
+!output/n2s_top_manifest.json
+output/n2s_top/geye_*

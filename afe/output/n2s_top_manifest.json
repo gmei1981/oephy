@@ -1,0 +1,285 @@
+{
+ "syms": {
+  "G1": {
+   "vout": "din",
+   "vdd": "vdd"
+  },
+  "G2": {
+   "vout": "aggr",
+   "vdd": "vdd"
+  },
+  "CK": {
+   "ck8": "ck8",
+   "pclk": "pclk",
+   "pi_code": "pi_in",
+   "vdd": "vdd"
+  },
+  "PP": {
+   "pclk": "pclk",
+   "a_eval": "a_eval",
+   "a_az": "a_az",
+   "b_eval": "b_eval",
+   "b_az": "b_az",
+   "vdd": "vdd"
+  },
+  "SMP": {
+   "act_p": "act_p",
+   "act_n": "act_n",
+   "ck8": "ck8",
+   "d_even": "d_even",
+   "d_odd": "d_odd",
+   "vdd": "vdd"
+  },
+  "CHK": {
+   "d_even": "d_even",
+   "d_odd": "d_odd",
+   "ck8": "ck8",
+   "lock": "lock",
+   "err_cnt": "err_cnt",
+   "bit_cnt": "bit_cnt",
+   "vdd": "vdd"
+  },
+  "DRV": {
+   "din": "din",
+   "pad": "tx_pad",
+   "vccio": "vccio",
+   "vdd": "vdd",
+   "vss": "vss"
+  },
+  "BIAS": {
+   "vbias": "vbias",
+   "vdd": "vdd",
+   "vss": "vss"
+  },
+  "BA": {
+   "vin": "rx_in",
+   "vref": "vref",
+   "eval": "a_eval",
+   "az": "a_az_g",
+   "vbias": "vbias",
+   "outp": "cmp_a_p",
+   "outn": "cmp_a_n",
+   "vdd": "vdd",
+   "vss": "vss",
+   "gp": "gp_a"
+  },
+  "BB": {
+   "vin": "rx_in",
+   "vref": "vref",
+   "eval": "b_eval",
+   "az": "b_az_g",
+   "vbias": "vbias",
+   "outp": "cmp_b_p",
+   "outn": "cmp_b_n",
+   "vdd": "vdd",
+   "vss": "vss",
+   "gp": "gp_b"
+  },
+  "Rser": {
+   "PLUS": "tx_pad",
+   "MINUS": "ntx"
+  },
+  "TL": {
+   "IN+": "ntx",
+   "IN-": "vss",
+   "OUT+": "rx_in",
+   "OUT-": "vss"
+  },
+  "Cxt": {
+   "PLUS": "aggr",
+   "MINUS": "rx_in"
+  },
+  "Crx": {
+   "PLUS": "rx_in",
+   "MINUS": "vss"
+  },
+  "Vpi": {
+   "PLUS": "pi_in",
+   "MINUS": "vss"
+  },
+  "EazA": {
+   "PLUS": "a_az_g",
+   "MINUS": "vss",
+   "NC+": "a_az",
+   "NC-": "vss"
+  },
+  "EazB": {
+   "PLUS": "b_az_g",
+   "MINUS": "vss",
+   "NC+": "b_az",
+   "NC-": "vss"
+  },
+  "Idr": {
+   "PLUS": "vss",
+   "MINUS": "gp_a"
+  },
+  "Vcb0": {
+   "PLUS": "codeb0",
+   "MINUS": "vss"
+  },
+  "Vcb1": {
+   "PLUS": "codeb1",
+   "MINUS": "vss"
+  },
+  "Vcb2": {
+   "PLUS": "codeb2",
+   "MINUS": "vss"
+  },
+  "Vcb3": {
+   "PLUS": "codeb3",
+   "MINUS": "vss"
+  },
+  "Vcb4": {
+   "PLUS": "codeb4",
+   "MINUS": "vss"
+  },
+  "Vcb5": {
+   "PLUS": "codeb5",
+   "MINUS": "vss"
+  },
+  "Vcb6": {
+   "PLUS": "codeb6",
+   "MINUS": "vss"
+  },
+  "Vcb7": {
+   "PLUS": "codeb7",
+   "MINUS": "vss"
+  }
+ },
+ "mos": {
+  "MtgAp": [
+   "cmp_a_p",
+   "a_eval",
+   "act_p",
+   "vss"
+  ],
+  "MtgAn": [
+   "cmp_a_n",
+   "a_eval",
+   "act_n",
+   "vss"
+  ],
+  "MtgBp": [
+   "cmp_b_p",
+   "b_eval",
+   "act_p",
+   "vss"
+  ],
+  "MtgBn": [
+   "cmp_b_n",
+   "b_eval",
+   "act_n",
+   "vss"
+  ],
+  "MpgAp": [
+   "cmp_a_p",
+   "b_eval",
+   "act_p",
+   "vdd"
+  ],
+  "MpgAn": [
+   "cmp_a_n",
+   "b_eval",
+   "act_n",
+   "vdd"
+  ],
+  "MpgBp": [
+   "cmp_b_p",
+   "a_eval",
+   "act_p",
+   "vdd"
+  ],
+  "MpgBn": [
+   "cmp_b_n",
+   "a_eval",
+   "act_n",
+   "vdd"
+  ]
+ },
+ "pins": [
+  [
+   "tx_pad",
+   "output"
+  ],
+  [
+   "rx_in",
+   "output"
+  ],
+  [
+   "vref",
+   "inputOutput"
+  ],
+  [
+   "ck8",
+   "output"
+  ],
+  [
+   "pclk",
+   "output"
+  ],
+  [
+   "d_even",
+   "output"
+  ],
+  [
+   "d_odd",
+   "output"
+  ],
+  [
+   "lock",
+   "output"
+  ],
+  [
+   "err_cnt",
+   "output"
+  ],
+  [
+   "bit_cnt",
+   "output"
+  ],
+  [
+   "vdd",
+   "inputOutput"
+  ],
+  [
+   "vccio",
+   "inputOutput"
+  ],
+  [
+   "vss",
+   "inputOutput"
+  ],
+  [
+   "codeb0",
+   "output"
+  ],
+  [
+   "codeb1",
+   "output"
+  ],
+  [
+   "codeb2",
+   "output"
+  ],
+  [
+   "codeb3",
+   "output"
+  ],
+  [
+   "codeb4",
+   "output"
+  ],
+  [
+   "codeb5",
+   "output"
+  ],
+  [
+   "codeb6",
+   "output"
+  ],
+  [
+   "codeb7",
+   "output"
+  ]
+ ]
+}
