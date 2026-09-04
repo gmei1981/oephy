@@ -26,6 +26,7 @@
 | n2s 顶层组装 | ✅ 9-4 | 除数字行为级 5 个 VA leaf(symbol+stub schematic+磁盘 veriloga 源三件套)外全原理图化:afe_tb_tran 结构层(34 实例:6 VA+DRV/BIAS/BA/BB+8 TG MOS+信道 Rser/TL/Cxt/Crx+胶水源 12 个)+tb_afe_tran 顶层(24 实例:Xtb+电源/封装 R/L+cfmom 去耦×10+Xdac+Xesd×2+Xpc),schCheck 全 0 错;gate=si 导出对 golden 逐行(见要点 22-26) |
 | 全链 golden link | ✅ 9-4 | **BER=0/639 bits、lock=0.801、vbias=0.3614**,功率对齐基线(DRV 326 vs 327µW;BA/BB 41.8 vs 43.9µW,vhi 微差级);网表=si 导出+组装归一(`output/n2s_top/golden_tb_template.scs`,scripts/gen_golden_netlist.py),仿真走服务器 21 |
 | 全链 golden 眼图 | ✅ 9-4 | **90-180 码 × 全部 8 相位 BER=0**(基线内沿逐点一致,130/140 处 8/8 优于基线 7/8);190/200 码相位无关小误码(8/639、63/639)、210 码 8 点 SSH 限流失败(窗外,未重跑)——上边沿内缩 20 码的机制=golden vhi 锁存 0.770 vs 基线 0.968(din/ck 摆幅∝vhi,要点 24);vhi 硬化列入未来工作 |
+| golden corners | ✅ 9-4 | 7 配置 6/7 零误码窗:tt25 90-180/ff **90-210(与基线完全一致)**/sf 90-200/fs 90-160/tt-40 90-170/tt125 90-200——上边沿伪影内缩 0-30 码与眼图同构;**ss 角全窗 84/639 误码**(相位与门限完全无关的固定子集=时序违约特征,机制=vhi 伪影链×ss 慢器件);**同平台同日旧网表复跑 ss=90-140 完全复现基线**→差异 100% 归因伪影链(网表等价性由混合实验证明),vhi 硬化升级为**流片前必做**;ff 首轮 23 点/±温探针为 SSH 限流失败,子集重跑已恢复 |
 
 **当前链路基准(最新,含 ESD+真实偏置+封装模型)**:BER=0(639 bits),**眼窗 90-200 码 = 159-353mV,眼高 194mV ≥ 180mV 目标**。
 
