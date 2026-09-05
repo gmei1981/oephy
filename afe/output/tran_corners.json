@@ -472,18 +472,12 @@
         {
           "vref_code": 200,
           "pi": 0.875,
-          "ber": null,
-          "errors": [
-            "Failed to download remote raw results from /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/cba295d7/cor_top_ss_25_v200_p875.raw: SSH error: Warning: Permanently added '192.168.110.21' (ECDSA) to the list of known hosts.\r\nmei@192.168.110.21: Permission denied (password). | Tar error: gzip: stdin: unexpected end of file\n/bin/tar: Child returned status 1\n/bin/tar: Error is not recoverable: exiting now"
-          ]
+          "ber": 0.1315240083507307
         },
         {
           "vref_code": 210,
           "pi": 0.875,
-          "ber": null,
-          "errors": [
-            "Failed to download remote raw results from /tmp/virtuoso_bridge_mei/gmei/virtuoso_bridge_spectre/30461111/cor_top_ss_25_v210_p875.raw: SSH error: Warning: Permanently added '192.168.110.21' (ECDSA) to the list of known hosts.\r\nmei@192.168.110.21: Permission denied (password). | Tar error: gzip: stdin: unexpected end of file\n/bin/tar: Child returned status 1\n/bin/tar: Error is not recoverable: exiting now"
-          ]
+          "ber": 0.1315240083507307
         }
       ]
     },

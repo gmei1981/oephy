@@ -1,0 +1,59 @@
+
+// Library name: afe_sch
+// Cell name: afe_bias
+// View name: schematic
+subckt afe_bias vbias vdd vss
+    Mbb (vbias vbias vss vss) nch_lvt_mac l=16.0n nfin=16 w=730.0n multi=1 \
+        nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mba (vbias vbias vss vss) nch_lvt_mac l=16.0n nfin=16 w=730.0n multi=1 \
+        nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+Rb (vdd vbias ) rhim l=2.35u w=360.0n multi=(1)
+
+    Cdec16 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec15 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec14 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec13 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec12 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec11 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec10 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec9 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec8 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec7 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec6 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec5 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec4 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec3 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec2 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+    Cdec1 (vbias vss) cfmom_2t_p80 lr=1u multi=1 mxd_flag=0 nr=12 n_mxa=2 \
+        spm=3 stm=1 vapmod=2
+ends afe_bias
+// End of subcircuit definition.
+
+// Library name: afe_sch
+// Cell name: tb_bias_dc
+// View name: schematic
+Vvdd (vdd 0) vsource type=sine
+Xb (vbias vdd 0) afe_bias

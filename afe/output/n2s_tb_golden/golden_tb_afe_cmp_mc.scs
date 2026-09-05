@@ -1,0 +1,79 @@
+// UCIe-AP RX AFE golden TB (tb_afe_cmp_mc) -- si export assembled by scripts/gen_tb_golden.py
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_MOS_MOSCAP
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_RES_BIP_DIO_DISRES
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_MOM
+// Library name: afe_sch
+// Cell name: afe_bias
+// View name: schematic
+subckt afe_bias vbias vdd vss
+    Mba (vbias vbias vss vss) nch_lvt_mac l=16n nfin=16
+    Mbb (vbias vbias vss vss) nch_lvt_mac l=16n nfin=16
+Rb (vdd vbias ) rhim l=2.35u w=360.0n multi=(1)
+    Cdec1 (vbias vss) cfmom_2t_p80
+    Cdec2 (vbias vss) cfmom_2t_p80
+    Cdec3 (vbias vss) cfmom_2t_p80
+    Cdec4 (vbias vss) cfmom_2t_p80
+    Cdec5 (vbias vss) cfmom_2t_p80
+    Cdec6 (vbias vss) cfmom_2t_p80
+    Cdec7 (vbias vss) cfmom_2t_p80
+    Cdec8 (vbias vss) cfmom_2t_p80
+    Cdec9 (vbias vss) cfmom_2t_p80
+    Cdec10 (vbias vss) cfmom_2t_p80
+    Cdec11 (vbias vss) cfmom_2t_p80
+    Cdec12 (vbias vss) cfmom_2t_p80
+    Cdec13 (vbias vss) cfmom_2t_p80
+    Cdec14 (vbias vss) cfmom_2t_p80
+    Cdec15 (vbias vss) cfmom_2t_p80
+    Cdec16 (vbias vss) cfmom_2t_p80
+ends afe_bias
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: afecmp_bank
+// View name: schematic
+subckt afecmp_bank az eval gp outn outp vbias vdd vin vref vss
+    C1 (pA gp) capacitor c=80f
+    C2 (vref gn) capacitor c=80f
+    Msw (pA eval vin vss) nch_ulvt_mac l=16n nfin=8
+    MazA (pA az vref vss) nch_ulvt_mac l=16n nfin=8
+    MazGp (gp az vbias vss) nch_ulvt_mac l=16n nfin=8
+    MazGn (gn az vbias vss) nch_ulvt_mac l=16n nfin=8
+    MNp (s1n gp tA vss) nch_lvt_mac l=16n nfin=8
+    MNn (s1p gn tA vss) nch_lvt_mac l=16n nfin=8
+    MLp (s1p s1p vdd vdd) pch_svt_mac l=16n nfin=2
+    MLn (s1n s1n vdd vdd) pch_svt_mac l=16n nfin=2
+    Mtail (tA eval vss vss) nch_svt_mac l=16n nfin=8
+    MN2p (outn s1p t2 vss) nch_ulvt_mac l=16n nfin=6
+    MN2n (outp s1n t2 vss) nch_ulvt_mac l=16n nfin=6
+    ML2p (outp outp vdd vdd) pch_svt_mac l=16n nfin=2
+    ML2n (outn outn vdd vdd) pch_svt_mac l=16n nfin=2
+    Mtail2 (t2 eval vss vss) nch_svt_mac l=16n nfin=6
+    Msh (outp az outn vss) nch_svt_mac l=16n nfin=2
+    RbpA (pA vss) resistor r=1T
+    Rbgp (gp vss) resistor r=1T
+    Rbgn (gn vss) resistor r=1T
+ends afecmp_bank
+Vvdd (vdd 0) vsource dc=0.8
+Vvss (vss 0) vsource dc=0
+Vvref (vref 0) vsource dc=0.225
+Vvin (vin 0) vsource type=pwl wave=[0 0.10 0.5n 0.10 60n 0.35]
+Veval (eval 0) vsource type=pulse val0=0 val1=0.8 delay=__EVALD__ rise=10p fall=10p width=100n period=200n
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: tb_afe_cmp_mc
+// View name: schematic
+Vaz (az 0) vsource type=pulse val0=0 val1=__AZEN__ delay=0 rise=10p fall=10p width=1.5n period=200n
+Xbias (vbias vdd vss) afe_bias
+Xcmp (az eval gp outn outp vbias vdd vin vref vss) afecmp_bank
+
+// ---- directives (verbatim from tb_afe_cmp_mc.scs) ----
+nodeset gp=0.4 Xcmp.gn=0.4 Xcmp.pA=__PANODESET__
+ic vbias=0.362
+
+mc1 montecarlo numruns=__NRUNS__ variations=mismatch seed=__SEED__ donominal=no {
+    tran tran stop=60n maxstep=5p method=gear2only skipdc=yes
+}
+
+saveOptions options save=selected
+save vin outp outn

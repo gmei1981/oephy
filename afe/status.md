@@ -4,7 +4,7 @@
 > 从「关键标定参数」恢复仿真配置,从「关键技术要点」避开已踩过的坑。
 > 详细报告见 `docs/report.md`,论文规格提取见 `docs/spec_extracted.md`。
 
-## 1. 当前状态（2026-09-04：n2s 顶层组装+全链 golden 闭环中）
+## 1. 当前状态（2026-09-05：测试电路 n2s 全量落地+全 TB A/B 闭环）
 
 **补电路（P0-P4）全部完成,验证闭环（P5）部分完成。** 目标:在功能验证基础上补电路+验证,向流片准备推进(版图/DRC/LVS 与数字综合仍在本期范围外)。
 
@@ -27,6 +27,7 @@
 | 全链 golden link | ✅ 9-4 | **BER=0/639 bits、lock=0.801、vbias=0.3614**,功率对齐基线(DRV 326 vs 327µW;BA/BB 41.8 vs 43.9µW,vhi 微差级);网表=si 导出+组装归一(`output/n2s_top/golden_tb_template.scs`,scripts/gen_golden_netlist.py),仿真走服务器 21 |
 | 全链 golden 眼图 | ✅ 9-4 | **90-180 码 × 全部 8 相位 BER=0**(基线内沿逐点一致,130/140 处 8/8 优于基线 7/8);190/200 码相位无关小误码(8/639、63/639)、210 码 8 点 SSH 限流失败(窗外,未重跑)——上边沿内缩 20 码的机制=golden vhi 锁存 0.770 vs 基线 0.968(din/ck 摆幅∝vhi,要点 24);vhi 硬化列入未来工作 |
 | golden corners | ✅ 9-4 | 7 配置 6/7 零误码窗:tt25 90-180/ff **90-210(与基线完全一致)**/sf 90-200/fs 90-160/tt-40 90-170/tt125 90-200——上边沿伪影内缩 0-30 码与眼图同构;**ss 角全窗 84/639 误码**(相位与门限完全无关的固定子集=时序违约特征,机制=vhi 伪影链×ss 慢器件);**同平台同日旧网表复跑 ss=90-140 完全复现基线**→差异 100% 归因伪影链(网表等价性由混合实验证明),vhi 硬化升级为**流片前必做**;ff 首轮 23 点/±温探针为 SSH 限流失败,子集重跑已恢复 |
+| 测试电路 n2s | ✅ 9-5 | **剩余 5 个模拟 TB 全原理图化**(tb_bias_dc/tb_noise_smoke/tb_afe_dac_dc/tb_afe_txron_mc/tb_afe_cmp_mc,afe_sch 现 24 cell);golden TB 网表=si 导出+组装(`scripts/gen_tb_golden.py`),网表级等价 5/5 PASS(subckt 器件集对 tran 源、顶层逐端口/逐节点);**A/B 对跑 9/9 MATCH**(`scripts/run_tb_ab.py`,本机 spectre 普通模式):bias 0.362723384V/DAC 3 码/cmp az_on trip/Ron_pu+pd 全部**位级一致**,noise_on 统计同量级(3.6/3.7mV,基线 3.76-3.81);MC 逐 seed 位级可比性靠要点 27 的发射序重排 |
 
 **当前链路基准(最新,含 ESD+真实偏置+封装模型)**:BER=0(639 bits),**眼窗 90-200 码 = 159-353mV,眼高 194mV ≥ 180mV 目标**。
 
@@ -37,6 +38,7 @@
 **新注意**:
 - SSH 限流("Permission denied (password)"/"Connection reset")本轮频繁出现,还会**打挂 bridge 隧道**。对策:批量任务间 sleep 60-180s;隧道挂了用 `virtuoso-bridge stop && virtuoso-bridge start` 重置(旧 ControlMaster socket 会僵死,直接 start 不够,先 stop)。
 - 并行统一 `max_workers=4`。
+- **2026-09-05:21 服务器整机不可达**(SSH Connection refused+ping 100% 丢包,非限流),本机 spectre 完整座位同源不可用 → 本日 TB A/B 走 `run_tb_ab.py --local` 普通模式;服务器恢复后跑批照旧走 common.make_sim。
 
 ## 3. 关键标定参数（已烧入各 run 脚本）
 
@@ -72,6 +74,7 @@
 24. **首步振铃平台相关,本机冒烟≠基线数值**:同网表 spectre 20.1(本机)/25.1(服务器)的 t=0+ 首步解不同(vdd[1] +0.075 vs +0.168);VA 的 vhi 锁存使全链对首步敏感。**混合对撞实验**(golden TB 层+旧 VA 包装=旧版本机逐位一致)是隔离差异层的手段;本机冒烟只验语法/收敛。
 25. **si/符号机制(2026-09-04 沉淀)**:①veriloga 视图是 DM 文本视图,dbOpenCellViewByType 返 nil 属正常——VA leaf 三件套=「stub schematic(仅 pin,网表器可解析)+ symbol + 磁盘 veriloga 源」;②si 实例行按 stub subckt 头(字母序)发射,组装时重排为 module 声明序+注参数(G1 fbit/seed、CHK n_shift/start_bit 等);③afe_sch 无 tech→bind basic 后 pin/drawing、label purpose 可用(symbol 层无 symbol/drawing 层,	body=slection box);④label stub 方向=pin 对符号中心 |dx|vs|dy| 判定,密集符号必须锥区安全(X=y1+0.5,否则垂直 stub 跨脚短路);⑤si 导出前必须释放活会话 cv 写锁(关窗+dbClose),改过 cellview 必须 schCheck+dbSave(否则 OSSHNL-108/109);⑥hia18 MOS 的网表 nf 取 CDF `fingers`、multi 取 `m`——裸写 fingers=1/m=1/multi=1 后才与省略态一致;⑦analogLib vsource/vdc/idc/tline 的实例参数 CDF 通道写不进网表——TB 级激励值全部由组装脚本在导出网表上打点(与旧模板 __X__ 烘焙同构)。
 26. **ESD nf_dio 参数化在原理图流丢失**:源 subckt `parameters nf_dio=50`+实例覆盖 100;n2s 把 subparam 默认 50 烧死。`n2s_tb.py fix_esd_nf` 按 golden 设计点烧 100(源默认 50 从未被任何 run 用过);NFDIO 扫描仍走旧网表流。
+27. **TB n2s 与 si/本机跑批(2026-09-05 全部实证)**:①纯 net-label TB 的 schCheck 软告警是固有产物——golden tb_afe_tran 本身 (0 24)(告警按 symbol 来源分布:afe_bias 2/afe_dac_r2r 2/afecmp_bank 4/afe_tx_drv 0),叶子 cell 全 (0 0),**门=零错误**即可;②`simInitEnvWithArgs` 生成的 si.env 缺 simViewList/simStopList,必须手补(spectre 用 `si -batch -cdslib <cds.lib> -command nl`,本机 si 在 IC618 tools/dfII/bin/si);③si 发射 subckt 头**无括号**(`subckt afe_bias vbias vdd vss`)且 subckt 内器件与顶层实例都按**字母序**——解析/对比时按端口名映射即自洽;④**MC 失配抽签按网表元件发射序分配**:字母序 golden 与 legacy 同 seed 得到不同实现(cmp az_on 0.181→0.259);重排实验证明把 subckt 体恢复**源声明序**+顶层恢复 **legacy 声明序**(实例对序也互换实现,如 Xdrv_pu/Xdrv_pd)后**逐 seed 位级一致**(gen_tb_golden 1.5 步固化);⑤CLI `virtuoso-bridge eval` 的包装 .il 在本环境加载失败,一律走 Python client 写 .py 文件;⑥本机 license.dat 只有 SpectreBasic(完整 Spectre 座位在网络服务上):`+preset=ax` 卡 "Waiting for available license",**普通模式(无 preset)秒过且 A/B 等价性成立**(两边同模式);⑦common.py import 时把 afe/.env 的 VB_* 灌进 os.environ,本机模式构造前须清除再 chdir /tmp(run_tb_ab `make_sim_local`);⑧mc1 包裹 DC 的 res.data 取不到值(老坑 16③),txron Ron 用本地 raw `mc1_dc1.dc` 重-parse 回退。
 
 ## 5. 文件地图（新增部分）
 
@@ -104,7 +107,10 @@ afe/
 │   ├── run_tran_supply.py     电源注入扫描+LS 扫描
 │   ├── n2s_top.py         afe_tb_tran 结构层构建(34 实例+21 pin,从 /tmp 跑本地桥)
 │   ├── n2s_tb.py          tb_afe_tran 顶层构建(24 实例+ESD nf=100 烧入)
+│   ├── n2s_tbs.py         5 个模拟 TB 构建(bias/noise/dac/txron/cmp,net-label+gnd!)
 │   ├── gen_golden_netlist.py  si 导出→golden 模板(归一+VA 重排+胶水打点+directives)
+│   ├── gen_tb_golden.py   5 个 TB 的 si 导出→golden 模板+等价验证(含 MC 发射序重排)
+│   ├── run_tb_ab.py       legacy vs golden TB A/B 对跑(--local 本机普通模式通道)
 │   └── run_golden_link.py / run_golden_eye.py  全链 golden 跑批(VA 5 文件为唯一 include)
 └── output/
     ├── tran_eye.json       最新眼图:90-200 码(159-353mV)
@@ -132,3 +138,4 @@ afe/
 
    脚本 `scripts/n2s_afe_bias.py`(试点)+`scripts/n2s_cells.py`(批量,分块创建),产物 `output/n2s_*/`(netlist+bias 图)。**关键机制(全部固化进技能文档)**:①CDF 权威参数命名——MOS 是 `nFin`(网表 nfin/w 为推导值,直写被回调弹回),hia18 二极管是裸写 `nf`+`nfin=12`(模型省略态默认;摆放默认 8 非中性→电流 0.643×;w/l/multi 中性);②MOS 必须裸写 `sa=0/sb=0`(CDF 发射 sa/sb=90n 的 LOD 应力,+10.9mV 移动 0.362V 工作点;0=无应力哨兵,大值饱和不归零);③si 网表器不重算存量 prop;`set_instance_params` 的 geGetEditCellView 会漂(用显式 cv 批量更新);④Gate C 判据=位置节点元组;导出平铺网表+`\`续行+自带模型 include(外部 TB 勿重复 include);⑤>~200 行批量 SKILL 触发字面量栈溢出→分块创建(create+modify);⑥daemon 中断留下的半成品 cell 会引发会话恢复 SIGSEGV 崩溃循环(重启前删损坏 cell;afe/ 现有自含 cds.lib;.cdsinit 已修到 .local/state 新路径);⑦本机 spectre 20.1 可直接跑 12FFC 模型(golden 无需服务器)。
 5. **顶层组装+全链 golden(2026-09-04 完成)**:afe_tb_tran 结构层+tb_afe_tran 顶层全原理图化(用户要求:除数字行为级外每模块原理图、顶层/测试程序均原理图);全链 golden link **BER=0/639** 与基线一致,眼图扫描见 §1 表;golden 模板 `output/n2s_top/golden_tb_template.scs`(si 导出+`gen_golden_netlist.py` 归一/重排/打点;MOS/cfmom 裸写、Xpc 裸写、胶水 gnd 参考、VA 实例重排+参数注入、directives 逐字);**要点 22-26 是本阶段全部新坑**。Virtuoso 会话中 afe_sch 库现含:7 cell(sch+sym)+5 VA(stub sch+sym+veriloga 源)+afe_tb_tran(sch+sym)+tb_afe_tran(sch)+va_probe/alib_probe(试验残留,可删)。
+6. **测试电路 n2s+A/B 闭环(2026-09-05 完成)**:剩余 5 个模拟 TB(tb_bias_dc/tb_noise_smoke/tb_afe_dac_dc/tb_afe_txron_mc/tb_afe_cmp_mc)建入 afe_sch(净标签连接、gnd!→0、实例名=legacy 名;`scripts/n2s_tbs.py`);si 导出(先释放写锁+手补 si.env view/stop list)→`gen_tb_golden.py` 组装(0 归一化/1 激励打点/1.5 MC 发射序重排/2 头/3 directives 逐字)+网表级等价验证;`run_tb_ab.py` 9 案例 A/B 全 MATCH(bias/dac×3/cmp_on/Ron 位级,noise_on 统计,cmp_off 双 nocross 一致)。产物:`output/n2s_tb_golden/`(5 si 导出+5 golden 模板)、`output/tb_ab.json`(A/B 记录)。**要点 27 是本阶段全部新坑**。至此 netlists/ 下 7 个 TB 中 6 个已原理图化(tb_sa_test 为 StrongARM 未来任务保留网表流,tb_afe_va 为旧 VA 原型)。

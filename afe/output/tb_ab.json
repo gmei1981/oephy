@@ -1,0 +1,53 @@
+{
+  "bias_tt25": {
+    "legacy": 0.3627233842309325,
+    "golden": 0.3627233842309325,
+    "match": true
+  },
+  "noise_off": {
+    "legacy": 1.1101305176029883e-16,
+    "golden": 1.1101305176029883e-16,
+    "match": true
+  },
+  "noise_on": {
+    "legacy": 0.0035762943997915747,
+    "golden": 0.003673748510227753,
+    "match": true
+  },
+  "dac_c0": {
+    "legacy": 7.770593541100108e-08,
+    "golden": 7.770593537602991e-08,
+    "match": true
+  },
+  "dac_c128": {
+    "legacy": 0.2218400338045949,
+    "golden": 0.2218399477451635,
+    "match": true
+  },
+  "dac_c255": {
+    "legacy": 0.4480477159521881,
+    "golden": 0.4480477159521922,
+    "match": true
+  },
+  "txron_s1": {
+    "legacy": [
+      249.939779,
+      244.086089
+    ],
+    "golden": [
+      249.939779,
+      244.086089
+    ],
+    "match": true
+  },
+  "cmp_on_s1": {
+    "legacy": 0.1811389413448181,
+    "golden": 0.18113894134481834,
+    "match": true
+  },
+  "cmp_off_s1": {
+    "legacy": "nocross",
+    "golden": "nocross",
+    "match": true
+  }
+}

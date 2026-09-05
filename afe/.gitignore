@@ -21,3 +21,7 @@ __pycache__/
 output/n2s_top/geye_*
 !output/golden_corners.json
 !output/golden_ss_diag.json
+!output/n2s_tb_golden/
+output/n2s_tb_golden/*__*
+!output/n2s_tb_golden/*.scs
+!output/tb_ab.json

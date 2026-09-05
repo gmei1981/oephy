@@ -1,0 +1,41 @@
+// UCIe-AP RX AFE golden TB (tb_bias_dc) -- si export assembled by scripts/gen_tb_golden.py
+simulator lang=spectre
+
+__MODELS__
+// Library name: afe_sch
+// Cell name: afe_bias
+// View name: schematic
+subckt afe_bias vbias vdd vss
+    Mbb (vbias vbias vss vss) nch_lvt_mac l=16n nfin=16
+    Mba (vbias vbias vss vss) nch_lvt_mac l=16n nfin=16
+Rb (vdd vbias ) rhim l=2.35u w=360.0n multi=(1)
+    Cdec16 (vbias vss) cfmom_2t_p80
+    Cdec15 (vbias vss) cfmom_2t_p80
+    Cdec14 (vbias vss) cfmom_2t_p80
+    Cdec13 (vbias vss) cfmom_2t_p80
+    Cdec12 (vbias vss) cfmom_2t_p80
+    Cdec11 (vbias vss) cfmom_2t_p80
+    Cdec10 (vbias vss) cfmom_2t_p80
+    Cdec9 (vbias vss) cfmom_2t_p80
+    Cdec8 (vbias vss) cfmom_2t_p80
+    Cdec7 (vbias vss) cfmom_2t_p80
+    Cdec6 (vbias vss) cfmom_2t_p80
+    Cdec5 (vbias vss) cfmom_2t_p80
+    Cdec4 (vbias vss) cfmom_2t_p80
+    Cdec3 (vbias vss) cfmom_2t_p80
+    Cdec2 (vbias vss) cfmom_2t_p80
+    Cdec1 (vbias vss) cfmom_2t_p80
+ends afe_bias
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: tb_bias_dc
+// View name: schematic
+Vvdd (vdd 0) vsource dc=0.8
+Xb (vbias vdd 0) afe_bias
+
+// ---- directives (verbatim from tb_bias_dc.scs) ----
+simOpts options temp=__TEMP__
+dc1 dc
+
+saveOptions options save=selected
+save vbias

@@ -1,0 +1,68 @@
+// UCIe-AP RX AFE golden TB (tb_afe_txron_mc) -- si export assembled by scripts/gen_tb_golden.py
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_MOS_MOSCAP
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_RES_BIP_DIO_DISRES
+include "/home/lib/tsmc_12nm_installed/pdk/models/cln12ffcll_1d8_sp_v1d0_2p4_usage.scs" section=TTGlobalCorner_LocalMC_MOM
+// Library name: afe_sch
+// Cell name: afe_tx_drv
+// View name: schematic
+subckt afe_tx_drv din pad vccio vdd vss
+    Mp1 (n1 din vdd vdd) pch_svt_mac l=16n nfin=4
+    Mn1 (n1 din vss vss) nch_svt_mac l=16n nfin=2
+    Mp2a (n2 n1 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp2b (n2 n1 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp2c (n2 n1 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mn2a (n2 n1 vss vss) nch_svt_mac l=16n nfin=16
+    Mn2b (n2 n1 vss vss) nch_svt_mac l=16n nfin=16
+    Mp3a (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp3b (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp3c (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mp3d (n3 n2 vdd vdd) pch_svt_mac l=16n nfin=16
+    Mn3a (n3 n2 vss vss) nch_svt_mac l=16n nfin=16
+    Mn3b (n3 n2 vss vss) nch_svt_mac l=16n nfin=16
+    Mn3c (n3 n2 vss vss) nch_svt_mac l=16n nfin=16
+    Mpu01 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu02 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu03 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu04 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu05 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu06 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu07 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu08 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu09 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu10 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu11 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu12 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu13 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu14 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu15 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpu16 (pad n3 vccio vccio) pch_ulvt_mac l=16n nfin=16
+    Mpd1 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+    Mpd2 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+    Mpd3 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+    Mpd4 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+    Mpd5 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+    Mpd6 (pad n3 vss vss) nch_ulvt_mac l=16n nfin=16
+ends afe_tx_drv
+Vvdd (vdd 0) vsource dc=0.8
+Vvccio (vccio 0) vsource dc=0.45
+Vvss (vss 0) vsource dc=0
+Vdin0 (din0 0) vsource dc=0
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: tb_afe_txron_mc
+// View name: schematic
+Vdin1 (din1 0) vsource dc=0.8
+Ipu (pad_pu 0) isource dc=2m
+Ipd (0 pad_pd) isource dc=2m
+Xdrv_pu (din0 pad_pu vccio vdd vss) afe_tx_drv
+Xdrv_pd (din1 pad_pd vccio vdd vss) afe_tx_drv
+
+// ---- directives (verbatim from tb_afe_txron_mc.scs) ----
+mc1 montecarlo numruns=__NRUNS__ variations=mismatch seed=__SEED__ donominal=no {
+    dc1 dc
+}
+
+saveOptions options save=selected
+save pad_pu pad_pd

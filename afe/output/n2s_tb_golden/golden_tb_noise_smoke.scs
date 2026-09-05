@@ -1,0 +1,17 @@
+// UCIe-AP RX AFE golden TB (tb_noise_smoke) -- si export assembled by scripts/gen_tb_golden.py
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+// Library name: afe_sch
+// Cell name: tb_noise_smoke
+// View name: schematic
+Vvdd (vdd 0) vsource dc=0.8
+M1 (out out vss vss) nch_lvt_mac l=16n nfin=8
+R1 (vdd out ) rhim l=10u w=360.0n multi=(1)
+C1 (out vss) capacitor c=50f
+
+// ---- directives (verbatim from tb_noise_smoke.scs) ----
+tran tran stop=40n maxstep=5p method=gear2only skipdc=yes __NOISE_OPTS__
+
+saveOptions options save=selected
+save out

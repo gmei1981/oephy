@@ -1,0 +1,223 @@
+
+// Library name: afe_sch
+// Cell name: afe_tx_drv
+// View name: schematic
+subckt afe_tx_drv din pad vccio vdd vss
+    Mp3d (n3 n2 vdd vdd) pch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mp3c (n3 n2 vdd vdd) pch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mp3b (n3 n2 vdd vdd) pch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mp3a (n3 n2 vdd vdd) pch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mp2c (n2 n1 vdd vdd) pch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mp2b (n2 n1 vdd vdd) pch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mp2a (n2 n1 vdd vdd) pch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mp1 (n1 din vdd vdd) pch_svt_mac l=16.0n nfin=4 w=154.00n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mn3c (n3 n2 vss vss) nch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mn3b (n3 n2 vss vss) nch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mn3a (n3 n2 vss vss) nch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mn2b (n2 n1 vss vss) nch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mn2a (n2 n1 vss vss) nch_svt_mac l=16.0n nfin=16 w=730.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=61.0n spob=61.0n spotl1=61.0n spobl1=61.0n spotl2=61.0n \
+        spobl2=61.0n spotr1=61.0n spobr1=61.0n spotr2=61.0n spobr2=61.0n
+    Mn1 (n1 din vss vss) nch_svt_mac l=16.0n nfin=2 w=58.0n multi=1 nf=1 \
+        sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 plodb1=16.0n \
+        plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M dinsaflag=0 ppitch=0 \
+        spot=103.00n spob=103.00n spotl1=103.00n spobl1=103.00n \
+        spotl2=103.00n spobl2=103.00n spotr1=103.00n spobr1=103.00n \
+        spotr2=103.00n spobr2=103.00n
+    Mpu16 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu15 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu14 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu13 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu12 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu11 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu10 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu09 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu08 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu07 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu06 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu05 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu04 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu03 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu02 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpu01 (pad n3 vccio vccio) pch_ulvt_mac l=16.0n nfin=16 w=730.0n \
+        multi=1 nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpd6 (pad n3 vss vss) nch_ulvt_mac l=16.0n nfin=16 w=730.0n multi=1 \
+        nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpd5 (pad n3 vss vss) nch_ulvt_mac l=16.0n nfin=16 w=730.0n multi=1 \
+        nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpd4 (pad n3 vss vss) nch_ulvt_mac l=16.0n nfin=16 w=730.0n multi=1 \
+        nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpd3 (pad n3 vss vss) nch_ulvt_mac l=16.0n nfin=16 w=730.0n multi=1 \
+        nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpd2 (pad n3 vss vss) nch_ulvt_mac l=16.0n nfin=16 w=730.0n multi=1 \
+        nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+    Mpd1 (pad n3 vss vss) nch_ulvt_mac l=16.0n nfin=16 w=730.0n multi=1 \
+        nf=1 sd=74.0n sa=0 sb=0 ploda1=16.0n ploda2=0 ploda3=0 \
+        plodb1=16.0n plodb2=0 plodb3=0 nf_flag=1 smbt=1M smbb=1M \
+        dinsaflag=0 ppitch=0 spot=61.0n spob=61.0n spotl1=61.0n \
+        spobl1=61.0n spotl2=61.0n spobl2=61.0n spotr1=61.0n spobr1=61.0n \
+        spotr2=61.0n spobr2=61.0n
+ends afe_tx_drv
+// End of subcircuit definition.
+
+// Library name: afe_sch
+// Cell name: tb_afe_txron_mc
+// View name: schematic
+Vdin1 (din1 0) vsource type=sine
+Vdin0 (din0 0) vsource type=sine
+Vvss (vss 0) vsource type=sine
+Vvccio (vccio 0) vsource type=sine
+Vvdd (vdd 0) vsource type=sine
+Ipd (0 pad_pd) isource type=sine
+Ipu (pad_pu 0) isource type=sine
+Xdrv_pd (din1 pad_pd vccio vdd vss) afe_tx_drv
+Xdrv_pu (din0 pad_pu vccio vdd vss) afe_tx_drv
