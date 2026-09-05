@@ -1,0 +1,58 @@
+// pll_lockdet.va — lock detection (ref3 ADPLL_ALG 图18)
+// |phe| <= lock_thr for 2^lcnt_thr consecutive clk edges -> phase_lock=1
+// (counter cleared on any miss); with phase_lock=1, |phe| >= unlock_thr for
+// 2^ucnt_thr consecutive edges -> phase_lock=0. Spec defaults lock_phe_thr
+// =655 / unlock_phe_thr=6554 on an (s,18,16) word -> 0.01 / 0.1 cycles;
+// lcnt/ucnt thr = 8 -> 256 consecutive edges.
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_lockdet(clk, phe, phase_lock);
+inout clk, phe;
+output phase_lock;
+electrical clk, phe, phase_lock;
+
+parameter real lock_thr = 0.01;        // cycles (TCKV units of phe)
+parameter real unlock_thr = 0.1;
+parameter integer lcnt_thr = 8;        // 2^8 = 256
+parameter integer ucnt_thr = 8;
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+
+integer cnt_lock, cnt_unlock, plk;
+real plk_v;
+
+analog begin
+    @(initial_step) begin
+        cnt_lock = 0; cnt_unlock = 0; plk = 0; plk_v = 0.0;
+    end
+
+    @(cross(V(clk) - vth, +1)) begin
+        if (plk == 0) begin
+            if (abs(V(phe)) <= lock_thr) begin
+                cnt_lock = cnt_lock + 1;
+                if (cnt_lock >= pow(2.0, lcnt_thr)) begin
+                    plk = 1;
+                    cnt_lock = 0;
+                end
+            end else begin
+                cnt_lock = 0;
+            end
+        end else begin
+            if (abs(V(phe)) >= unlock_thr) begin
+                cnt_unlock = cnt_unlock + 1;
+                if (cnt_unlock >= pow(2.0, ucnt_thr)) begin
+                    plk = 0;
+                    cnt_unlock = 0;
+                end
+            end else begin
+                cnt_unlock = 0;
+            end
+        end
+        plk_v = (plk == 1) ? vh : 0.0;
+    end
+
+    V(phase_lock) <+ transition(plk_v, 0, tt);
+end
+endmodule

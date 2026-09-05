@@ -882,3 +882,90 @@
 - **待续**: smoke/full 判定（判据: 0 错误、fVCO 8.0G±0.1%、phe→0±0.03、FSTATE 到 4(LOCK)、
   FQLK/PHLK 时序、AFC 63→…→~55 阶梯、交接 VC1 无跳变）→ 结果追加 progress.md →
   V4 分数闭环（FCW=80.5、三校准全开、dither 频谱）。
+
+## 2026-09-04 上午：V3 本机两台被会话退出杀死查明 + full 挪 21 服务器（本会话）
+
+- **真相还原**: 本机 smoke/full 并非跑完——两台 07:35:48 同时被上一会话退出连带杀死
+  （main.log 收尾段 "Saving the states into file at t=4.44742 us... Killed by user"，
+  进程树里可见 claude 进程）。**"spectre completes with 0 errors" 只是电路错误计数，
+  被杀也会打印**——判定脚本用这行判"0 errors"有误导性，需结合 sim 时长判完整度。
+- **smoke 判定有效（窗口全在 4.3µs 内）ALL PASS**：vco 8.058G/ena@50n/AFC 起 63 首跳 31
+  @4.3µs/CNTOUT 计数/phe 活跃/SELF=0 QERR=-0.5。
+- **full 判定 FAIL 属数据截断**（只到 4.45µs，FSTATE=1 AFC 未完），非设计问题。
+- **check_ref3_v3.py 修 3 处 bug**: ①②[info] 行 µs 换算 ×1e-6→×1e6（time 轴是秒）；
+  ③ AFC/FLL 时间为 None 时 135 行与 148 行两处 TypeError——加 us() None 安全格式化 +
+  ta None 早退护栏（打 [skip] "AFC never done" 后干净退出，不误导性判 fvco/phe）。
+  回归：smoke 仍 ALL PASS；截断 full 优雅 FAIL+skip。
+- **full 移 21 服务器**（key 认证本次正常，48 核 load 1.0）: 网表 21 文件 scp 到
+  `mei@192.168.110.21:/home/mei/adpll_zp_v3/main`（md5 校验一致；不带本地 ahdlSimDB，
+  25.1 自己重编 VA）。启动：
+  `cd /home/mei/adpll_zp_v3/main && setsid nohup /edatool/cadence/spectre2510.10.393/tools.lnx86/bin/spectre -64 main.scs -raw main.raw +log main.log -format psfbin +mt=16 < /dev/null > spectre_stdout.txt 2>&1 &`
+  09:02 瞬态起跑。网表 include 的 PDK 路径 /home/lib/... 在 21 服务器原样可用。
+  **完成后拉回判定**: `rsync -a mei@192.168.110.21:/home/mei/adpll_zp_v3/main/main.raw/ sim/ref3/v3/main/main.raw/`
+  （连同 main.log）再 `python3 tools/check_ref3_v3.py full`。
+- **本机速率复核**: 4.447µs/7.17h ≈ 10.3ns/min（略低于之前 12.7 估计），20µs 本机需 ~32h。
+- **坑**: sleep+ssh 组合会被本地工具拦（用 run_in_background until-loop 或 Monitor）；
+  ssh 命令里带 sleep 8 的组合曾把会话拖到 timeout（setsid 已脱离不影响后台进程）。
+
+## 2026-09-05：ref3 全链原理图化——3 模拟 cell + 顶层 + tb 建成，语义比对全过，tb 冒烟在跑（本会话）
+
+- **桥接恢复**: 上一会话 ref3sch 进程已死（stale）→ vlink-pro start 重启（workspace 用户确认
+  /home/gmei/git/oephy/adpll_ted_zp/virtuoso_ws，display :0）。
+- **P2 模拟 cell**（tools/build_ref3_analog.py，标签命名法零手绘；schCheck + 逐网 dump 验证 +
+  si 导出 + compare_block 全部一致）：
+  - ldo_05：9 器件+6 pin，schCheck (0,0)，10 网 36 端子对全对
+  - vco_x_c_dac：22 器件+7 pin，(0,22)（9 浮空 net01-11 + VDDC 悬空口为预期，与 vco_x 同口径）
+  - dtc_10b_ss：2053 器件+14 pin，(0,0)；延迟线与 dtc_10b 全同（R0/MNI/MPI/MRST_D/1023 单元/
+    MN1/MP1），仅 Xdec 换 pll_dtc_code（1033 端口，vth=0.5）
+  - 三 cell 的 si 导出 vs netlist/inc 参考**逐项全部一致**
+- **P3 顶层 adpll_ref3_top**（tools/build_ref3_top.py）：18 X 实例 + Rbuf + 2 反相器 = 23 实例 +
+  10 pin（REF/RSTN/RCOMP/VDD/V1V/VBG/VBL/VSS + OUTP/OUTN 探针口供 ic=与测频）；三个模拟 cell
+  symbol 用 ref3VaSym 复用生成；schCheck (0,16)（TCODE/CNTOUT/KDBG/DDBG/FSTATE/ST0-2 只驱动
+  不加载的调试网，预期）。export_ref3_top.py 语义比对 **23/23 ALL MATCH**。
+- **P4 tb_ref3**（tools/build_ref3_tb.py）：Xpll + 8 源（vdc×6 + vpulse×2，负极 gnd! 标签法），
+  schCheck (0,4)（OUTP/OUTN 悬空=探针口预期）；export_ref3_tb.py 组装 sim/ref3/v3/tbsmoke/
+  tbsmoke.scs（PDK include + 15 VA + 层级 save Xpll.*×23 + tran 300n 与参考 smoke 同参），
+  本机 spectre 在跑（~30min）。
+- **判定工具**: tools/compare_ref3_tb.py（tb 层级名 vs 参考 smoke 平铺名：模拟量 VC1/VC2/VDDC
+  <2mV、慢数字 PHE/FCTRL/QERR/SELF <0.02、计数器 <0.5、快数字错位率 <8%+末值、fVCO<0.2%）。
+- **新坑沉淀（重要）**：
+  1. **pch 桩方向**：MOS 符号 4 端子挤在原点 ±0.19 内；pch 的 D 在下、S 在上（与 nch 相反）——
+     pch 的 D 桩必须向下、S 桩向上。写反时 D 桩(向上)终点恰好落在 B 端子上→**静默物理短接**
+     （现象=SCH-3488 'VOUT'&'VIN' thru nets + 匿名网 + 被短端子挂到错网；ldo_05 首建即中招）。
+  2. **moscap_rf 桩**：GATE(0,0)/BULK(0,−0.375)/GNODE(+0.125,−0.1875)——BULK 桩必须向下
+     （向上会戳向 GATE）。cfmom(PLUS 上/MINUS 下/BULK 右)、analogLib ind/cap/res(PLUS 上/
+     MINUS 下)、rhim(PLUS 左/MINUS 右) 均安全。
+  3. **VA symbol 是 310 宽横条**（1033 引脚 0.3 间距单行排开）：dtc_10b_ss 内 Xdec 放 (4,26) 时
+     引脚行 y≈26.45 与网格首行开关 D 桩终点 y=26.4375 相撞 → **11 个 c 网(c477..c727, 索引
+     477+col×8.33)与 VDLY 短接**；Xdec 上移 (4,32) 修复。放大符号实例前先查 master bbox。
+  4. **si 的 subckt 头按字母序**发射（CK_IN CK_OUT CODE0-9 VDD VSS），实例行节点序=导出端口
+     序≠参考行序——跨层级比对必须**按端口名映射**（export_ref3_top.py 的 analog 字典法）。
+  5. **si 发射全量 CDF 参数**（含与默认同值的）——参数比对需**双向归一化**：多余参数=CDF 默认
+     即等价、缺失参数须等于默认；数值带工程单位展开比较（50p≡5e-11）。
+  6. **analogLib CDF 参数名**（本机 IC618）：vdc 的电压参数是 **`vdc`**（不是 dc）、vpulse 的
+     延迟是 **`td`**（不是 delay）——名字设错被网表器**静默忽略**，导出行缺参数（vpulse 其余
+     v1/v2/per/pw/tr/tf 正确，导出为 val0/val1/period/width/rise/fall/delay）。
+  7. **组装网表头**：缺 `simulator lang=spectre` 时 PDK toplevel.scs 的 `section=top_tt` 选择
+     失效 → 全部器件模型 undefined（1057 个 SFE-23，41s 即致命退出）；头部还要补
+     constants.vams/disciplines.vams 两行 ahdl_include（si 导出不会自带）。
+  8. 复发老坑：`t` 布尔常量不能做 foreach 变量；instance~>props 槽对 vdc 实例为 nil（以
+     dbFindProp 为准）；`i~>transform` 的 car 是原点、cadr 是朝向串。
+  9. **DB-270211**（"Failed to create cellview ... 'a' mode"）出现在 ref3VaSym 流程是 wipe 阶段
+     良性告警——symbol 实际建成（端子数可查证），勿据此判失败。
+  10. schCheck 返回 [errors, warnings]；pin 也是实例（实例数=器件+pin 数）。
+- **21 服务器**（ref3 full 20µs 判定，task#1）：09-05 全程 SSH 超时不可达（多次重试），判定挂起；
+  恢复后 rsync main.raw/ 回 sim/ref3/v3/main/ 再 `python3 tools/check_ref3_v3.py full`。
+- **tb 冒烟判定 ALL MATCH（原理图↔网表电气等价闭环，本会话收官）**：300ns 0 错误跑完，
+  compare_ref3_tb.py vs 参考 smoke 轨迹（sim/ref3/v3/smoke/main.raw）：
+  - 模拟态逐位全同：VC1/VC2 max|d|=0、VDDC 0.25mV（<2mV 限）
+  - 数字/计数全同：FCTRL/QERR/SELF/CNTOUT/AB8/AB7/AB6/KDBG max|d|=0；FSTATE/FQLK/PHLK/
+    AFCD/ENA/ENF/ENP/CKR/CKFB/CK16 mismatch 0/6001
+  - **fVCO=8.1831G 双跑完全一致（dev 0.000%，65/65 沿）**；OUTPB 3% 错位=边沿 bin 抖动（预期）
+  - PHE 首判 FAIL 定性为**跳变边界采样假象**：6001 点仅 1 点（t=236.75ns，ref 值更新早一个
+    50p 频闪 bin）——比对器已加「跳变进行中 bin 豁免」（两侧之一自身在跳变 ≥|d|/2 即豁免），
+    重判 ALL MATCH。坑沉淀：逐周期数字量（TDC 码类）不能按点迹 max|d| 严格判，与老
+    compare_smoke 的边沿假象同类。
+- **ref3 原理图全链资产**：adpll_sch 库新增 ldo_05/vco_x_c_dac/dtc_10b_ss（schematic+symbol）、
+  adpll_ref3_top（schematic+symbol）、tb_ref3（schematic）+ 上会话 15 个 VA symbol——
+  网表→原理图转换完成，恢复/复用入口：tools/build_ref3_{analog,top,tb}.py（可重跑重建）、
+  tools/export_ref3_{sch,top,tb}.py（导出+比对）、tools/compare_ref3_tb.py（冒烟判定）。

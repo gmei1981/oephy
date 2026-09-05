@@ -1,0 +1,205 @@
+// pll_pfd.va — PFD decode + normalize (ref3 ADPLL_ALG 图13 digital side)
+// Combinational (evaluated every analog step):
+//   decode   = leading-ones count of the thermometer inputs (the spec LUT:
+//              0xxx->0, 1000->1, 110x->2, ..., all-1->15)
+//   sign     = arb (0.8 = fb edge after ckr = positive phe)
+//   tdc_code = {arb, dec_high, dec_low} u,9,0 (debug output, 0..511)
+//   phe      = inv*(sign*(dec_high*16+dec_low)*coef - phe_sh), clamped
+//              +-sat (spec s,18,16 "sat 6")
+// Stage-A unit convention: phe in CYCLES (TCKV). coef default = fbin/tckv
+// = 1/64 with the TDC defaults (cbin=TCKV/4, fbin=cbin/16); phe_sh default
+// 0 — the spec's 0.5*2^16 phe_sh belongs to their unsigned-code convention,
+// here the offset-binary code centering (256) already absorbs it.
+// One-hot LUT feedback outputs for the analog TDC (ctdc_in_one_hot):
+// interval k (leading-ones count) -> bit(16-k); all-zero input -> all-zero
+// output. oha carries the interval when arb selects the a-path, ohb the
+// b-path.
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_pfd(ca0, ca1, ca2, ca3, ca4, ca5, ca6, ca7, ca8, ca9, ca10, ca11,
+    ca12, ca13, ca14, ca15,
+    cb0, cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, cb10, cb11, cb12, cb13,
+    cb14, cb15,
+    f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, arb,
+    oha0, oha1, oha2, oha3, oha4, oha5, oha6, oha7, oha8, oha9, oha10, oha11,
+    oha12, oha13, oha14, oha15,
+    ohb0, ohb1, ohb2, ohb3, ohb4, ohb5, ohb6, ohb7, ohb8, ohb9, ohb10, ohb11,
+    ohb12, ohb13, ohb14, ohb15,
+    phe, tcode);
+inout ca0, ca1, ca2, ca3, ca4, ca5, ca6, ca7, ca8, ca9, ca10, ca11, ca12, ca13,
+    ca14, ca15;
+inout cb0, cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, cb10, cb11, cb12, cb13,
+    cb14, cb15;
+inout f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, arb;
+output oha0, oha1, oha2, oha3, oha4, oha5, oha6, oha7, oha8, oha9, oha10, oha11,
+    oha12, oha13, oha14, oha15;
+output ohb0, ohb1, ohb2, ohb3, ohb4, ohb5, ohb6, ohb7, ohb8, ohb9, ohb10, ohb11,
+    ohb12, ohb13, ohb14, ohb15;
+output phe, tcode;
+electrical ca0, ca1, ca2, ca3, ca4, ca5, ca6, ca7, ca8, ca9, ca10, ca11, ca12,
+    ca13, ca14, ca15;
+electrical cb0, cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, cb10, cb11, cb12,
+    cb13, cb14, cb15;
+electrical f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    arb;
+electrical oha0, oha1, oha2, oha3, oha4, oha5, oha6, oha7, oha8, oha9, oha10,
+    oha11, oha12, oha13, oha14, oha15;
+electrical ohb0, ohb1, ohb2, ohb3, ohb4, ohb5, ohb6, ohb7, ohb8, ohb9, ohb10,
+    ohb11, ohb12, ohb13, ohb14, ohb15;
+electrical phe, tcode;
+
+parameter real coef = 0.015625;        // 1/64 (fbin/tckv with TDC defaults)
+parameter real phe_sh = 0.0;           // loop phase offset (spec default 0.5
+                                       // is their unsigned-code convention)
+parameter real sat = 4.0;              // "sat 6" of s,18,16 (cycles-scale)
+parameter real inv = 1.0;              // phe_inv_en polarity
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+
+integer da, db, df, hi, code, sign, ksel;
+real phe_v;
+real ohav0, ohav1, ohav2, ohav3, ohav4, ohav5, ohav6, ohav7, ohav8, ohav9,
+    ohav10, ohav11, ohav12, ohav13, ohav14, ohav15;
+real ohbv0, ohbv1, ohbv2, ohbv3, ohbv4, ohbv5, ohbv6, ohbv7, ohbv8, ohbv9,
+    ohbv10, ohbv11, ohbv12, ohbv13, ohbv14, ohbv15;
+
+analog begin
+    // leading-ones decode (flat chains, no loops/arrays per repo constraint)
+    da = 0;
+    if (V(ca0) > vth) da = 1;
+    if ((da == 1) && (V(ca1) > vth)) da = 2;
+    if ((da == 2) && (V(ca2) > vth)) da = 3;
+    if ((da == 3) && (V(ca3) > vth)) da = 4;
+    if ((da == 4) && (V(ca4) > vth)) da = 5;
+    if ((da == 5) && (V(ca5) > vth)) da = 6;
+    if ((da == 6) && (V(ca6) > vth)) da = 7;
+    if ((da == 7) && (V(ca7) > vth)) da = 8;
+    if ((da == 8) && (V(ca8) > vth)) da = 9;
+    if ((da == 9) && (V(ca9) > vth)) da = 10;
+    if ((da == 10) && (V(ca10) > vth)) da = 11;
+    if ((da == 11) && (V(ca11) > vth)) da = 12;
+    if ((da == 12) && (V(ca12) > vth)) da = 13;
+    if ((da == 13) && (V(ca13) > vth)) da = 14;
+    if ((da == 14) && (V(ca14) > vth)) da = 15;
+    if ((da == 15) && (V(ca15) > vth)) da = 15;  // all-ones -> 15 per spec LUT
+
+    db = 0;
+    if (V(cb0) > vth) db = 1;
+    if ((db == 1) && (V(cb1) > vth)) db = 2;
+    if ((db == 2) && (V(cb2) > vth)) db = 3;
+    if ((db == 3) && (V(cb3) > vth)) db = 4;
+    if ((db == 4) && (V(cb4) > vth)) db = 5;
+    if ((db == 5) && (V(cb5) > vth)) db = 6;
+    if ((db == 6) && (V(cb6) > vth)) db = 7;
+    if ((db == 7) && (V(cb7) > vth)) db = 8;
+    if ((db == 8) && (V(cb8) > vth)) db = 9;
+    if ((db == 9) && (V(cb9) > vth)) db = 10;
+    if ((db == 10) && (V(cb10) > vth)) db = 11;
+    if ((db == 11) && (V(cb11) > vth)) db = 12;
+    if ((db == 12) && (V(cb12) > vth)) db = 13;
+    if ((db == 13) && (V(cb13) > vth)) db = 14;
+    if ((db == 14) && (V(cb14) > vth)) db = 15;
+    if ((db == 15) && (V(cb15) > vth)) db = 15;
+
+    df = 0;
+    if (V(f0) > vth) df = 1;
+    if ((df == 1) && (V(f1) > vth)) df = 2;
+    if ((df == 2) && (V(f2) > vth)) df = 3;
+    if ((df == 3) && (V(f3) > vth)) df = 4;
+    if ((df == 4) && (V(f4) > vth)) df = 5;
+    if ((df == 5) && (V(f5) > vth)) df = 6;
+    if ((df == 6) && (V(f6) > vth)) df = 7;
+    if ((df == 7) && (V(f7) > vth)) df = 8;
+    if ((df == 8) && (V(f8) > vth)) df = 9;
+    if ((df == 9) && (V(f9) > vth)) df = 10;
+    if ((df == 10) && (V(f10) > vth)) df = 11;
+    if ((df == 11) && (V(f11) > vth)) df = 12;
+    if ((df == 12) && (V(f12) > vth)) df = 13;
+    if ((df == 13) && (V(f13) > vth)) df = 14;
+    if ((df == 14) && (V(f14) > vth)) df = 15;
+    if ((df == 15) && (V(f15) > vth)) df = 15;
+
+    sign = 1;
+    if (V(arb) > vth) sign = 1; else sign = -1;
+    if (sign > 0) hi = da; else hi = db;
+    code = hi * 16 + df;
+    if (sign > 0) code = 256 + hi * 16 + df;
+
+    phe_v = inv * (sign * (hi * 16 + df) * coef - phe_sh);
+    if (phe_v > sat) phe_v = sat;
+    if (phe_v < -sat) phe_v = -sat;
+
+    // one-hot LUT: interval k -> bit(16-k); k=0 -> all zero
+    ksel = 0;
+    if (sign > 0) ksel = da; else ksel = db;
+    ohav0 = ((ksel == 16) && (sign > 0)) ? vh : 0.0;
+    ohav1 = ((ksel == 15) && (sign > 0)) ? vh : 0.0;
+    ohav2 = ((ksel == 14) && (sign > 0)) ? vh : 0.0;
+    ohav3 = ((ksel == 13) && (sign > 0)) ? vh : 0.0;
+    ohav4 = ((ksel == 12) && (sign > 0)) ? vh : 0.0;
+    ohav5 = ((ksel == 11) && (sign > 0)) ? vh : 0.0;
+    ohav6 = ((ksel == 10) && (sign > 0)) ? vh : 0.0;
+    ohav7 = ((ksel == 9) && (sign > 0)) ? vh : 0.0;
+    ohav8 = ((ksel == 8) && (sign > 0)) ? vh : 0.0;
+    ohav9 = ((ksel == 7) && (sign > 0)) ? vh : 0.0;
+    ohav10 = ((ksel == 6) && (sign > 0)) ? vh : 0.0;
+    ohav11 = ((ksel == 5) && (sign > 0)) ? vh : 0.0;
+    ohav12 = ((ksel == 4) && (sign > 0)) ? vh : 0.0;
+    ohav13 = ((ksel == 3) && (sign > 0)) ? vh : 0.0;
+    ohav14 = ((ksel == 2) && (sign > 0)) ? vh : 0.0;
+    ohav15 = ((ksel == 1) && (sign > 0)) ? vh : 0.0;
+    ohbv0 = ((ksel == 16) && (sign < 0)) ? vh : 0.0;
+    ohbv1 = ((ksel == 15) && (sign < 0)) ? vh : 0.0;
+    ohbv2 = ((ksel == 14) && (sign < 0)) ? vh : 0.0;
+    ohbv3 = ((ksel == 13) && (sign < 0)) ? vh : 0.0;
+    ohbv4 = ((ksel == 12) && (sign < 0)) ? vh : 0.0;
+    ohbv5 = ((ksel == 11) && (sign < 0)) ? vh : 0.0;
+    ohbv6 = ((ksel == 10) && (sign < 0)) ? vh : 0.0;
+    ohbv7 = ((ksel == 9) && (sign < 0)) ? vh : 0.0;
+    ohbv8 = ((ksel == 8) && (sign < 0)) ? vh : 0.0;
+    ohbv9 = ((ksel == 7) && (sign < 0)) ? vh : 0.0;
+    ohbv10 = ((ksel == 6) && (sign < 0)) ? vh : 0.0;
+    ohbv11 = ((ksel == 5) && (sign < 0)) ? vh : 0.0;
+    ohbv12 = ((ksel == 4) && (sign < 0)) ? vh : 0.0;
+    ohbv13 = ((ksel == 3) && (sign < 0)) ? vh : 0.0;
+    ohbv14 = ((ksel == 2) && (sign < 0)) ? vh : 0.0;
+    ohbv15 = ((ksel == 1) && (sign < 0)) ? vh : 0.0;
+
+    V(phe) <+ phe_v;
+    V(tcode) <+ code;
+    V(oha0) <+ transition(ohav0, 0, tt);
+    V(oha1) <+ transition(ohav1, 0, tt);
+    V(oha2) <+ transition(ohav2, 0, tt);
+    V(oha3) <+ transition(ohav3, 0, tt);
+    V(oha4) <+ transition(ohav4, 0, tt);
+    V(oha5) <+ transition(ohav5, 0, tt);
+    V(oha6) <+ transition(ohav6, 0, tt);
+    V(oha7) <+ transition(ohav7, 0, tt);
+    V(oha8) <+ transition(ohav8, 0, tt);
+    V(oha9) <+ transition(ohav9, 0, tt);
+    V(oha10) <+ transition(ohav10, 0, tt);
+    V(oha11) <+ transition(ohav11, 0, tt);
+    V(oha12) <+ transition(ohav12, 0, tt);
+    V(oha13) <+ transition(ohav13, 0, tt);
+    V(oha14) <+ transition(ohav14, 0, tt);
+    V(oha15) <+ transition(ohav15, 0, tt);
+    V(ohb0) <+ transition(ohbv0, 0, tt);
+    V(ohb1) <+ transition(ohbv1, 0, tt);
+    V(ohb2) <+ transition(ohbv2, 0, tt);
+    V(ohb3) <+ transition(ohbv3, 0, tt);
+    V(ohb4) <+ transition(ohbv4, 0, tt);
+    V(ohb5) <+ transition(ohbv5, 0, tt);
+    V(ohb6) <+ transition(ohbv6, 0, tt);
+    V(ohb7) <+ transition(ohbv7, 0, tt);
+    V(ohb8) <+ transition(ohbv8, 0, tt);
+    V(ohb9) <+ transition(ohbv9, 0, tt);
+    V(ohb10) <+ transition(ohbv10, 0, tt);
+    V(ohb11) <+ transition(ohbv11, 0, tt);
+    V(ohb12) <+ transition(ohbv12, 0, tt);
+    V(ohb13) <+ transition(ohbv13, 0, tt);
+    V(ohb14) <+ transition(ohbv14, 0, tt);
+    V(ohb15) <+ transition(ohbv15, 0, tt);
+end
+endmodule

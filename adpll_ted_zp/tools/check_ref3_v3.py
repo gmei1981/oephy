@@ -66,6 +66,11 @@ def level_time(t, x, lv):
     return t[i]
 
 
+def us(x):
+    """format seconds as us, None-safe (t in s -> 'x.xxx'; None -> 'never')."""
+    return f"{x*1e6:.3f}" if x is not None else "never"
+
+
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else "full"
     d = V3 / ("smoke" if mode == "smoke" else "main")
@@ -81,7 +86,7 @@ def main():
     fstate = get(d, "FSTATE")
     qerr = get(d, "QERR")
     selfv = get(d, "SELF")
-    print(f"  [info] sim {t[0]*1e-6:.2f}..{t[-1]*1e-6:.2f} us,"
+    print(f"  [info] sim {t[0]*1e6:.2f}..{t[-1]*1e6:.2f} us,"
           f" {len(t)} strobed points")
 
     if mode == "smoke":
@@ -132,11 +137,18 @@ def main():
         ta = level_time(t, afcd, 0.4)
         tf = level_time(t, fqlk, 0.4)
         tp = level_time(t, phlk, 0.4)
-        print(f"  [info] AFC@{ta*1e-6:.3f}u FLL@{t2*1e-6:.3f}u FQLK@{tf*1e-6:.3f}u"
-              f" PLL@{t3*1e-6:.3f}u PHLK@{tp*1e-6:.3f}u LOCK@{t4*1e-6:.3f}u")
+        print(f"  [info] AFC@{us(ta)}u FLL@{us(t2)}u FQLK@{us(tf)}u"
+              f" PLL@{us(t3)}u PHLK@{us(tp)}u LOCK@{us(t4)}u")
         check("fsm order", (t1 < ta <= tf < t3 <= tp < t4) if None not in
               (t1, ta, tf, t3, tp, t4) else False,
               "AFC->FLL->PLL->LOCK monotone")
+        if ta is None:
+            # run never finished AFC (killed/truncated data): phase verdicts
+            # below are meaningless -- report and stop cleanly.
+            print("  [skip] AFC never done in saved data;"
+                  " phase verdicts need longer run")
+            print(f"\nFAILED: {', '.join(FAIL)}")
+            return
         # 2. AFC staircase: start 63, final code from VC1
         v63 = vc1[(t > t1 + 0.2e-6) & (t < t1 + 0.6e-6)].mean()
         ab_start = v63 / VC1_LSB

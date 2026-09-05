@@ -1,0 +1,92 @@
+cv = dbOpenCellViewByType("adpll_sch" "tb_ref3" "schematic" "schematic" "a")
+
+procedure(rsProp(inst prop val)
+  if(dbFindProp(inst prop)
+    dbReplaceProp(inst prop "string" val)
+    dbCreateProp(inst prop "string" val)))
+
+procedure(rsTermCtr(inst termName)
+  let((term pin fig bb)
+    term = car(setof(tt inst~>master~>terminals tt~>name == termName))
+    pin = when(term car(term~>pins))
+    fig = when(pin car(pin~>figs))
+    bb = when(fig fig~>bBox)
+    when(bb
+      dbTransformPoint(
+        list((xCoord(car(bb)) + xCoord(cadr(bb))) / 2.0
+             (yCoord(car(bb)) + yCoord(cadr(bb))) / 2.0)
+        inst~>transform))))
+
+procedure(rsStub(inst termName netName dx dy)
+  let((ctr end mid)
+    ctr = rsTermCtr(inst termName)
+    when(ctr
+      end = list(xCoord(ctr) + dx yCoord(ctr) + dy)
+      mid = list((xCoord(ctr) + xCoord(end)) / 2.0
+                 (yCoord(ctr) + yCoord(end)) / 2.0)
+      schCreateWire(cv "route" "full" list(ctr end) 0 0 0 nil nil)
+      schCreateWireLabel(cv nil mid netName "centerCenter" "R0" "stick" 0.0625 nil))))
+Xpll = dbCreateInstByMasterName(cv "adpll_sch" "adpll_ref3_top" "symbol" "Xpll" 0:0 "R0")
+rsStub(Xpll "REF" "REF" -0.35 0)
+rsStub(Xpll "RSTN" "RSTN" -0.35 0)
+rsStub(Xpll "RCOMP" "RCOMP" -0.35 0)
+rsStub(Xpll "VDD" "VDD" -0.35 0)
+rsStub(Xpll "V1V" "V1V" -0.35 0)
+rsStub(Xpll "VBG" "VBG" -0.35 0)
+rsStub(Xpll "VBL" "VBL" -0.35 0)
+rsStub(Xpll "VSS" "VSS" -0.35 0)
+rsStub(Xpll "OUTP" "OUTP" 0.35 0)
+rsStub(Xpll "OUTN" "OUTN" 0.35 0)
+
+Vvdd = dbCreateInstByMasterName(cv "analogLib" "vdc" "symbol" "Vvdd" 20:6 "R0")
+rsProp(Vvdd "vdc" "0.8")
+rsStub(Vvdd "PLUS" "VDD" 0 0.35)
+rsStub(Vvdd "MINUS" "gnd!" 0 -0.35)
+
+Vvss = dbCreateInstByMasterName(cv "analogLib" "vdc" "symbol" "Vvss" 20:2 "R0")
+rsProp(Vvss "vdc" "0")
+rsStub(Vvss "PLUS" "VSS" 0 0.35)
+rsStub(Vvss "MINUS" "gnd!" 0 -0.35)
+
+Vref = dbCreateInstByMasterName(cv "analogLib" "vpulse" "symbol" "Vref" 20:-2 "R0")
+rsProp(Vref "v1" "0")
+rsProp(Vref "v2" "0.8")
+rsProp(Vref "per" "10n")
+rsProp(Vref "pw" "5n")
+rsProp(Vref "tr" "10p")
+rsProp(Vref "tf" "10p")
+rsStub(Vref "PLUS" "REF" 0 0.35)
+rsStub(Vref "MINUS" "gnd!" 0 -0.35)
+
+Vv1v = dbCreateInstByMasterName(cv "analogLib" "vdc" "symbol" "Vv1v" 20:-6 "R0")
+rsProp(Vv1v "vdc" "1.0")
+rsStub(Vv1v "PLUS" "V1V" 0 0.35)
+rsStub(Vv1v "MINUS" "gnd!" 0 -0.35)
+
+Vvbg = dbCreateInstByMasterName(cv "analogLib" "vdc" "symbol" "Vvbg" 28:6 "R0")
+rsProp(Vvbg "vdc" "0.5")
+rsStub(Vvbg "PLUS" "VBG" 0 0.35)
+rsStub(Vvbg "MINUS" "gnd!" 0 -0.35)
+
+Vvbl = dbCreateInstByMasterName(cv "analogLib" "vdc" "symbol" "Vvbl" 28:2 "R0")
+rsProp(Vvbl "vdc" "0.62")
+rsStub(Vvbl "PLUS" "VBL" 0 0.35)
+rsStub(Vvbl "MINUS" "gnd!" 0 -0.35)
+
+Vrstn = dbCreateInstByMasterName(cv "analogLib" "vpulse" "symbol" "Vrstn" 28:-2 "R0")
+rsProp(Vrstn "v1" "0")
+rsProp(Vrstn "v2" "0.8")
+rsProp(Vrstn "per" "1m")
+rsProp(Vrstn "pw" "1m")
+rsProp(Vrstn "td" "20n")
+rsProp(Vrstn "tr" "10p")
+rsProp(Vrstn "tf" "10p")
+rsStub(Vrstn "PLUS" "RSTN" 0 0.35)
+rsStub(Vrstn "MINUS" "gnd!" 0 -0.35)
+
+Vrcomp = dbCreateInstByMasterName(cv "analogLib" "vdc" "symbol" "Vrcomp" 28:-6 "R0")
+rsProp(Vrcomp "vdc" "0")
+rsStub(Vrcomp "PLUS" "RCOMP" 0 0.35)
+rsStub(Vrcomp "MINUS" "gnd!" 0 -0.35)
+
+printf("TB_BUILD_DONE instances=%d\n" length(cv~>instances))

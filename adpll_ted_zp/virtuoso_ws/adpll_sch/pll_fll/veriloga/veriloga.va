@@ -1,0 +1,70 @@
+// pll_fll.va — FLL frequency-lock loop (ref3 ADPLL_ALG 图12)
+// V1 rewrite (two V0 bugs fixed):
+//   (a) counting basis: the FLL counts the FIXED-divided clock ckfb16
+//       (= fVCO/16, the ref3 architecture reading — drawing13's 16-bit
+//       fb_cnt and the fcw shift gymnastics >>2/左移 match
+//       calc_cnt = floor(FCW*2^thr/16); counting the MMD output (~fref)
+//       would give a useless 1-edge = N/(win*Tref) ~ 250MHz resolution),
+//   (b) integrator sign: err>0 (too fast) -> freq_ctrl goes DOWN.
+// Window = 2^thr REF edges (first_win +1 geometry inherited from pll_afc).
+// freq_ctrl is a RELATIVE residual integrator starting at 0, unit = 1
+// Abank LSB; the LPF adds its latched AFC base (no jump at handoff).
+// freq_lock = 1 when |err| <= ftol. Stage-A defaults: thr=9 (512 REF
+// periods = 5.12us @100M, 1 edge = 16/5.12us = 3.1MHz), fstep=7 (1/128
+// per spec), ftol=1 (spec freq_lock_thr=0; +-1 absorbs count jitter).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_fll(clk, ckfb16, en_fll, freq_ctrl, freq_lock);
+inout clk, ckfb16, en_fll;
+output freq_ctrl, freq_lock;
+electrical clk, ckfb16, en_fll, freq_ctrl, freq_lock;
+
+parameter real FCW = 80.0;
+parameter integer thr = 9;             // window = 2^thr REF edges
+parameter integer D = 16;              // fixed divider ratio of the tap
+parameter integer fstep = 7;           // integrator step = 1/2^fstep
+parameter integer ftol = 1;            // |err| tolerance (edges)
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+parameter real fclim = 64.0;           // freq_ctrl clamp +-fclim (Abank LSB)
+
+integer ref_cnt, fb_cnt, first_win, win_edge, locked;
+real expected, err, fctrl_v, flk_v;
+
+analog begin
+    @(initial_step) begin
+        ref_cnt = 0; fb_cnt = 0; first_win = 1; win_edge = 0; locked = 0;
+        expected = 0.0; err = 0.0; fctrl_v = 0.0; flk_v = 0.0;
+    end
+
+    @(cross(V(clk) - vth, +1)) begin
+        if (V(en_fll) > vth) begin
+            ref_cnt = ref_cnt + 1;
+            win_edge = pow(2.0, thr);            // V1 fix: window = 2^thr edges
+            if (first_win == 1) win_edge = win_edge + 1;
+            if (ref_cnt >= win_edge) begin
+                expected = floor(FCW * pow(2.0, thr) / D);
+                err = fb_cnt - expected;
+                fctrl_v = fctrl_v - err / pow(2.0, fstep);   // err>0: f high -> down
+                if (fctrl_v > fclim) fctrl_v = fclim;
+                if (fctrl_v < -fclim) fctrl_v = -fclim;
+                if ((err <= ftol) && (err >= -ftol)) locked = 1;
+                else locked = 0;
+                fb_cnt = 0;
+                ref_cnt = 0;
+                first_win = 0;
+                flk_v = (locked == 1) ? vh : 0.0;
+            end
+        end
+    end
+
+    @(cross(V(ckfb16) - vth, +1)) begin
+        if (V(en_fll) > vth) fb_cnt = fb_cnt + 1;
+    end
+
+    V(freq_ctrl) <+ fctrl_v;
+    V(freq_lock) <+ transition(flk_v, 0, tt);
+end
+endmodule

@@ -1,0 +1,76 @@
+// pll_fsm.va — ADPLL top FSM (ref3 ADPLL_ALG 图5)
+// States (fsm_state u,3,0):
+//   0 IDEL   reset all module rstn's; after idle_wait clk cycles -> AFC
+//   1 AFC    open loop (Abank cfg mode, dsm_dco off), afc_calib_en=1;
+//            on afc_finish -> FLL
+//   2 FLL    freq_lock_en=1; on freq_lock -> PLL
+//   3 PLL    release rstn_dsm_fb/mmd/lpf/calib/lock, run background
+//            calibrations per enables; on phase_lock -> LOCK
+//   4 LOCK   monitor; on phase_lock=0 -> UNLOCK
+//   5 UNLOCK -> FLL (next cycle)
+// Outputs: en_afc/en_fll/en_pll gate the downstream modules (LPF mode
+// selection, calib enables); st0..st2 + analog state debug. The individual
+// per-module rstn's of the spec collapse into these three enables for the
+// behavioral model (comment in ref3_adpll_alg_plan.md §3.8).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_fsm(clk, rstn, afc_finish, freq_lock, phase_lock,
+    st0, st1, st2, en_afc, en_fll, en_pll, state);
+inout clk, rstn, afc_finish, freq_lock, phase_lock;
+output st0, st1, st2, en_afc, en_fll, en_pll, state;
+electrical clk, rstn, afc_finish, freq_lock, phase_lock;
+electrical st0, st1, st2, en_afc, en_fll, en_pll, state;
+
+parameter integer idle_wait = 4;       // clk cycles held in IDEL
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+
+integer state_i, wcnt;
+real st0v, st1v, st2v, eafcv, efllv, epllv;
+
+analog begin
+    @(initial_step) begin
+        state_i = 0; wcnt = 0;
+        st0v = 0.0; st1v = 0.0; st2v = 0.0;
+        eafcv = 0.0; efllv = 0.0; epllv = 0.0;
+    end
+
+    @(cross(V(clk) - vth, +1)) begin
+        if (V(rstn) < vth) begin
+            state_i = 0;
+            wcnt = 0;
+        end else begin
+            if (state_i == 0) begin
+                wcnt = wcnt + 1;
+                if (wcnt >= idle_wait) state_i = 1;
+            end else if (state_i == 1) begin
+                if (V(afc_finish) > vth) state_i = 2;
+            end else if (state_i == 2) begin
+                if (V(freq_lock) > vth) state_i = 3;
+            end else if (state_i == 3) begin
+                if (V(phase_lock) > vth) state_i = 4;
+            end else if (state_i == 4) begin
+                if (V(phase_lock) < vth) state_i = 5;
+            end else if (state_i == 5) begin
+                state_i = 2;
+            end
+        end
+        st0v = ((state_i % 2) > 0) ? vh : 0.0;
+        st1v = (((state_i / 2) % 2) > 0) ? vh : 0.0;
+        st2v = (((state_i / 4) % 2) > 0) ? vh : 0.0;
+        eafcv = (state_i == 1) ? vh : 0.0;
+        efllv = (state_i == 2) ? vh : 0.0;
+        epllv = (state_i >= 3) ? vh : 0.0;
+    end
+
+    V(st0) <+ transition(st0v, 0, tt);
+    V(st1) <+ transition(st1v, 0, tt);
+    V(st2) <+ transition(st2v, 0, tt);
+    V(en_afc) <+ transition(eafcv, 0, tt);
+    V(en_fll) <+ transition(efllv, 0, tt);
+    V(en_pll) <+ transition(epllv, 0, tt);
+    V(state) <+ state_i;
+end
+endmodule

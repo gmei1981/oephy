@@ -1,0 +1,34 @@
+// pll_divn.va — fixed-ratio divider (ref3 stage A: the AFC/FLL counting
+// tap ckfb16 = fVCO/16, per drawing1-2's 反馈分频器; generalized from the
+// validated pll_div4.va). Counts input rising edges, toggles out every N.
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_divn(in, out);
+inout in;
+output out;
+electrical in, out;
+
+parameter integer N = 16;
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+
+integer cnt;
+real out_v;
+
+analog begin
+    @(initial_step) begin
+        cnt = 0;
+        out_v = 0.0;
+    end
+    @(cross(V(in) - vth, +1)) begin
+        cnt = cnt + 1;
+        if (cnt >= N) begin
+            out_v = vh - out_v;
+            cnt = 0;
+        end
+    end
+    V(out) <+ transition(out_v, 0, tt);
+end
+endmodule

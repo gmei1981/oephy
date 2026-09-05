@@ -2,4 +2,3 @@ DEFINE basic $CDSHOME/tools/dfII/etc/cdslib/basic
 DEFINE analogLib $CDSHOME/tools/dfII/etc/cdslib/artist/analogLib
 DEFINE tsmcN12 /home/lib/tsmc_12nm_installed/pdk/tsmcN12
 DEFINE adpll_sch ./adpll_sch
-DEFINE adpll_sch /home/gmei/git/oephy/adpll_ted/virtuoso_ws/adpll_sch

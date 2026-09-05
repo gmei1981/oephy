@@ -1,0 +1,85 @@
+// pll_cal_kdtc.va — DTC gain calibration (ref3 ADPLL_ALG 图15)
+// multi_out = phe * q_err -> integrated with step 1/2^kstep -> kdtc;
+// dtc_code = round(kdtc * (q_err + dtc_off)) + dco_dtc_comp, clamped
+// 0..1023 (spec LMT is 0~511 on their 10b field; our dtc_10b_ss spans
+// 0..1023 — documented deviation).
+// Units (stage-A conventions): phe and q_err in CYCLES (TCKV), q_err
+// centered (x1-0.5). kdtc unit = DTC LSB per cycle; true value =
+// TCKV/Tres = 125p/0.354p ~ 353 (default kdtc0). LMS convergence:
+// d(phe)/d(kdtc) < 0 through (q_err+off) with E[q_err]=0, so
+// kdtc += mu * phe * q_err walks toward the true gain.
+// q_err is consumed one cycle delayed (qerr_d) — the phe measured in
+// cycle k reflects the divide code loaded at REF edge k-1; alignment is
+// re-verified in V1 (same lesson as the ref2 BBPD V1 alignment work).
+// Updates on the clk FALLING edge (phe settles after the CKFB edge).
+`include "constants.vams"
+`include "disciplines.vams"
+
+module pll_cal_kdtc(clk, phe, q_err, dcomp, en,
+    d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, kdtc_dbg);
+inout clk, phe, q_err, dcomp, en;
+output d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, kdtc_dbg;
+electrical clk, phe, q_err, dcomp, en;
+electrical d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, kdtc_dbg;
+
+parameter integer kstep = 0;           // kdtc_calib_step (spec default 0)
+parameter real kdtc0 = 353.2;          // TCKV/Tres @ 8G / 0.354ps
+parameter real dtc_off = 0.5;          // u,35,35 spec default 0.5
+parameter real kmin = 64.0;            // kdtc clamp
+parameter real kmax = 1023.0;
+parameter real vth = 0.4;
+parameter real vh = 0.8;
+parameter real tt = 50p;
+
+real kdtc, phe_v, qd_v, qerr_d, codef;
+integer code_i;
+real d0v, d1v, d2v, d3v, d4v, d5v, d6v, d7v, d8v, d9v;
+
+analog begin
+    @(initial_step) begin
+        kdtc = kdtc0; phe_v = 0.0; qd_v = 0.0; qerr_d = 0.0; codef = 0.0;
+        code_i = 176;
+        d0v = 0.0; d1v = 0.0; d2v = 0.0; d3v = 0.0; d4v = 0.0; d5v = 0.0;
+        d6v = 0.0; d7v = 0.0; d8v = 0.0; d9v = 0.0;
+    end
+
+    @(cross(V(clk) - vth, -1)) begin
+        if (V(en) > vth) begin
+            phe_v = V(phe);
+            qd_v = qerr_d;                       // one-cycle-delayed q_err
+            // integrator (LMS)
+            kdtc = kdtc + (phe_v * qd_v) / pow(2.0, kstep);
+            if (kdtc > kmax) kdtc = kmax;
+            if (kdtc < kmin) kdtc = kmin;
+        end
+        qerr_d = V(q_err);                       // shift the delay register
+        // DTC code: kdtc*(q_err+off) + dco duty comp, round + clamp
+        codef = kdtc * (qerr_d + dtc_off) + V(dcomp);
+        code_i = codef + 0.5;
+        if (code_i > 1023) code_i = 1023;
+        if (code_i < 0) code_i = 0;
+        d0v = (((code_i       ) % 2) > 0) ? vh : 0.0;
+        d1v = (((code_i / 2   ) % 2) > 0) ? vh : 0.0;
+        d2v = (((code_i / 4   ) % 2) > 0) ? vh : 0.0;
+        d3v = (((code_i / 8   ) % 2) > 0) ? vh : 0.0;
+        d4v = (((code_i / 16  ) % 2) > 0) ? vh : 0.0;
+        d5v = (((code_i / 32  ) % 2) > 0) ? vh : 0.0;
+        d6v = (((code_i / 64  ) % 2) > 0) ? vh : 0.0;
+        d7v = (((code_i / 128 ) % 2) > 0) ? vh : 0.0;
+        d8v = (((code_i / 256 ) % 2) > 0) ? vh : 0.0;
+        d9v = (((code_i / 512 ) % 2) > 0) ? vh : 0.0;
+    end
+
+    V(d0) <+ transition(d0v, 0, tt);
+    V(d1) <+ transition(d1v, 0, tt);
+    V(d2) <+ transition(d2v, 0, tt);
+    V(d3) <+ transition(d3v, 0, tt);
+    V(d4) <+ transition(d4v, 0, tt);
+    V(d5) <+ transition(d5v, 0, tt);
+    V(d6) <+ transition(d6v, 0, tt);
+    V(d7) <+ transition(d7v, 0, tt);
+    V(d8) <+ transition(d8v, 0, tt);
+    V(d9) <+ transition(d9v, 0, tt);
+    V(kdtc_dbg) <+ kdtc * 0.001;      // debug scale: 1V = 1000
+end
+endmodule
