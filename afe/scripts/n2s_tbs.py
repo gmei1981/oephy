@@ -89,6 +89,24 @@ TBS = {
           "vbias": "vbias", "outp": "outp", "outn": "outn",
           "vdd": "vdd", "vss": "vss", "gp": "gp"}),
     ],
+    "tb_sa_test": [
+        ("src", "vinp", V, -3, 3, {"PLUS": "ip", "MINUS": GND}),
+        ("src", "vinn", V, -3, 2, {"PLUS": "in", "MINUS": GND}),
+        ("src", "vck", V, -3, 1, {"PLUS": "ck", "MINUS": GND}),
+        ("src", "vckn", V, -3, 0, {"PLUS": "ckn", "MINUS": GND}),
+        ("src", "vvdd", V, -1.5, 1, {"PLUS": "vdd", "MINUS": GND}),
+        ("src", "vvss", V, -1.5, 0, {"PLUS": "vss", "MINUS": GND}),
+        ("src", "Xsa", (LIB, "afe_strongarm"), 1, 0.5,
+         {"inp": "ip", "inn": "in", "ck": "ck", "ckn": "ckn",
+          "qp": "qp", "qn": "qn", "vdd": "vdd", "vss": "vss"}),
+    ],
+    "tb_afe_va": [
+        ("src", "Xtb", (LIB, "afe_tb"), 0, 0,
+         {"tx_pad": "tx_pad", "rx_in": "rx_in", "vref": "vref",
+          "ck8": "ck8", "pclk": "pclk", "d_even": "d_even",
+          "d_odd": "d_odd", "lock": "lock", "err_cnt": "err_cnt",
+          "bit_cnt": "bit_cnt"}),
+    ],
 }
 
 # CDF params per (cell, instance) -- masters whose params reach the netlist

@@ -1,0 +1,12 @@
+
+// Library name: afe_sch
+// Cell name: afe_tb
+// View name: schematic
+subckt afe_tb bit_cnt ck8 d_even d_odd err_cnt lock pclk rx_in tx_pad vref
+ends afe_tb
+// End of subcircuit definition.
+
+// Library name: afe_sch
+// Cell name: tb_afe_va
+// View name: schematic
+Xtb (bit_cnt ck8 d_even d_odd err_cnt lock pclk rx_in tx_pad vref) afe_tb

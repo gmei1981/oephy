@@ -60,7 +60,9 @@ def case(name, cell, **bakekw):
            "tb_afe_txron_mc": [str(TRAN_DIR / "afe_tx_drv.scs")],
            "tb_afe_cmp_mc": [str(TRAN_DIR / "afecmp_bank.scs"),
                              str(TRAN_DIR / "afe_bias.scs")],
-           "tb_noise_smoke": []}[cell]
+           "tb_noise_smoke": [],
+           "tb_sa_test": [str(TRAN_DIR / "afe_sampler.scs")],
+           "tb_afe_va": None}[cell]  # None -> VA_FILES for both sides
     CASES[name] = (NET_DIR / f"{cell}.scs", GOLD / f"golden_{cell}.scs",
                    bakekw, inc)
 
@@ -76,6 +78,9 @@ case("cmp_on_s1", "tb_afe_cmp_mc", NRUNS=1, SEED=1, AZEN=0.8,
      EVALD="1.6n", PANODESET=0.225)
 case("cmp_off_s1", "tb_afe_cmp_mc", NRUNS=1, SEED=1, AZEN=0,
      EVALD=0, PANODESET=0.10)
+case("sa_test", "tb_sa_test")  # fixed stimulus, no placeholders
+case("va_proto", "tb_afe_va", VC=142, PC=0.875, VOSA=0.004, VOSB=-0.003,
+     AZR=0.05, NS=3, STOP=40e-9)
 
 
 def trip_voltage(data):
@@ -115,6 +120,14 @@ def metric(name, res):
     if name.startswith("cmp"):
         tv = trip_voltage(d)
         return tv if tv is not None else "nocross"  # az_off may not cross
+    if name == "sa_test":
+        return (round(float(np.array(d["qp"])[-1]), 9),
+                round(float(np.array(d["qn"])[-1]), 9))
+    if name == "va_proto":
+        keys = ("err_cnt", "bit_cnt", "lock")
+        if any(k not in d for k in keys):
+            return None
+        return tuple(round(float(np.array(d[k])[-1]), 6) for k in keys)
     return None
 
 
@@ -146,10 +159,16 @@ def main():
     out = {}
     for name in names:
         tpl, gold, kw, inc = CASES[name]
+        if inc is None:  # VA prototype: both decks ahdl_include the .va
+            from common import VA_FILES
+            inc = VA_FILES
+        # golden decks are self-contained EXCEPT the VA prototype (its
+        # header keeps the legacy relative ahdl_include lines)
+        gld_inc = inc if name == "va_proto" else []
         jobs = [(write_baked(tpl, OUT_DIR / f"ab_{name}_leg.scs", **kw),
                  {"include_files": inc}),
                 (write_baked(gold, OUT_DIR / f"ab_{name}_gld.scs", **kw),
-                 {"include_files": []})]
+                 {"include_files": gld_inc})]
         rleg, rgld = sim.run_parallel(jobs, max_workers=2)
         mleg, mgld = metric(name, rleg), metric(name, rgld)
         if name.startswith("txron"):  # mc1-DC: local raw re-parse fallback

@@ -49,5 +49,29 @@
     "legacy": "nocross",
     "golden": "nocross",
     "match": true
+  },
+  "sa_test": {
+    "legacy": [
+      0.804326922,
+      0.239626168
+    ],
+    "golden": [
+      0.804326922,
+      0.239626168
+    ],
+    "match": true
+  },
+  "va_proto": {
+    "legacy": [
+      238.0,
+      639.0,
+      0.8
+    ],
+    "golden": [
+      238.0,
+      639.0,
+      0.8
+    ],
+    "match": true
   }
 }

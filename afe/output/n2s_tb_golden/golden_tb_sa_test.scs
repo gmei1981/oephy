@@ -1,0 +1,36 @@
+// UCIe-AP RX AFE golden TB (tb_sa_test) -- si export assembled by scripts/gen_tb_golden.py
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+// Library name: afe_sch
+// Cell name: afe_strongarm
+// View name: schematic
+subckt afe_strongarm ck ckn inn inp qn qp vdd vss
+    Mtsr (ts ckn vss vss) nch_svt_mac l=16n nfin=2
+    Mtail (ts ck vss vss) nch_svt_mac l=16n nfin=6
+    MNin (qp inn ts vss) nch_ulvt_mac l=16n nfin=4
+    MNip (qn inp ts vss) nch_ulvt_mac l=16n nfin=4
+    MNxn (qn qp ts vss) nch_lvt_mac l=16n nfin=4
+    MNxp (qp qn ts vss) nch_lvt_mac l=16n nfin=4
+    MPprn (qn ck vdd vdd) pch_svt_mac l=16n nfin=2
+    MPprp (qp ck vdd vdd) pch_svt_mac l=16n nfin=2
+    MPxn (qn qp vdd vdd) pch_svt_mac l=16n nfin=4
+    MPxp (qp qn vdd vdd) pch_svt_mac l=16n nfin=4
+ends afe_strongarm
+vinp (ip 0) vsource type=pwl wave=[0 0.25 1n 0.25 1.01n 0.15 2n 0.15 2.01n 0.35 3n 0.35 3.01n 0.55 4n 0.55]
+vinn (in 0) vsource type=pwl wave=[0 0.05 1n 0.05 1.01n 0.25 2n 0.25 2.01n 0.15 3n 0.15 3.01n 0.35 4n 0.35]
+vck (ck 0) vsource type=pulse val0=0 val1=0.8 period=125p rise=10p fall=10p width=52.5p delay=0
+vckn (ckn 0) vsource type=pulse val0=0.8 val1=0 period=125p rise=10p fall=10p width=52.5p delay=0
+vvdd (vdd 0) vsource dc=0.8
+// End of subcircuit definition.
+// Library name: afe_sch
+// Cell name: tb_sa_test
+// View name: schematic
+vvss (vss 0) vsource dc=0
+Xsa (ck ckn in ip qn qp vdd vss) afe_strongarm
+
+// ---- directives (verbatim from tb_sa_test.scs) ----
+tran tran stop=4.2n maxstep=2p method=gear2only skipdc=yes
+
+saveOptions options save=selected
+save ip in ck qp qn Xsa:ts Xsa:pwr

@@ -55,6 +55,8 @@ HEADERS = {
     "tb_afe_dac_dc": [MODELS_TT],
     "tb_afe_txron_mc": MC_INCS,
     "tb_afe_cmp_mc": MC_INCS,
+    "tb_sa_test": [MODELS_TT],
+    "tb_afe_va": [],  # header = the legacy ahdl_include lines (see gen())
 }
 DIRECTIVE_AT = {
     "tb_bias_dc": "simOpts options temp=",
@@ -62,6 +64,8 @@ DIRECTIVE_AT = {
     "tb_afe_dac_dc": "dc1 dc",
     "tb_afe_txron_mc": "mc1 montecarlo",
     "tb_afe_cmp_mc": "nodeset gp=",
+    "tb_sa_test": "tran tran stop=",
+    "tb_afe_va": "tran tran stop=",
 }
 
 VS_SRC = "vsource type=sine"
@@ -94,6 +98,18 @@ SRC_PATCHES = {
                  "delay=__EVALD__ rise=10p fall=10p width=100n period=200n",
         "Vaz": "Vaz (az 0) vsource type=pulse val0=0 val1=__AZEN__ "
                "delay=0 rise=10p fall=10p width=1.5n period=200n"},
+    "tb_sa_test": {
+        "vinp": "vinp (ip 0) vsource type=pwl wave=[0 0.25 1n 0.25 1.01n "
+                "0.15 2n 0.15 2.01n 0.35 3n 0.35 3.01n 0.55 4n 0.55]",
+        "vinn": "vinn (in 0) vsource type=pwl wave=[0 0.05 1n 0.05 1.01n "
+                "0.25 2n 0.25 2.01n 0.15 3n 0.15 3.01n 0.35 4n 0.35]",
+        "vck": "vck (ck 0) vsource type=pulse val0=0 val1=0.8 period=125p "
+               "rise=10p fall=10p width=52.5p delay=0",
+        "vckn": "vckn (ckn 0) vsource type=pulse val0=0.8 val1=0 "
+                "period=125p rise=10p fall=10p width=52.5p delay=0",
+        "vvdd": "vvdd (vdd 0) vsource dc=0.8",
+        "vvss": "vvss (vss 0) vsource dc=0"},
+    "tb_afe_va": {},  # single VA instance; params injected in gen() 1.4
 }
 
 # legacy template -> included source subckts (replaced by exported defs)
@@ -102,7 +118,26 @@ LEGACY_INCLUDES = {
     "tb_afe_cmp_mc": ["afecmp_bank.scs", "afe_bias.scs"],
     "tb_afe_txron_mc": ["afe_tx_drv.scs"],
     "tb_afe_dac_dc": ["afe_dac_r2r.scs"],
+    "tb_sa_test": ["afe_sampler.scs"],
 }
+# golden subckt name -> tran source file (defaults to <name>.scs)
+TRAN_FILE = {"afe_strongarm": "afe_sampler.scs",
+             "afe_dlatch": "afe_sampler.scs"}
+VA_DIR = AFE / "va"
+# tb_afe_va Xtb instance params (legacy line, placeholders kept)
+VA_TB_PARAMS = ("vref_code=__VC__ pi_code=__PC__ vos_a=__VOSA__ "
+                "vos_b=__VOSB__ az_resid=__AZR__ n_shift=__NS__")
+
+
+def va_module_ports():
+    """module name -> declaration-order ports, from va/*.va headers."""
+    out = {}
+    for p in VA_DIR.glob("*.va"):
+        m = re.search(r"module\s+\w+\s*\(([^)]*)\)", p.read_text())
+        if m:
+            out[p.stem] = [x.strip()
+                           for x in m.group(1).replace("\n", " ").split(",")]
+    return out
 
 
 def sub1(pattern, repl, text, n=1, what=""):
@@ -208,6 +243,31 @@ def gen(cell):
                rf"^{name} \([^)]*\) isource type=sine\s*$")
         src = sub1(pat, line, src, 1, name)
 
+    # 1.4 tb_afe_va VA-leaf flow: drop the afe_tb stub subckt def, rewrite
+    #    the Xtb instance to module declaration order + inject params (the
+    #    real module comes from the header ahdl_include lines)
+    if cell == "tb_afe_va":
+        m = re.search(
+            r"// Library name: [^\n]*\n// Cell name: afe_tb\n// View name: "
+            r"[^\n]*\nsubckt afe_tb ([^\n]+)\nends afe_tb\n"
+            r"// End of subcircuit definition\.\n", src)
+        assert m, "afe_tb stub def not found"
+        stub_hdr = m.group(1).split()
+        src = src.replace(m.group(0), "")
+        mi = re.search(r"Xtb \(([^)]*)\) afe_tb\n", src)
+        assert mi, "Xtb instance not found"
+        nets = mi.group(1).split()
+        assert len(nets) == len(stub_hdr), \
+            f"Xtb: {nets} vs stub {stub_hdr}"
+        by_port = dict(zip(stub_hdr, nets))
+        mports = va_module_ports()["afe_tb"]
+        ordered = [by_port[p] for p in mports]
+        src = src.replace(
+            mi.group(0),
+            f"Xtb ({' '.join(ordered)}) afe_tb {VA_TB_PARAMS}\n")
+        print(f"[{cell}] afe_tb stub dropped, Xtb rewritten to module "
+              f"order + params")
+
     # 1.5 MC TBs: spectre montecarlo mismatch draws are consumed in netlist
     # element order, so si's alphabetical subckt emission re-assigns the
     # per-seed realization vs the legacy include flow.  Emit subckt bodies
@@ -222,10 +282,14 @@ def gen(cell):
     legacy_tpl = (NET / f"{cell}.scs").read_text()
     src = reorder_toplevel(src, legacy_tpl)
 
-    # 2. header
+    # 2. header (tb_afe_va: the legacy ahdl_include lines, in legacy order)
     header = [f"// UCIe-AP RX AFE golden TB ({cell}) -- si export assembled "
               "by scripts/gen_tb_golden.py", "simulator lang=spectre", ""]
-    header += HEADERS[cell] + [""]
+    if cell == "tb_afe_va":
+        header += [l for l in legacy_tpl.splitlines()
+                   if l.startswith("ahdl_include")] + [""]
+    else:
+        header += HEADERS[cell] + [""]
 
     # 3. directives verbatim from the legacy template
     legacy = (NET / f"{cell}.scs").read_text()
@@ -255,7 +319,7 @@ def verify(cell):
     # (si emission: `subckt name p1 p2 ...` -- no parens around ports)
     for m in re.finditer(r"subckt (\S+)[^\n]*\n(.*?)\nends \S+", gold, re.S):
         sname, sbody = m.group(1), m.group(2)
-        srcf = TRAN / f"{sname}.scs"
+        srcf = TRAN / TRAN_FILE.get(sname, f"{sname}.scs")
         s2 = re.search(rf"subckt\s+{sname}\s*\(([^)]*)\)(.*?)ends",
                        srcf.read_text(), re.S)
         gdev = parse_devices(sbody)
@@ -282,6 +346,7 @@ def verify(cell):
         for m in re.finditer(r"subckt\s+(\S+)\s*\(([^)]*)\)", t):
             lsrc_ports[m.group(1)] = m.group(2).split()
 
+    vamp = va_module_ports()  # VA-leaf masters: compare in module order
     for name, (gm, gn, _gp) in gtop.items():
         if name not in ltop:
             print(f"[{cell}] FAIL top {name} not in legacy")
@@ -292,7 +357,13 @@ def verify(cell):
             print(f"[{cell}] FAIL top {name} master {gm} != {lm}")
             ok = False
             continue
-        if gm in lsrc_ports:  # X instance: compare net-by-port
+        if gm in vamp and gm not in lsrc_ports:
+            # VA-leaf instance (stub dropped): both sides already in
+            # module declaration order
+            if gn != ln:
+                print(f"[{cell}] FAIL top {name} (VA) nodes {gn} != {ln}")
+                ok = False
+        elif gm in lsrc_ports:  # X instance: compare net-by-port
             gmap = port_map(gn, subckt_ports(gold, gm))
             lmap = port_map(ln, lsrc_ports[gm])
             # gnd! already emitted as 0 in golden; legacy uses 0 too

@@ -25,3 +25,5 @@ output/n2s_top/geye_*
 output/n2s_tb_golden/*__*
 !output/n2s_tb_golden/*.scs
 !output/tb_ab.json
+!output/golden_mc_offset.json
+!output/golden_mc_ron.json
