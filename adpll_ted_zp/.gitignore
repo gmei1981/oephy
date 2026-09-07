@@ -22,3 +22,8 @@ server21_sch_backup/*.il
 sim/out_tune/run/
 sim/ssbb/
 sim/ref3/
+# DCO 可行性原始仿真数据（报告 dco_12nm_feasibility.md + tools/run_dco_feas.py 入库）
+sim/dco_feas/
+# vlink 桥接会话运行时产物 / si 网表器输出
+virtuoso_ws/.vlink/
+virtuoso_ws/netlist/

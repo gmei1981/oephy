@@ -953,8 +953,19 @@
   9. **DB-270211**（"Failed to create cellview ... 'a' mode"）出现在 ref3VaSym 流程是 wipe 阶段
      良性告警——symbol 实际建成（端子数可查证），勿据此判失败。
   10. schCheck 返回 [errors, warnings]；pin 也是实例（实例数=器件+pin 数）。
-- **21 服务器**（ref3 full 20µs 判定，task#1）：09-05 全程 SSH 超时不可达（多次重试），判定挂起；
-  恢复后 rsync main.raw/ 回 sim/ref3/v3/main/ 再 `python3 tools/check_ref3_v3.py full`。
+- **21 服务器**（ref3 full 20µs 判定，task#1）：09-05 全程 SSH 超时不可达（多次重试）→
+  **用户指示放弃服务器、本机完成全部仿真**：09-05 08:41 起本机重跑 main.scs（20µs），实测
+  稳态仅 ~3.85ns/min（较 0904 的 10.3 慢 2.6×，负载/CPU/昼夜均排除，原因未定位）→ ETA 63h。
+  **09-06 用户进一步指示按 2h 跑完改设计参数**：停掉全量跑（半截 5.42µs 存档
+  main_partial_5.4u.raw/main_partial.log），+preset=ax 无 license（SPECTRE-209 弃用），改跑
+  **压缩变体 sim/ref3/v3/fast/fast.scs**（main.scs 派生 6 处参数）：stop=900n、
+  afc thr=3/skipwins=1/**code0=51 温启动**/step0=2（80ns 窗，推演首窗即命中：Abank408→
+  8.0G−4M→count≈40=target）、fll thr=3/ftol=2、**lpf ki1=8**（拉入 8×）、lock_thr=0.05/
+  lcnt_thr=4、idle_wait=1。预期轨迹 AFC done~240ns→FLL~320-400ns→PLL 拉入~200ns→
+  **LOCK~600ns**。判定：fVCO→8.0G、FSTATE 到 4、phe→0、AFCD/FQLK/PHLK 时序。
+  速率预算：8.6ns/min→1.75h 达标；若实测 3.85→3.9h 超标需再裁。
+  （注意：快速变体改了 thr/ki1/code0——是算法链快速验证口径，不替代 20µs 全量判定；
+   全量判定后续可用存档断点或服务器恢复后补。）
 - **tb 冒烟判定 ALL MATCH（原理图↔网表电气等价闭环，本会话收官）**：300ns 0 错误跑完，
   compare_ref3_tb.py vs 参考 smoke 轨迹（sim/ref3/v3/smoke/main.raw）：
   - 模拟态逐位全同：VC1/VC2 max|d|=0、VDDC 0.25mV（<2mV 限）
@@ -969,3 +980,50 @@
   adpll_ref3_top（schematic+symbol）、tb_ref3（schematic）+ 上会话 15 个 VA symbol——
   网表→原理图转换完成，恢复/复用入口：tools/build_ref3_{analog,top,tb}.py（可重跑重建）、
   tools/export_ref3_{sch,top,tb}.py（导出+比对）、tools/compare_ref3_tb.py（冒烟判定）。
+
+## 2026-09-07：12nm DCO 电容步进可行性判定 + 三 bank 实现方案（本会话）
+
+- **问题**：12nm 能否做几十 aF 开关电容步进（ref3 spec DCO 50 kHz 步长）；不行的话 8G 的
+  6b Pbank(30M 带宽)/9b Abank(50kHz)/3b Fbank 怎么落地。
+- **三组实测**（tools/run_dco_feas.py，本机 20.1，数据 sim/dco_feas/，报告
+  dco_12nm_feasibility.md）：
+  - **A 几何**：cfmom(vapmod=2) 斜率 290 aF/nr@lr1µ 线性；**nr≥7 硬下限**（内部 nmos
+    l=nr×0.1µ≥lmin=0.7µ，CMI-2942）；最小完整单元 vm2 nr7/lr0.7µ=1.35 fF、
+    vm1（nr 奇数格点 {5,7,...}）nr5/lr0.5µ=**0.691 fF**。mom 菜单无几十 aF 器件，
+    nr 的 0.29 fF 粒度只是版图修调粒度。MIM 面积型最小数 fF，无关。
+  - **B 开关**（8G 复导纳，tran+正弦 LSQ 拟合）：off 态底板经关态结电容近似接地
+    （~0.31 fF 恒挂）；on 态被 nfin1 svt 的 Ron 封顶（C_eff 上限 ~2.7-2.9 fF、
+    nr16/32 大单元塌到 61%/32%）；**最小可开关步进 ΔC_eff=0.51 fF（vm1 nr5）↔7.7 MHz/对**。
+  - **C 大摆幅**（vco_c_dac+开关 cfmom 对，120n）：vm1 nr5 对=**9.85 MHz**、
+    vm2 nr7 对=16.0 MHz、nr7×4=62.4 MHz（近线性）、nr16+nfin1 塌到 10.3 MHz
+    （大单元必须配大开关）；摆幅代价 1-2%/对。**运行时步进底限 ≈10 MHz/对@8G**。
+- **判定**：8G 坦克（C_half=264.5 fF）上 50 kHz↔3.3 aF、几十 aF↔0.2-0.5 MHz——
+  比工艺底限低 1.5-2 个数量级，**50 kHz 只能模拟域实现**（spec 原文即"模拟DCO+子频段"）。
+- **方案**：Pbank 6b=开关 cfmom 对（vm2 nr7+开关，16-20 MHz/段，63 段覆盖 ~1.2 GHz，
+  off 寄生 19.5 fF/边→CF 重定心 nr−34）；Abank 9b×50kHz=dac9b(vmax=0.45)+
+  细 moscap nfin=2/边（实测 KVCO2=57MHz/V→LSB 50.1 kHz、满量程 28.5M≈"30M 带宽"✓）；
+  Fbank 3b=同 DAC 低位 DSM 抖调（V3 现行接法）。改造清单与 5G 缩放见报告 §5。
+- **坑**：CDS psf 文本导出并发互踩（输出截断）→ 加锁串行；crossings 插值
+  `t[k]-x[k-1]` 时间/电压笔误 + VDDC 斜坡段相邻样点全等→插值爆炸（加退化步保护+
+  t>40ns 稳态窗）；VCO TB 相对 include 不解析（用绝对路径）；python replace 静默
+  不匹配 → 关键 patch 后必须 grep 验证。
+
+### 0907 状态盘点会话：fast 跑中断核实 + 原理图仿真全景（本会话，无新仿真）
+
+- **fast 900ns 压缩判定跑实际未完成**（此前 progress 无记录，本次核实）：
+  sim/ref3/v3/fast/ 于 09-06 06:59 起跑，**07:13 后 log/raw 再无写入**（raw 仅 315KB、
+  log 尾部停在 tran 进度点无 "completes" 收尾行）、无 spectre 进程存活——起跑 ~14min
+  即被杀（与 0904 会话退出连带杀进程同型）。判定未做；`check_ref3_v3.py` 亦不支持
+  fast 模式（仅 smoke|full）。
+- **复跑命令**（建议 setsid nohup 脱离会话防再被杀；预算 ~1.75h@8.6ns/min）：
+  `cd sim/ref3/v3/fast && setsid nohup /opt/cadence/SPECTRE201/tools.lnx86/bin/spectre -64 fast.scs -raw fast.raw +log fast.log -format psfbin +mt=8 < /dev/null > spectre_stdout.txt 2>&1 &`
+  判定口径（需给 check 脚本加 fast 模式或手判）：fVCO→8.0G、FSTATE 到 4、phe→0、
+  AFCD/FQLK/PHLK 时序（预期 LOCK ~600ns）。
+- **原理图仿真全景**（回答"当前状态"）：① 电气等价已闭环（0905 tb 冒烟 ALL MATCH，
+  fVCO dev 0.000%）；② 挂起 = fast 900ns 判定（上条）+ full 20µs 判定（等 21 服务器
+  恢复：rsync 拉回 main.raw → check_ref3_v3.py full；本机半截 5.42µs 存档
+  main_partial_5.4u.raw）；③ 若按 0907 三 bank 方案改造，vco_x_c_dac 原理图需重画
+  （Pbank 换开关 cfmom 对、CF 重定心 nr−34）。
+- **本会话入库**：dco_12nm_feasibility.md + tools/run_dco_feas.py（0907 会话产物补
+  入库）；sim/dco_feas/ 27M 原始数据按惯例留本地不入库（gitignore）；另入
+  tools/adpll_ref3_top_sch_netlist.scs、tools/n2s_ldo_ast.json（0905 遗漏未提交）。
