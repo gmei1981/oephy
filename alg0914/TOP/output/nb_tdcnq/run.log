@@ -1,0 +1,14 @@
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.00, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 146.11  (spec 200)
+phe_rms_fs     = 29.38  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 1.9 (0.000 ppm)
+kdtc_final     = 280.49 (target 280.0, err 0.18%)
+frac spur      = -101.55 dBc  (rms 1.33e-06 cyc)
+2nd-harm spur  = -114.92 dBc  (rms 2.86e-07 cyc)
+g2_final       = 0.00003 (target -0.00000)
+outputs -> /home/gmei/git/dpll/alg0908/TOP/output/nb_tdcnq

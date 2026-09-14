@@ -1,0 +1,12 @@
+             f_dco: [262144x1 double]
+             pbank: [262144x1 double]
+        afc_finish: [262144x1 double]
+           phi_abs: [262144x1 double]
+       phi_abs_err: [262144x1 double]
+
+{Error using exit
+Unrecognized function or variable 'Settings'.
+} 
+{Error using exit
+Unrecognized function or variable 'Settings'.
+} 

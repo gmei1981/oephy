@@ -1,0 +1,14 @@
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.31, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 144.81  (spec 200)
+phe_rms_fs     = 1188.27  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = -1170.7 (-0.146 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -81.02 dBc  (rms 1.42e-05 cyc)
+2nd-harm spur  = -93.57 dBc  (rms 3.34e-06 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/dpll/alg0908/TOP/output/nb_glitch_m2

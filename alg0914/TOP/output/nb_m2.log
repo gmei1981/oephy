@@ -1,0 +1,190 @@
+
+===== noise_budget 1/22 : total (cached from output/default) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 1178.3 fs | spur25 -129.4 dBc  L(50k)=-109  L(200k)=-89  L(1000k)=-110  L(5000k)=-121
+
+===== noise_budget 2/22 : dco (cached from output/nb_dco) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 325.4 fs | spur25 -130.7 dBc  L(50k)=-130  L(200k)=-106  L(1000k)=-117  L(5000k)=-124
+
+===== noise_budget 3/22 : tdc (cached from output/nb_tdc) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 0.0 fs | spur25 -364.2 dBc  L(50k)=-317  L(200k)=-324  L(1000k)=-337  L(5000k)=-351
+
+===== noise_budget 4/22 : dtc (cached from output/nb_dtc) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 79.2 fs | spur25 -156.7 dBc  L(50k)=-120  L(200k)=-112  L(1000k)=-144  L(5000k)=-152
+
+===== noise_budget 5/22 : dsm (cached from output/nb_dsm) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 606.0 fs | spur25 -138.2 dBc  L(50k)=-116  L(200k)=-106  L(1000k)=-139  L(5000k)=-155
+
+===== noise_budget 6/22 : dsmq (cached from output/nb_dsmq) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 56.4 fs | spur25 -135.4 dBc  L(50k)=-109  L(200k)=-126  L(1000k)=-149  L(5000k)=-156
+
+===== noise_budget 7/22 : tdcq (cached from output/nb_tdcq) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 12.2 fs | spur25 -155.5 dBc  L(50k)=-122  L(200k)=-125  L(1000k)=-149  L(5000k)=-157
+
+===== noise_budget 8/22 : tdcinlq (cached from output/nb_tdcinlq) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 884.9 fs | spur25 -142.2 dBc  L(50k)=-111  L(200k)=-107  L(1000k)=-140  L(5000k)=-154
+
+===== noise_budget 9/22 : glitch (cached from output/nb_glitch) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 1107.4 fs | spur25 -138.9 dBc  L(50k)=-113  L(200k)=-92  L(1000k)=-113  L(5000k)=-125
+
+===== noise_budget 10/22 : refjit (cached from output/nb_refjit) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 24.4 fs | spur25 -161.5 dBc  L(50k)=-131  L(200k)=-121  L(1000k)=-147  L(5000k)=-150
+
+===== noise_budget 11/22 : tdcnq (cached from output/nb_tdcnq) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 108.0 fs | spur25 -161.0 dBc  L(50k)=-101  L(200k)=-117  L(1000k)=-148  L(5000k)=-148
+
+===== noise_budget 12/22 : glitch10 (cached from output/nb_glitch10) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 0.0 fs | spur25 -364.2 dBc  L(50k)=-317  L(200k)=-324  L(1000k)=-337  L(5000k)=-351
+
+===== noise_budget 13/22 : glitch30 (cached from output/nb_glitch30) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 0.0 fs | spur25 -364.2 dBc  L(50k)=-317  L(200k)=-324  L(1000k)=-337  L(5000k)=-351
+
+===== noise_budget 14/22 : glitch300 (cached from output/nb_glitch300) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 0.0 fs | spur25 -375.3 dBc  L(50k)=-322  L(200k)=-334  L(1000k)=-348  L(5000k)=-362
+
+===== noise_budget run 15/22 : total_m2 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DCO PN: L(1MHz)=-120 dBc/Hz, 10 dB/dec to floor -150 dBc/Hz
+    TDC INL: on, RMS 1.00 LSB (smoothed random)
+    DTC spec model: INL 2.00 LSB RMS (realized 2.09), DNL 1.00 LSB RMS (realized 0.99), PN floor -160 dBc/Hz @100 MHz = 159.2 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.08, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 147.43  (spec 200)
+phe_rms_fs     = 863.04  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = -25.7 (-0.003 ppm)
+kdtc_final     = 269.98 (target 280.0, err -3.58%)
+frac spur      = -34.79 dBc  (rms 2.90e-03 cyc)
+2nd-harm spur  = -46.55 dBc  (rms 7.49e-04 cyc)
+g2_final       = -0.03118 (target -0.00000)
+[Warning: MATLAB has disabled some advanced graphics rendering features by
+switching to software OpenGL. For more information, click <a
+href="matlab:opengl('problems')">here</a>.] 
+outputs -> /home/gmei/git/dpll/alg0908/TOP/output/nb_total_m2
+   locked @ 147.4 us, seg from 1650 us | sigma_t = 877.3 fs | spur25 -129.3 dBc  L(50k)=-106  L(200k)=-92  L(1000k)=-110  L(5000k)=-122
+
+===== noise_budget run 16/22 : glitch_m2 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.19, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 144.81  (spec 200)
+phe_rms_fs     = 836.46  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 93.7 (0.012 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -111.43 dBc  (rms 4.27e-07 cyc)
+2nd-harm spur  = -114.15 dBc  (rms 3.12e-07 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/dpll/alg0908/TOP/output/nb_glitch_m2
+   locked @ 144.8 us, seg from 1650 us | sigma_t = 795.4 fs | spur25 -142.9 dBc  L(50k)=-115  L(200k)=-95  L(1000k)=-114  L(5000k)=-128
+
+===== noise_budget run 17/22 : glitch_m2_10 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.00, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.28  (spec 200)
+phe_rms_fs     = 0.07  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 0.0 (0.000 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -154.51 dBc  (rms 2.99e-09 cyc)
+2nd-harm spur  = -154.53 dBc  (rms 2.99e-09 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/dpll/alg0908/TOP/output/nb_glitch_m2_10
+   locked @ 145.3 us, seg from 1650 us | sigma_t = 0.4 fs | spur25 -175.5 dBc  L(50k)=-155  L(200k)=-153  L(1000k)=-177  L(5000k)=-178
+
+===== noise_budget run 18/22 : glitch_m2_30 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.00, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.29  (spec 200)
+phe_rms_fs     = 0.06  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 0.0 (0.000 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -154.11 dBc  (rms 3.14e-09 cyc)
+2nd-harm spur  = -150.13 dBc  (rms 4.96e-09 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/dpll/alg0908/TOP/output/nb_glitch_m2_30
+   locked @ 145.3 us, seg from 1650 us | sigma_t = 0.4 fs | spur25 -175.7 dBc  L(50k)=-155  L(200k)=-172  L(1000k)=-177  L(5000k)=-178
+
+===== noise_budget run 19/22 : glitch_m2_300 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.34, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.51  (spec 200)
+phe_rms_fs     = 2840.14  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 25.7 (0.003 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -98.34 dBc  (rms 1.93e-06 cyc)
+2nd-harm spur  = -104.14 dBc  (rms 9.88e-07 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/dpll/alg0908/TOP/output/nb_glitch_m2_300
+   locked @ 145.5 us, seg from 1650 us | sigma_t = 2542.8 fs | spur25 -128.6 dBc  L(50k)=-104  L(200k)=-85  L(1000k)=-102  L(5000k)=-118
+
+===== noise_budget run 20/22 : glitch_m2_s1 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.18, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.23  (spec 200)
+phe_rms_fs     = 798.63  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 238.8 (0.030 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -105.01 dBc  (rms 8.94e-07 cyc)
+2nd-harm spur  = -109.29 dBc  (rms 5.46e-07 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/dpll/alg0908/TOP/output/nb_glitch_m2_s1
+   locked @ 145.2 us, seg from 1650 us | sigma_t = 822.4 fs | spur25 -139.2 dBc  L(50k)=-114  L(200k)=-95  L(1000k)=-114  L(5000k)=-128
+
+===== noise_budget run 21/22 : glitch_m2_s2 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.17, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.23  (spec 200)
+phe_rms_fs     = 858.39  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = -148.5 (-0.019 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -106.36 dBc  (rms 7.65e-07 cyc)
+2nd-harm spur  = -108.78 dBc  (rms 5.79e-07 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/dpll/alg0908/TOP/output/nb_glitch_m2_s2
+   locked @ 145.2 us, seg from 1650 us | sigma_t = 818.7 fs | spur25 -141.6 dBc  L(50k)=-115  L(200k)=-93  L(1000k)=-115  L(5000k)=-127
+
+===== noise_budget run 22/22 : glitch_m2_s3 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.17, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.41  (spec 200)
+phe_rms_fs     = 800.98  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 59.2 (0.007 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -107.01 dBc  (rms 7.10e-07 cyc)
+2nd-harm spur  = -110.08 dBc  (rms 4.98e-07 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/dpll/alg0908/TOP/output/nb_glitch_m2_s3
+   locked @ 145.4 us, seg from 1650 us | sigma_t = 737.2 fs | spur25 -140.7 dBc  L(50k)=-117  L(200k)=-96  L(1000k)=-114  L(5000k)=-128
+
+noise_budget done -> /home/gmei/git/dpll/alg0908/TOP/output/noise_budget
+  sigma_t (fs): total 1178 | DCO 325 | TDCq 12 | TDCinl 883 | DTC 79 | DSM 55 | glitch 1107
+  additions (fs): REFjitter(50fs)=24 TDCthermal(0.1LSB)=107 | glitch sweep 10/30/100/300: 0/0/1107/0
+  superposition: RSS(contributors) = 1456.6 fs vs total 1178.3 fs
+  mode=2 (real 3-bit fbank): total 877 fs | glitch_m2 795 (sweep 10/30/100/300: 0/0/795/2543, seeds 7/1/2/3: 795/822/819/737)
+  superposition_m2: RSS = 1236.1 fs vs total_m2 877.3 fs

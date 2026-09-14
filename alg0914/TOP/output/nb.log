@@ -1,0 +1,34 @@
+
+===== noise_budget 1/9 : total (cached from output/default) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 1178.3 fs | spur25 -129.4 dBc  L(50k)=-109  L(200k)=-89  L(1000k)=-110  L(5000k)=-121
+
+===== noise_budget 2/9 : dco (cached from output/nb_dco) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 325.4 fs | spur25 -130.7 dBc  L(50k)=-130  L(200k)=-106  L(1000k)=-117  L(5000k)=-124
+
+===== noise_budget 3/9 : tdc (cached from output/nb_tdc) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 0.0 fs | spur25 -364.2 dBc  L(50k)=-317  L(200k)=-324  L(1000k)=-337  L(5000k)=-351
+
+===== noise_budget 4/9 : dtc (cached from output/nb_dtc) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 79.2 fs | spur25 -156.7 dBc  L(50k)=-120  L(200k)=-112  L(1000k)=-144  L(5000k)=-152
+
+===== noise_budget 5/9 : dsm (cached from output/nb_dsm) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 606.0 fs | spur25 -138.2 dBc  L(50k)=-116  L(200k)=-106  L(1000k)=-139  L(5000k)=-155
+
+===== noise_budget 6/9 : dsmq (cached from output/nb_dsmq) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 56.4 fs | spur25 -135.4 dBc  L(50k)=-109  L(200k)=-126  L(1000k)=-149  L(5000k)=-156
+
+===== noise_budget 7/9 : tdcq (cached from output/nb_tdcq) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 12.2 fs | spur25 -155.5 dBc  L(50k)=-122  L(200k)=-125  L(1000k)=-149  L(5000k)=-157
+
+===== noise_budget 8/9 : tdcinlq (cached from output/nb_tdcinlq) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 884.9 fs | spur25 -142.2 dBc  L(50k)=-111  L(200k)=-107  L(1000k)=-140  L(5000k)=-154
+
+===== noise_budget 9/9 : glitch (cached from output/nb_glitch) =====
+   locked @ 138.4 us, seg from 1650 us | sigma_t = 1107.4 fs | spur25 -138.9 dBc  L(50k)=-113  L(200k)=-92  L(1000k)=-113  L(5000k)=-125
+[Warning: MATLAB has disabled some advanced graphics rendering features by
+switching to software OpenGL. For more information, click <a
+href="matlab:opengl('problems')">here</a>.] 
+
+noise_budget done -> /home/gmei/git/dpll/alg0908/TOP/output/noise_budget
+  sigma_t (fs): total 1178 | DCO 325 | TDCq 12 | TDCinl 883 | DTC 79 | DSM 55 | glitch 1107
+  superposition: RSS(contributors) = 1456.6 fs vs total 1178.3 fs

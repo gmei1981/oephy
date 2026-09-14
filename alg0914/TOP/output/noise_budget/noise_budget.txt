@@ -1,0 +1,35 @@
+total: lock_us=150.39 seg_start_us=1650 sigma_t_fs=1422.9 spur25_dBc=-89.83 spur50_dBc=-101.80  L(50k)=-101  L(200k)=-95  L(1000k)=-98  L(5000k)=-96
+dco: lock_us=149.16 seg_start_us=1650 sigma_t_fs=127.9 spur25_dBc=-133.10 spur50_dBc=-149.37  L(50k)=-111  L(200k)=-111  L(1000k)=-116  L(5000k)=-119
+tdc: lock_us=145.28 seg_start_us=1650 sigma_t_fs=0.7 spur25_dBc=-178.02 spur50_dBc=-152.34  L(50k)=-158  L(200k)=-172  L(1000k)=-182  L(5000k)=-183
+dtc: lock_us=145.30 seg_start_us=1650 sigma_t_fs=79.6 spur25_dBc=-134.49 spur50_dBc=-143.47  L(50k)=-120  L(200k)=-120  L(1000k)=-122  L(5000k)=-122
+dsm: lock_us=145.99 seg_start_us=1650 sigma_t_fs=186.2 spur25_dBc=-89.48 spur50_dBc=-90.37  L(50k)=-117  L(200k)=-129  L(1000k)=-143  L(5000k)=-135
+dsmq: lock_us=145.99 seg_start_us=1650 sigma_t_fs=206.5 spur25_dBc=-89.42 spur50_dBc=-90.04  L(50k)=-111  L(200k)=-122  L(1000k)=-122  L(5000k)=-114
+tdcq: lock_us=146.11 seg_start_us=1650 sigma_t_fs=150.2 spur25_dBc=-150.38 spur50_dBc=-164.90  L(50k)=-108  L(200k)=-115  L(1000k)=-120  L(5000k)=-142
+tdcinlq: lock_us=145.39 seg_start_us=1650 sigma_t_fs=189.4 spur25_dBc=-95.37 spur50_dBc=-105.94  L(50k)=-111  L(200k)=-119  L(1000k)=-123  L(5000k)=-122
+glitch: lock_us=144.84 seg_start_us=1650 sigma_t_fs=0.7 spur25_dBc=-180.83 spur50_dBc=-161.52  L(50k)=-158  L(200k)=-172  L(1000k)=-184  L(5000k)=-189
+refjit: lock_us=145.28 seg_start_us=1650 sigma_t_fs=25.0 spur25_dBc=-144.34 spur50_dBc=-152.78  L(50k)=-131  L(200k)=-130  L(1000k)=-131  L(5000k)=-132
+tdcnq: lock_us=146.11 seg_start_us=1650 sigma_t_fs=81.4 spur25_dBc=-149.30 spur50_dBc=-159.20  L(50k)=-115  L(200k)=-104  L(1000k)=-124  L(5000k)=-136
+glitch10: lock_us=145.29 seg_start_us=1650 sigma_t_fs=0.7 spur25_dBc=-180.56 spur50_dBc=-158.18  L(50k)=-158  L(200k)=-172  L(1000k)=-183  L(5000k)=-190
+glitch30: lock_us=145.29 seg_start_us=1650 sigma_t_fs=0.7 spur25_dBc=-187.08 spur50_dBc=-164.49  L(50k)=-158  L(200k)=-171  L(1000k)=-174  L(5000k)=-184
+glitch300: lock_us=146.06 seg_start_us=1650 sigma_t_fs=4488.5 spur25_dBc=-104.04 spur50_dBc=-107.40  L(50k)=-95  L(200k)=-87  L(1000k)=-86  L(5000k)=-86
+total_m2: lock_us=150.39 seg_start_us=1650 sigma_t_fs=1421.1 spur25_dBc=-89.87 spur50_dBc=-101.83  L(50k)=-101  L(200k)=-96  L(1000k)=-97  L(5000k)=-97
+glitch_m2: lock_us=144.81 seg_start_us=1650 sigma_t_fs=1394.4 spur25_dBc=-114.25 spur50_dBc=-116.99  L(50k)=-105  L(200k)=-97  L(1000k)=-95  L(5000k)=-96
+glitch_m2_10: lock_us=145.28 seg_start_us=1650 sigma_t_fs=0.4 spur25_dBc=-175.50 spur50_dBc=-180.23  L(50k)=-171  L(200k)=-153  L(1000k)=-174  L(5000k)=-176
+glitch_m2_30: lock_us=145.29 seg_start_us=1650 sigma_t_fs=0.4 spur25_dBc=-177.07 spur50_dBc=-180.48  L(50k)=-173  L(200k)=-166  L(1000k)=-175  L(5000k)=-176
+glitch_m2_300: lock_us=145.51 seg_start_us=1650 sigma_t_fs=4486.4 spur25_dBc=-103.99 spur50_dBc=-107.55  L(50k)=-95  L(200k)=-87  L(1000k)=-86  L(5000k)=-86
+glitch_m2_s1: lock_us=145.23 seg_start_us=1650 sigma_t_fs=0.4 spur25_dBc=-178.11 spur50_dBc=-181.56  L(50k)=-173  L(200k)=-168  L(1000k)=-173  L(5000k)=-174
+glitch_m2_s2: lock_us=145.23 seg_start_us=1650 sigma_t_fs=0.4 spur25_dBc=-176.86 spur50_dBc=-181.00  L(50k)=-172  L(200k)=-162  L(1000k)=-173  L(5000k)=-175
+glitch_m2_s3: lock_us=145.41 seg_start_us=1650 sigma_t_fs=1034.6 spur25_dBc=-116.50 spur50_dBc=-119.26  L(50k)=-106  L(200k)=-100  L(1000k)=-97  L(5000k)=-99
+dsmq_m2: lock_us=145.99 seg_start_us=1650 sigma_t_fs=206.5 spur25_dBc=-89.42 spur50_dBc=-90.05  L(50k)=-111  L(200k)=-123  L(1000k)=-123  L(5000k)=-112
+tdcq_m2: lock_us=146.11 seg_start_us=1650 sigma_t_fs=148.8 spur25_dBc=-143.23 spur50_dBc=-174.02  L(50k)=-112  L(200k)=-118  L(1000k)=-122  L(5000k)=-142
+tdcinlq_m2: lock_us=145.39 seg_start_us=1650 sigma_t_fs=189.8 spur25_dBc=-95.36 spur50_dBc=-105.96  L(50k)=-111  L(200k)=-119  L(1000k)=-122  L(5000k)=-120
+budget_fs: DCO=127.9 TDCquant=150.2 TDCinl=0.0 DTCthermal=79.6 DSMleak=141.7 glitch=0.7
+budget_add_fs: REFjitter(50fs,assumed)=25.0 TDCthermal(0.1LSB,assumed)=0.0
+glitch_sweep_fs_per_code: 10=0.7 30=0.7 100=0.7 300=4488.5 (sigma_t fs)
+superposition: RSS(contributors) = 255.6 fs vs total 1422.9 fs
+budget_m2_fs (real 3-bit fbank): DCO=127.9 TDCquant=148.8 TDCinl=0.0 DTCthermal=79.6 DSMleak=143.2 glitch_m2=1394.4
+glitch_m2_sweep_fs_per_code: 10=0.4 30=0.4 100=1394.4 300=4486.4 (sigma_t fs)
+glitch_m2_seed_spread_fs: seed7=1394.4 seed1=0.4 seed2=0.4 seed3=1034.6 (100 fs/code)
+superposition_m2: RSS(contributors, glitch_m2) = 1417.6 fs vs total_m2 1421.1 fs
+
+RBW = 12.2 kHz (nfft 8192 @ 100 MHz); integration RBW..50 MHz
