@@ -1,0 +1,96 @@
+===== seed1 solo 1/5 : dco_s1 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DCO PN spec: piecewise 4 pts (f Hz,dBc/Hz): 100000,1000000,10000000,100000000 | -76,-105,-129,-151
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.61, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.04  (spec 200)
+phe_rms_fs     = 129.70  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 16216.0 (2.021 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -101.19 dBc  (rms 1.39e-06 cyc)
+2nd-harm spur  = -106.66 dBc  (rms 7.39e-07 cyc)
+g2_final       = 0.00000 (target -0.00000)
+[Warning: MATLAB has disabled some advanced graphics rendering features by
+switching to software OpenGL. For more information, click <a
+href="matlab:opengl('problems')">here</a>.] 
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_dco_s1
+          dco_s1 :    145.0       128.8
+===== seed1 solo 2/5 : tdcq_m2_s1 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DCO PN spec: piecewise 4 pts (f Hz,dBc/Hz): 100000,1000000,10000000,100000000 | -76,-105,-129,-151
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.65, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 146.15  (spec 200)
+phe_rms_fs     = 191.48  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 16218.5 (2.021 ppm)
+kdtc_final     = 280.48 (target 280.0, err 0.17%)
+frac spur      = -90.28 dBc  (rms 4.87e-06 cyc)
+2nd-harm spur  = -102.06 dBc  (rms 1.26e-06 cyc)
+g2_final       = 0.00006 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_tdcq_m2_s1
+      tdcq_m2_s1 :    146.2       168.0
+===== seed1 solo 3/5 : dsmq_m2_s1 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DCO PN spec: piecewise 4 pts (f Hz,dBc/Hz): 100000,1000000,10000000,100000000 | -76,-105,-129,-151
+    DTC spec model: INL 2.00 LSB RMS (realized 2.08), DNL 1.00 LSB RMS (realized 1.02), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.65, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 146.11  (spec 200)
+phe_rms_fs     = 386.82  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 16219.0 (2.021 ppm)
+kdtc_final     = 275.85 (target 280.0, err -1.48%)
+frac spur      = -40.23 dBc  (rms 1.55e-03 cyc)
+2nd-harm spur  = -40.28 dBc  (rms 1.54e-03 cyc)
+g2_final       = -0.01596 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_dsmq_m2_s1
+      dsmq_m2_s1 :    146.1       194.5
+===== seed1 solo 4/5 : tdcinlq_m2_s1 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DCO PN spec: piecewise 4 pts (f Hz,dBc/Hz): 100000,1000000,10000000,100000000 | -76,-105,-129,-151
+    TDC INL: on, RMS 1.00 LSB (smoothed random)
+    DTC spec model: INL 2.00 LSB RMS (realized 2.09), DNL 1.00 LSB RMS (realized 1.01), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.63, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 146.19  (spec 200)
+phe_rms_fs     = 1319.46  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 16224.5 (2.022 ppm)
+kdtc_final     = 280.50 (target 280.0, err 0.18%)
+frac spur      = -37.81 dBc  (rms 2.05e-03 cyc)
+2nd-harm spur  = -27.63 dBc  (rms 6.61e-03 cyc)
+g2_final       = 0.00952 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_tdcinlq_m2_s1
+   tdcinlq_m2_s1 :    146.2       316.0
+===== seed1 solo 5/5 : dtc_s1 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DCO PN spec: piecewise 4 pts (f Hz,dBc/Hz): 100000,1000000,10000000,100000000 | -76,-105,-129,-151
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -160 dBc/Hz @100 MHz = 159.2 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.61, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.03  (spec 200)
+phe_rms_fs     = 219.72  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 16217.1 (2.021 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -86.61 dBc  (rms 7.44e-06 cyc)
+2nd-harm spur  = -92.48 dBc  (rms 3.78e-06 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_dtc_s1
+          dtc_s1 :    145.0       151.1
+done
+{Error using exit
+Unrecognized function or variable 'Settings'.
+} 
+{Error using exit
+Unrecognized function or variable 'Settings'.
+} 

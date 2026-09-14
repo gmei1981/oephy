@@ -1,0 +1,5 @@
+dco_s1: lock_us=145.04 sigma_t_fs=128.8
+tdcq_m2_s1: lock_us=146.15 sigma_t_fs=168.0
+dsmq_m2_s1: lock_us=146.11 sigma_t_fs=194.5
+tdcinlq_m2_s1: lock_us=146.19 sigma_t_fs=316.0
+dtc_s1: lock_us=145.03 sigma_t_fs=151.1

@@ -1,0 +1,7 @@
+dsmqLUT_s7: lock_us=145.99 sigma_t_fs=71.2 spur25_dBc=-106.93
+impr_tot_s7: lock_us=149.87 sigma_t_fs=161.7 spur25_dBc=-99.88
+dsmqLUT_s1: lock_us=146.27 sigma_t_fs=46.2 spur25_dBc=-113.70
+impr_tot_s1: lock_us=146.19 sigma_t_fs=148.3 spur25_dBc=-115.12
+dtc165_s7: lock_us=145.27 sigma_t_fs=44.8 spur25_dBc=-139.49
+impr_tot_s3: lock_us=146.43 sigma_t_fs=143.6 spur25_dBc=-114.93
+tdcq512_s7: lock_us=145.29 sigma_t_fs=33.9 spur25_dBc=-142.48

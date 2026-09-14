@@ -137,6 +137,24 @@ DTC 按 spec 建模：**PN floor ≤−160 dBc/Hz @fout=100MHz（换算 159fs �
 
 运行入口：`matlab -batch "addpath('TOP'); bw_sweep_probe"`（解析扫参）、`nb_bw_verify`/`nb_ng`/`nb_ng_b`（闭环验证，结果缓存于 `output/nb_tot{2,3,5}m_*`，汇总 `output/noise_budget/bw_verify.txt`）。
 
+## 三项提升实现与重跑（2026-09-14 第六轮，`nb_impr*.m`，模型改动 cfg 门控默认关）
+
+**实现**（`top_adpll.m`，check_units 全过回归）：
+①DTC INL 逐码 LUT 预失真 `dtc_inl_lut_calib_en`（标定副本抵消 plant 表，残差 `dtc_inl_lut_res_lsb` LSB，inl_calib_start 后生效）；②合成式细 TDC `tdc_synth_lsb_cyc`（tdc_ideal 分支注入白噪 σ=LSB/√12 + 标定后 INL 残差曲线 `tdc_synth_inl_lsb`，绕开黄金 pfd 接口）；③DTC PN floor −165dBc/Hz（cfg）。
+
+**实测（mode2、glitch 0.67fs/code 实测律、fc=4.84M、K=20）**：
+
+| 项 (fs) | 基线 | 提升@标称 | 备注 |
+|---|---|---|---|
+| TDC 量化 | 148.8 | **33.9**（合成 1/512+INL 0.25 标定） | ⚠ 合成白模型 vs 真实量化器有 2.1× 缺口（synth256=69.7 vs real 148.8——真实量化误差**非白**，近全带内；白噪理论 σ²×ENBW/(fref/2)=70.6 与合成完全吻合）→ 保守修正 **~72** |
+| DSM 泄漏 | 143.2 | **62.6**（LUT 0.2）/ **25.8**（LUT 0.05） | LUT 残差 0.2→0.05 再省 2.4×；校准精度是唯一杠杆 |
+| DTC 热 | 79.6 | **44.8**（−165dBc/Hz） | ×0.562 与理论精确一致 |
+| DCO | 127.9 | 128 | 不变，**成为新主宰** |
+| **total (s7/s1/s3)** | 226.8/342.8/— | **161.7 / 148.3 / 143.6** | 三 seed 全部 <200 ✓；TDC 保守修正后 ≈ 160–175，仍有 12–20% 裕量 |
+| 25M 杂散（输出域） | −90 | −100 ~ −115 | LUT 顺带压杂散 10–25dB |
+
+**结论**：三项提升把 total 从 227 压到 ~145–175fs（保守口径），**200fs spec 达成**；剩余风险=DCO 128fs 主宰（下一步可上扫 fc 6–8MHz，白源已小、DCO 权重上升）+ 真实 1/512 TDC 的量化误差白化程度（合成模型偏乐观 2.1×，需晶体管级或实测确认）+ TDC 热噪 spec 仍是假设值。
+
 ## 实测 glitch 律下的噪声预算重跑（2026-09-14 第五轮，`nb_gmeas*.m`）
 
 **输入**：fbank glitch 已在 12nm 晶体管级实测（adpll_ted/sim/GLITCH_MEAS.md）：**每切换一次的相位台阶 = 91±1 fs × 单元设计步进(MHz)**，台阶型、on/off 抵消 98.5%。换算到本模型：mode2 单元(7.34kHz)→**0.67fs/code**；mode0 单元(58.7kHz)→**5.34fs/code**（原假设 100）。当前框架（真实 spec、4.84M、K=20）重跑：
@@ -152,6 +170,8 @@ DTC 按 spec 建模：**PN floor ≤−160 dBc/Hz @fout=100MHz（换算 159fs �
 1. **glitch 主宰项消失**：total 从 1421fs 落到线性底噪 227fs（mode2）——按硅实测律，fbank 切换 glitch 不再是 jitter 瓶颈；前提是单元等效步进 ≤~77kHz（91fs/MHz 反推），**物理离散电容(≥5MHz 步进)做细bank仍被否决**，需 DAC+变容管/等效连续实现；
 2. **新瓶颈=线性底噪，且 seed 敏感**：seed7 底噪 227fs，seed1 升到 ~343fs（+116fs）——TDC INL 实现与 DSM 交互的随机实现差异（此前噪声预算只报单 seed）；跨 seed 统计应成为后续预算的标准动作；
 3. 底噪构成（seed7）：TDCq 149 + DSM泄漏 143 + DCO 128 + DTC热 80 + REF 25，实测 total 比 RSS(257) 低 12%（次可加）；到 200fs spec 的路径变为：DSM 泄漏（DTC 逐码 INL 查表）+ TDC 分辨率/热噪 spec + seed 鲁棒性。
+
+**seed 方差溯源（`nb_seed.m`，seed1 逐源 solo 对照）**：total 差 342.8−226.8=257fs 的账几乎全在 **TDC INL 实现×DSM 扫描交互**——tdcinlq_m2 solo 189.8(s7)→316.0(s1)，TDC INL 贡献从 ≈0（s7 实现与 DSM 轨迹近正交甚至轻度相消）跳到 **249fs**（s1 实现失真大）+257 ✓ 闭合。次因：TDCq 148.8→168（+13%）、**DTC 热噪 solo 79.6→151.1（+90%，白源不应如此；kdtc/g2 冻结排除校准整流，归因 1bit-fbank SDM/abank 极限环轨道轮盘对不同抖动实现的响应差）**；DCO 128.8≈127.9、DSM 泄漏稳定。修正旧结论："PM62° 下 TDC INL≈0" 应为 **0~250fs 实现相关**；单 seed 预算不可靠，后续一律 ≥3 seeds 报分布；TDC INL 逐码标定可把主项变为确定性可修项。
 
 ## 1bit fbank 重评（2026-09-14 第四轮，`nb_1bit*.m`，13 run）
 

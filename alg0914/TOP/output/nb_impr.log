@@ -1,0 +1,80 @@
+===== impr run 1/4 : impr_tot_s7 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DCO PN spec: piecewise 4 pts (f Hz,dBc/Hz): 100000,1000000,10000000,100000000 | -76,-105,-129,-151
+    TDC INL: on, RMS 1.00 LSB (smoothed random)
+    DTC spec model: INL 2.00 LSB RMS (realized 2.09), DNL 1.00 LSB RMS (realized 0.99), PN floor -165 dBc/Hz @100 MHz = 89.5 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.48, freq_ctrl_final=167.000
+fll_lock_time  = 143.49 us
+lock_time_us   = 149.87  (spec 200)
+phe_rms_fs     = 273.49  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 8546.5 (1.065 ppm)
+kdtc_final     = 274.72 (target 280.0, err -1.89%)
+frac spur      = -45.09 dBc  (rms 8.86e-04 cyc)
+2nd-harm spur  = -44.06 dBc  (rms 9.98e-04 cyc)
+g2_final       = -0.02221 (target -0.00000)
+[Warning: MATLAB has disabled some advanced graphics rendering features by
+switching to software OpenGL. For more information, click <a
+href="matlab:opengl('problems')">here</a>.] 
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_impr_tot_s7
+    impr_tot_s7 :    149.9       161.7      -99.9
+===== impr run 2/4 : impr_tot_s1 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DCO PN spec: piecewise 4 pts (f Hz,dBc/Hz): 100000,1000000,10000000,100000000 | -76,-105,-129,-151
+    TDC INL: on, RMS 1.00 LSB (smoothed random)
+    DTC spec model: INL 2.00 LSB RMS (realized 2.09), DNL 1.00 LSB RMS (realized 1.01), PN floor -165 dBc/Hz @100 MHz = 89.5 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.61, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 146.19  (spec 200)
+phe_rms_fs     = 197.91  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 16207.3 (2.020 ppm)
+kdtc_final     = 279.63 (target 280.0, err -0.13%)
+frac spur      = -60.89 dBc  (rms 1.44e-04 cyc)
+2nd-harm spur  = -47.78 dBc  (rms 6.50e-04 cyc)
+g2_final       = -0.00314 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_impr_tot_s1
+    impr_tot_s1 :    146.2       148.3     -115.1
+===== impr run 3/4 : impr_tot_s3 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DCO PN spec: piecewise 4 pts (f Hz,dBc/Hz): 100000,1000000,10000000,100000000 | -76,-105,-129,-151
+    TDC INL: on, RMS 1.00 LSB (smoothed random)
+    DTC spec model: INL 2.00 LSB RMS (realized 2.11), DNL 1.00 LSB RMS (realized 0.96), PN floor -165 dBc/Hz @100 MHz = 89.5 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.41, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 146.43  (spec 200)
+phe_rms_fs     = 195.02  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 4500.7 (0.561 ppm)
+kdtc_final     = 277.72 (target 280.0, err -0.82%)
+frac spur      = -59.60 dBc  (rms 1.67e-04 cyc)
+2nd-harm spur  = -43.50 dBc  (rms 1.06e-03 cyc)
+g2_final       = -0.00947 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_impr_tot_s3
+    impr_tot_s3 :    146.4       143.6     -114.9
+===== impr run 4/4 : tdcq512_s7 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.28, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.29  (spec 200)
+phe_rms_fs     = 75.56  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 0.8 (0.000 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -98.56 dBc  (rms 1.88e-06 cyc)
+2nd-harm spur  = -104.79 dBc  (rms 9.16e-07 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_tdcq512_s7
+     tdcq512_s7 :    145.3        33.9     -142.5
+done (nb_impr)
+{Error using exit
+Unrecognized function or variable 'Settings'.
+} 
+{Error using exit
+Unrecognized function or variable 'Settings'.
+} 

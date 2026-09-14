@@ -180,6 +180,27 @@ dtc_dnl_rms = std([0; diff(tbl_dtc)]);         % realized DNL, LSB (RMS)
 cfg_dtc.dtc_inl = tbl_dtc*cfg.dtc_lsb_cycles;
 assert(max(abs(cfg_dtc.dtc_inl)) < 0.1, ...
     'DTC INL table exceeds 0.1 cyc — LSB->cycle conversion missing?');
+% ---- improvement scenario blocks (2026-09-14, cfg-gated, default OFF) -------
+% (a) DTC per-code INL LUT pre-distortion: digital cancels the plant INL with
+%     a calibrated copy; residual = fresh smooth random of RMS
+%     dtc_inl_lut_res_lsb LSB (calibration noise). Applied to the DTC delay
+%     after inl_calib_start_cycle.
+dtc_lut_calib = isfield(cfg,'dtc_inl_lut_calib_en') && cfg.dtc_inl_lut_calib_en==1;
+tbl_dtc_lut = [];
+if dtc_lut_calib
+    tbl_dtc_lut = tbl_dtc + dtc_inl_table(2^10,cfg.dtc_inl_lut_res_lsb,0,64);
+end
+% (b) synthetic fine TDC (with tdc_ideal=1): white quantization noise
+%     sigma = tdc_synth_lsb_cyc/sqrt(12) + static post-calibration INL
+%     residual tdc_synth_inl_lsb (smooth random, LSB units). Models e.g. a
+%     1/512-cycle TDC without touching the golden one-hot/pfd interface.
+tdc_synth_lsb = 0; tdc_synth_inl_vec = [];
+if isfield(cfg,'tdc_synth_lsb_cyc') && cfg.tdc_synth_lsb_cyc>0
+    tdc_synth_lsb = cfg.tdc_synth_lsb_cyc;
+    res = 0;
+    if isfield(cfg,'tdc_synth_inl_lsb'), res = cfg.tdc_synth_inl_lsb; end
+    tdc_synth_inl_vec = dtc_inl_table(512,res,0,64);
+end
 % DTC PN floor (spec <= -160 dBc/Hz at fout = 100 MHz): white jitter on the
 % delayed edge, sigma_t = sqrt(2*10^(L/10)*fref/2)/(2*pi*fout) = 159 fs RMS
 sig_dtc_t = 0;
@@ -258,6 +279,10 @@ for i=1:N
         % plant: per-code INL/DNL table (spec) + optional quadratic term
         % (dtc_inl2_a, now 0) + PN-floor white edge jitter
         tau = dtc(dtc_code,cfg_dtc) + cfg.dtc_inl2_a*eq^2 + dtc_jit(i);
+        % per-code INL LUT pre-distortion (improvement scenario, cfg-gated)
+        if dtc_lut_calib && i >= cfg.inl_calib_start_cycle
+            tau = tau - tbl_dtc_lut(dtc_code+1)*cfg.dtc_lsb_cycles;
+        end
     else
         tau = 0;
     end
@@ -289,6 +314,14 @@ for i=1:N
         % no 1/256 quantization / INL / one-hot encoding
         xj = x + ref_jit(i);
         xj = xj - round(xj);
+        % synthetic fine TDC (improvement scenario, cfg-gated): white
+        % quantization sigma = LSB/sqrt(12) + static INL residual curve
+        % indexed by the wrapped position within the cycle
+        if tdc_synth_lsb > 0
+            xj = xj + tdc_synth_lsb/sqrt(12)*randn;
+            idx = floor(mod(xj+0.5,1)*numel(tdc_synth_inl_vec)) + 1;
+            xj = xj + tdc_synth_inl_vec(idx)*tdc_synth_lsb;
+        end
         arb = double(xj>=0); ca = 0; cb = 0; ft = 0;
         phe_out = xj; oh_a = 0; oh_b = 0;
     else
