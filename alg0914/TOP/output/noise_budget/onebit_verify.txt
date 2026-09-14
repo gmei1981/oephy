@@ -1,0 +1,26 @@
+gl1b_10: lock_us=145.29 sigma_t_fs=12.1 spur25_dBc=-155.00
+gl1b_10: switches=164 mean_dstep=1.00
+gl1b_s7: lock_us=144.84 sigma_t_fs=1393.6 spur25_dBc=-114.32
+gl1b_s7: switches=48598 mean_dstep=1.00
+tot1b_s7: lock_us=150.39 sigma_t_fs=1420.9 spur25_dBc=-89.90
+tot1b_s7: switches=7567 mean_dstep=1.00
+gl1b_200: lock_us=144.92 sigma_t_fs=2947.2 spur25_dBc=-108.09
+gl1b_200: switches=48501 mean_dstep=1.00
+gl1b_s1: lock_us=145.27 sigma_t_fs=1389.3 spur25_dBc=-113.11
+gl1b_s1: switches=48388 mean_dstep=1.00
+tot1b_s1: lock_us=147.59 sigma_t_fs=1449.8 spur25_dBc=-93.87
+tot1b_s1: switches=11237 mean_dstep=1.00
+gl1b_300: lock_us=145.51 sigma_t_fs=4489.9 spur25_dBc=-104.23
+gl1b_300: switches=48598 mean_dstep=1.00
+gl1b_s2: lock_us=145.27 sigma_t_fs=1392.2 spur25_dBc=-112.70
+gl1b_s2: switches=48487 mean_dstep=1.00
+tot1b_s3: lock_us=149.99 sigma_t_fs=1479.1 spur25_dBc=-94.60
+tot1b_s3: switches=7957 mean_dstep=1.00
+dsmq_m0: lock_us=145.99 sigma_t_fs=206.7 spur25_dBc=-89.41
+dsmq_m0: switches=0 mean_dstep=NaN
+gl1b_s3: lock_us=145.38 sigma_t_fs=1401.7 spur25_dBc=-113.24
+gl1b_s3: switches=48643 mean_dstep=1.00
+tot1b_ng: lock_us=149.91 sigma_t_fs=225.9 spur25_dBc=-90.74
+tot1b_ng: switches=4659 mean_dstep=1.00
+tdcq_m0: lock_us=146.11 sigma_t_fs=135.0 spur25_dBc=-152.65
+tdcq_m0: switches=0 mean_dstep=NaN

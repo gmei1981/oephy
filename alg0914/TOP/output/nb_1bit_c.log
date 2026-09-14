@@ -1,0 +1,89 @@
+===== 1bit run 1/5 : gl1b_10 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.00, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.29  (spec 200)
+phe_rms_fs     = 10.34  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = -24.7 (-0.003 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -119.79 dBc  (rms 1.63e-07 cyc)
+2nd-harm spur  = -126.01 dBc  (rms 7.97e-08 cyc)
+g2_final       = 0.00000 (target -0.00000)
+[Warning: MATLAB has disabled some advanced graphics rendering features by
+switching to software OpenGL. For more information, click <a
+href="matlab:opengl('problems')">here</a>.] 
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_gl1b_10
+        gl1b_10 :    145.3        12.1     -155.0
+   switches=164 rate=0kHz mean|dstep|=1.00
+===== 1bit run 2/5 : gl1b_200 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.31, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 144.92  (spec 200)
+phe_rms_fs     = 2511.78  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = -1480.0 (-0.184 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -74.50 dBc  (rms 3.00e-05 cyc)
+2nd-harm spur  = -89.33 dBc  (rms 5.44e-06 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_gl1b_200
+       gl1b_200 :    144.9      2947.2     -108.1
+   switches=48501 rate=50kHz mean|dstep|=1.00
+===== 1bit run 3/5 : gl1b_300 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.28, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.51  (spec 200)
+phe_rms_fs     = 3821.31  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = -2927.9 (-0.365 ppm)
+kdtc_final     = 300.00 (target 280.0, err 7.14%)
+frac spur      = -71.20 dBc  (rms 4.38e-05 cyc)
+2nd-harm spur  = -82.36 dBc  (rms 1.21e-05 cyc)
+g2_final       = 0.00000 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_gl1b_300
+       gl1b_300 :    145.5      4489.9     -104.2
+   switches=48598 rate=50kHz mean|dstep|=1.00
+===== 1bit run 4/5 : dsmq_m0 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 2.00 LSB RMS (realized 2.10), DNL 1.00 LSB RMS (realized 1.02), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.00, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 145.99  (spec 200)
+phe_rms_fs     = 944.85  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = 7.1 (0.001 ppm)
+kdtc_final     = 276.40 (target 280.0, err -1.29%)
+frac spur      = -34.73 dBc  (rms 2.92e-03 cyc)
+2nd-harm spur  = -28.60 dBc  (rms 5.91e-03 cyc)
+g2_final       = -0.01587 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_dsmq_m0
+        dsmq_m0 :    146.0       206.7      -89.4
+   switches=0 rate=0kHz mean|dstep|=NaN
+===== 1bit run 5/5 : tdcq_m0 =====
+=== top_adpll: scenario=default  FCW=80.250000 (8.025000 GHz)  N=262144 (2.621 ms) ===
+    DCO: f_lo=7.6700 GHz, pbank step 19.0 MHz, abank LSB 58.7 kHz (span 30 MHz/511)
+    DTC spec model: INL 0.00 LSB RMS (realized 0.00), DNL 0.00 LSB RMS (realized 0.00), PN floor -300 dBc/Hz @100 MHz = 0.0 fs RMS jitter
+afc: pbank=18 (f0=8.0129 GHz), finish@35.8 us
+abank_final=206.00, freq_ctrl_final=163.000
+fll_lock_time  = 138.37 us
+lock_time_us   = 146.11  (spec 200)
+phe_rms_fs     = 32.93  (spec 200; TDC quant-noise floor ~141 fs)
+freq_err_hz    = -0.2 (-0.000 ppm)
+kdtc_final     = 280.50 (target 280.0, err 0.18%)
+frac spur      = -101.25 dBc  (rms 1.38e-06 cyc)
+2nd-harm spur  = -103.97 dBc  (rms 1.01e-06 cyc)
+g2_final       = -0.00002 (target -0.00000)
+outputs -> /home/gmei/git/oephy/alg0914/TOP/output/nb_tdcq_m0
+        tdcq_m0 :    146.1       135.0     -152.6
+   switches=0 rate=0kHz mean|dstep|=NaN
+done (nb_1bit_c)

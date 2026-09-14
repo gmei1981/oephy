@@ -1,0 +1,6 @@
+totm2_g067_s7: lock_us=149.91 sigma_t_fs=226.8 spur25_dBc=-90.74
+totm0_g53_s7: lock_us=149.95 sigma_t_fs=237.7 spur25_dBc=-90.74
+totm2_g067_s1: lock_us=146.19 sigma_t_fs=342.8 spur25_dBc=-91.85
+totm0_g53_s1: lock_us=146.23 sigma_t_fs=350.2 spur25_dBc=-91.86
+glm2_067: lock_us=145.28 sigma_t_fs=0.6 spur25_dBc=-170.77
+glm0_53: lock_us=145.28 sigma_t_fs=6.8 spur25_dBc=-158.02

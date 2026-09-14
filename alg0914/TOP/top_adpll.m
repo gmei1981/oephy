@@ -11,9 +11,12 @@ function L = top_adpll(scenario,cfg_over)
 %     pbank 6b : sub-band select, 30 MHz band per code, 15 MHz spacing
 %     abank 9b : 511 sub-steps covering the full 30 MHz band
 %                (dco_abank_lsb = dco_abank_span/511 ~ 58.7 kHz/code)
-%     fbank    : TEMPORARY 1-bit mode (dsm_dco_mode=0): one cell of 1 abank
-%                LSB toggled by a 1st-order SDM fed the full lpf_frac; the
-%                original 3b/8-code path is kept and selected by mode=2
+%     fbank    : 1-bit mode (dsm_dco_mode=0): ONE cell of 1 abank LSB
+%                toggled by a 1st-order SDM fed the full lpf_frac — a
+%                single cell must span a full LSB to cover fractions by
+%                duty-cycling.  3-bit mode (mode=2, 8 cells of 1/8 LSB,
+%                thermometer) retained for comparison.  2026-09-14: both
+%                re-evaluated under clk_dsm = DCO/4 (K=20), see README.
 %     f_dco = dco_f_lo + pbank*15M + (abank + fbank/8)*(30M/511)
 %   AFC (pbank binary search) is fully implemented per rtl/adpll/pbank_afc.v
 %   + spec §3 (min-|err| tracking, DCO/afc_div window counting).
@@ -302,13 +305,15 @@ for i=1:N
     lpf_frac_q = round((lpf_out-abank)*2^26)/2^26;
 
     % ---- (7) fbank: dsm_dco (free-running, K sub-steps per ref cycle) -----
-    % TEMPORARY 1-bit fine bank (taps_dco==1, dsm_dco_mode=0): a single cell
-    % of ONE abank LSB toggled by the 1st-order SDM ({0,1} output).  The full
+    % 1-bit fine bank (taps_dco==1, dsm_dco_mode=0): a single cell of ONE
+    % abank LSB toggled by the 1st-order SDM ({0,1} output).  The full
     % lpf_frac goes into the modulator (no static floor needed), so the mean
-    % control is exactly abank + lpf_frac.  Residual phase ripple is only
-    % Ka/(K*fref) ~ 2 fs (the SDM accumulator bounds the integrated error).
-    % Original 3-bit path (taps_dco==3): 8 thermometer steps of 1/8 LSB, DSM
-    % input mod(8f,1), static floor(8f) carries through.
+    % control is exactly abank + lpf_frac.  Residual phase ripple is
+    % Ka/(K*fref) ~ 3.7 fs at K=20 (the SDM accumulator bounds the error).
+    % A single cell MUST span a full LSB: a 1-bit {0,1} output realizes means
+    % in [0, u] by duty-cycling, so u >= 1 LSB is required to cover [0,1).
+    % 3-bit path (taps_dco==3): 8 thermometer steps of 1/8 LSB, DSM input
+    % mod(8f,1), static floor(8f) carries through.
     K = cfg.dsm_dco_oversample;
     y_acc = 0;
     if taps_dco==1
@@ -574,9 +579,10 @@ fprintf(fid,['Modeling decisions (cfg-switchable):\n' ...
   '    58.7 kHz abank LSB the count LSB (195 kHz @ 512-cycle DCO/4 window) is\n' ...
   '    3.33x coarser than a code, so freq_ctrl walks at ~0.3 window-gain —\n' ...
   '    freq_lock_thr=15 declares early and the PLL absorbs the remainder.\n' ...
-  ' G. TEMPORARY 1-bit fbank (dsm_dco_mode=0): single cell of 1 abank LSB on a\n' ...
+  ' G. 1-bit fbank (dsm_dco_mode=0): single cell of 1 abank LSB on a\n' ...
   '    1st-order SDM fed the full lpf_frac; quantization phase ripple is only\n' ...
-  '    Ka/(K*fref) ~ 2 fs at dsm_dco_oversample=32 (3-bit path kept, mode=2).\n' ...
+  '    Ka/(K*fref) ~ 3.7 fs at dsm_dco_oversample=20 (clk_dsm = fDCO/4 =\n' ...
+  '    FCW/4 sub-steps per ref cycle; 3-bit path kept, mode=2).\n' ...
   ' H. DTC plant per spec table: per-code INL %.1f LSB RMS (smooth random curve)\n' ...
   '    + DNL %.1f LSB RMS (non-accumulating cell mismatch, see dtc_inl_table)\n' ...
   '    and PN floor %g dBc/Hz @%.0f MHz = %.0f fs RMS white edge jitter\n' ...

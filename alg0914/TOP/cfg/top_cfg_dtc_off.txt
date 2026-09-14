@@ -16,7 +16,7 @@ ref_double_en: 0
 dsm_dco_en: 1
 dsm_dco_mode: 0
 dither_dco_en: 0
-dsm_dco_oversample: 32
+dsm_dco_oversample: 20
 freq_ref_cnt_thr: 9
 freq_lock_step: 0
 freq_lock_thr: 3

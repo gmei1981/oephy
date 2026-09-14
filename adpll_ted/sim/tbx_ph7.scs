@@ -1,0 +1,22 @@
+// vco_glitch_tb2.scs — fbank 单元切换 glitch 测量 (DUT=LC核+EN开关VAR单元)
+// 协议: EN 在 TSW 切入(0->0.8), WON 后切出; 三窗相位拟合提取 kick
+simulator lang=spectre
+
+include "/home/lib/tsmc_12nm_installed/pdk/models/toplevel.scs" section=top_tt
+include "glitch_dut.scs"
+
+parameters TSW=60.109287n WON=5n TRISE=50p
+
+Vvdd  (VDD 0)  vsource dc=0.8
+Vss   (VSS 0)  vsource dc=0
+Vvddc (VDDC 0) vsource type=pulse val0=0 val1=0.5 delay=0 rise=1n width=1m period=1m
+Vc1 (VC1 0) vsource dc=0.3
+Vc2 (VC2 0) vsource dc=0.5
+Vsw (VSW 0) vsource dc=0.3
+Ven (EN 0) vsource type=pulse val0=0 val1=0.8 delay=TSW width=WON rise=TRISE fall=TRISE period=10m
+
+Xvco (VDDC VDDC VSS OUTP OUTN VC1 VC2 EN VSW) vco_glitch_dut
+
+tran tran stop=100n maxstep=2p errpreset=liberal method=gear2only skipdc=yes ic="OUTP=0.45" ic="OUTN=0.0"
+save OUTP OUTN EN VSW
+saveOptions options save=selected rawfmt=psfascii

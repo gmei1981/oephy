@@ -30,7 +30,7 @@ matlab -batch "addpath('TOP'); noise_budget"                # 噪声分解：25�
 ```
 
 条件：**fref = 100 MHz**，FCW=80.25（8.025 GHz，frac=0.25），262144拍=2.62ms。
-DCO：VCO 标称 8GHz；pbank 6bit 覆盖 7.67~8.90GHz（64子带×30MHz带宽，间距 19.047619MHz）；abank 9bit=511子带覆盖30MHz（LSB 58.7kHz）；**fbank 暂时只保留 1bit 控制**（单单元=1个abank LSB，lpf_frac 直接进 1阶SDM {0,1}；原 3bit 路径保留，cfg `dsm_dco_mode: 2` 切回）。
+DCO：VCO 标称 8GHz；pbank 6bit 覆盖 7.67~8.90GHz（64子带×30MHz带宽，间距 19.047619MHz）；abank 9bit=511子带覆盖30MHz（LSB 58.7kHz）；**fbank 双架构并存**（`dsm_dco_mode`）：mode0=1bit（单单元=1个abank LSB，lpf_frac 直接进 1阶SDM {0,1}，占空比平均——单单元必须跨满 1 LSB 才能覆盖 [0,1) 分数）；mode2=3bit（8单元温度计码×1/8 LSB，DSM 输入 mod(8f,1)+静态 floor(8f)）。clk_dsm=DCO÷4（≈2.006GHz，即每参考周期 FCW/4≈20.06 子步，cfg `dsm_dco_oversample: 20`）。
 DTC 按 spec 建模：**PN floor ≤−160 dBc/Hz @fout=100MHz（换算 159fs 白边沿抖动）+ INL 2LSB（平滑随机，相关长度64码）+ DNL 1LSB（非累积单元失配）**；合成二次项 `dtc_inl2_a` 归 0。
 100MHz 联动换算（保持时间域动态不变）：afc_ref_cnt_thr 7→9（窗口时间不变、计数分辨率 1.5625MHz/count）、freq_lock_thr 6→3（count LSB 变 781kHz）、kp2 48→64（每拍环路增益÷4 补偿）；kp1/ki/kdtc/DTC/TDC 以 Hz 为单位自动不变。DCO 相噪模型：**L(f)=max(−150, −120+10·log10(1MHz/f)) dBc/Hz**（1/f 区域，`dco_pn_slope_dbdec` 可调斜率，原 30dB/dec=1/f³ 路径保留默认）。
 
@@ -110,8 +110,68 @@ DTC 按 spec 建模：**PN floor ≤−160 dBc/Hz @fout=100MHz（换算 159fs �
 关键结论（2026-09-14 第二轮后为准，旧结论见"mode=2 真实 3bit fbank 重评"节）：
 1. **环路阻尼比噪声源幅度更关键**：原锁定环路 PM=2.7°/峰化21×，把 TDC INL 的带内相关误差放大成 873fs 角谐振；PM 修到 62° 后 1LSB INL 输出贡献 ≈0（旧"INL≤0.2LSB"要求作废）；
 2. **真实 DCO spec（100k/−76 起）在 4.84MHz 环路下 128fs，不是瓶颈**；DCO 抑制要带宽、glitch/白噪要低带宽——**带宽是最核心的权衡旋钮**（glitch chatter 标度随 kp 从 8×升到 14×fs/code，且 seed 捕获重新轮盘化；TDC 白噪声 141fs 全通 = 预算的 75%）；
-3. 当前 5MHz 配置 total=1421fs，主宰是 glitch 抖振（1394fs@100fs/code，50% seed 捕获）——**建议扫 1–2MHz 中间带宽找最优点**；
+3. 当前 5MHz 配置 total=1421fs，主宰是 glitch 抖振（1394fs@100fs/code，50% seed 捕获）——~~建议扫 1–2MHz 中间带宽找最优点~~（**已验证推翻**：2M/3M total 更差 1561–1796fs，见"带宽扫参闭环验证"节）；
 4. （沿用）输出域≠鉴相器域；分数杂散 −34.9dBc 在鉴相器域，kdtc 收敛 269.3（−3.5%）为随机 INL 最优线性拟合；鉴相器域杂散要 −50dBc 需逐码 INL 查表。
+
+诊断运行（不在预算内）：`tdc`（eq≡0 相位静止）→量化噪声退化为 0；`dsm`（理想TDC无抖动）→kdtc/g2 相关器确定性极限环 606fs 伪影（真实抖动下 kdtc 收敛 279.4、泄漏仅 ~55fs）。
+
+## 带宽扫参闭环验证 + jitter 根因定位（2026-09-14 第三轮，`bw_sweep_probe.m`/`nb_bw_verify.m`/`nb_ng*.m`）
+
+上节"建议扫 1–2MHz 中间带宽找最优点"的假设**已被闭环实测推翻**。新增 total 运行（全源、mode=2、锁定段 σt，seed 括注）：
+
+| fc | total（fs） | **无 glitch 底噪**（fs） | glitch 贡献（fs） | 标度系数 |
+|---|---|---|---|---|
+| 2.0 MHz（kp1=213.7/PM78°） | 1676/1656/1796（s7/s1/s3） | **282** | ~1652@100fs/code | **16.3×fs/code**（10/30/100fs 实测 164/483/1652，严格线性） |
+| 3.0 MHz（kp1=320.3/PM73°） | 1561/1637（s7/s3） | **231** | ~1544@100 | ~15.4× |
+| 4.84 MHz（现配置） | 1421（s7） | **227** | ~1403@100（10fs→135） | **14×** |
+| glitch solo@2M | — | — | **0.3**（安静轨道，0 次切换） | — |
+
+**根因（DBG 实证）**：jitter 98.5% 的功率来自 fbank 切换 glitch 的**再生式抖振**，且是**环境噪声驱动**而非自激——glitch solo 在 2MHz 完全安静（0 切换），但全源下 TDC 量化噪声（141fs）经 kp=512 放大成 lpf_frac ±0.29 LSB 摆动（Q26 实测 std≈0.29）→ 锁定段 8 万次/ms 码切换（|dstep|≈3）→ 每次切换给 DCO 相位**永久**加 100fs·dstep·randn 台阶 → 单次 kick 经 kp 再生 >1 LSB 指令摆动 → 自持极限环。线性小信号模型只预测 ~26fs（差 50×），证实是再生机理而非传递函数问题。带宽降低**不解决问题**：切率∝kp、压制∝1/√fc，两者近似抵消，实测标度系数 16.3×(2M)→14×(4.84M) 仅缓变，而线性底噪在低带宽端反而抬升（DCO 抑制不足）。
+
+**结论**：
+1. **模拟端 spec 是唯一主杠杆**：glitch 贡献 ≈ (14~16)×(fs/code)，要 glitch ≤100fs 需 **fbank 切换 glitch ≤ ~7fs/单位码**（全带宽范围近似不变，无须靠带宽换）；
+2. **需向模拟端核实 glitch 物理形态**：当前模型是"永久相位台阶"（最坏情况）。若实测为衰减振铃（ns 级 settle、净相移≈0），贡献会塌缩到远小于上表——这是最高杠杆的待验证建模假设；
+3. **即使 glitch=0 也到不了 200fs**：无 glitch 底噪 227fs@4.84M（=TDCq149+DSM泄漏143+DCO128+DTC80+REF25 次可加），**spec 200fs 需底噪再降 ~25%**——按序：DSM 泄漏（DTC 逐码 INL 查表）、TDC 分辨率/热噪 spec（热噪目前 0.1LSB 假设值，若实际 0.3LSB 将再加 ~150fs@5M，必须落实）；
+4. **维持 fc≈3–5MHz**（底噪 227–231 平坦最优），不要降带宽；
+5. 数字侧可探索（本轮未验证）：lpf_frac 进 fbank DSM 前加迟滞/死区切断再生环；用 DTC 预失真补偿 kick 的确定性分量（数字已知 dstep；注意模型 randn=零均值最坏情形，实际确定性分量可标定可补偿）。
+
+运行入口：`matlab -batch "addpath('TOP'); bw_sweep_probe"`（解析扫参）、`nb_bw_verify`/`nb_ng`/`nb_ng_b`（闭环验证，结果缓存于 `output/nb_tot{2,3,5}m_*`，汇总 `output/noise_budget/bw_verify.txt`）。
+
+## 实测 glitch 律下的噪声预算重跑（2026-09-14 第五轮，`nb_gmeas*.m`）
+
+**输入**：fbank glitch 已在 12nm 晶体管级实测（adpll_ted/sim/GLITCH_MEAS.md）：**每切换一次的相位台阶 = 91±1 fs × 单元设计步进(MHz)**，台阶型、on/off 抵消 98.5%。换算到本模型：mode2 单元(7.34kHz)→**0.67fs/code**；mode0 单元(58.7kHz)→**5.34fs/code**（原假设 100）。当前框架（真实 spec、4.84M、K=20）重跑：
+
+| 项 (fs) | **mode2 (0.67fs/code)** | **mode0 (5.34fs/code)** |
+|---|---|---|
+| glitch solo | **0.6**（自激阈值以下，抖振死亡） | **6.8** |
+| glitch 贡献（total−底噪） | ~10 ≈ 14×0.67 ✓ 标度律成立 | ~74 ≈ 16.3×5.34 ✓ |
+| **total (seed7)** | **226.8**（=底噪 227） | **237.7** |
+| total (seed1) | **342.8** | **350.2** |
+
+**结论**：
+1. **glitch 主宰项消失**：total 从 1421fs 落到线性底噪 227fs（mode2）——按硅实测律，fbank 切换 glitch 不再是 jitter 瓶颈；前提是单元等效步进 ≤~77kHz（91fs/MHz 反推），**物理离散电容(≥5MHz 步进)做细bank仍被否决**，需 DAC+变容管/等效连续实现；
+2. **新瓶颈=线性底噪，且 seed 敏感**：seed7 底噪 227fs，seed1 升到 ~343fs（+116fs）——TDC INL 实现与 DSM 交互的随机实现差异（此前噪声预算只报单 seed）；跨 seed 统计应成为后续预算的标准动作；
+3. 底噪构成（seed7）：TDCq 149 + DSM泄漏 143 + DCO 128 + DTC热 80 + REF 25，实测 total 比 RSS(257) 低 12%（次可加）；到 200fs spec 的路径变为：DSM 泄漏（DTC 逐码 INL 查表）+ TDC 分辨率/热噪 spec + seed 鲁棒性。
+
+## 1bit fbank 重评（2026-09-14 第四轮，`nb_1bit*.m`，13 run）
+
+fbank 收缩为 **1bit（单单元=1 abank LSB，一阶 SDM 占空比平均）** 作为正式架构选项重新实现并仿真（mode0 与 mode2 双路径并存；单元测试 ALL PASS）。当前框架（真实 spec、4.84M 环路、**K=20**）下 13 个 run 对比：
+
+| 项 | **1bit (mode0, K20)** | 3bit (mode2) |
+|---|---|---|
+| total σt（s7/s1/s3） | **1421 / 1450 / 1479** | 1421（s7） |
+| 无 glitch 底噪 | **225.9** | 226.6 |
+| glitch solo @100fs/code（4 seeds） | **1389–1402**（±0.5%，无轮盘） | 0.4–1394（轮盘，K32 数据） |
+| glitch 扫参 10/200/300 | **12 / 2947 / 4490**（≥100 近线性 ~14–15×fs/code） | 0.4 / — / 4486 |
+| 切换统计（total） | 8–12kHz, dstep=1 | 82kHz, dstep=3 |
+| TDC 量化 / DSM 泄漏 | 135.0 / 156.5 | 148.8 / 143.2 |
+| 量化相位纹波 | 3.7fs | 0.3fs |
+
+**结论**：
+1. **模型内 jitter 上两架构等效**（total/floor/glitch 标度全面重合，glitch 均 ~14×fs/code）——fbank 位数的取舍不由 jitter 决定；
+2. **K=32 时 mode0 solo 0.7fs 的"安静轨道"是粒度假象**：坍缩码 = round(8·y_acc/K)，K=32 时占空比粒度 0.25 恰好冻结、K=20 时 0.4 步进持续跳变（solo 自激 50kHz/dstep=1/1394fs）；真实 K=20.0625 非整数，图案永不精确重复 → 活跃抖振才是代表性行为；
+3. **物理 spec 锚点不同（关键提醒）**：模型 `fs_per_code` 按坍缩码变化计费——mode0 的"1 码"= 1/8 LSB 平均占空比变化 ≈ 大单元多切 ~1.5 个子步（≈12 个小单元等效的电容面积），mode2 的"1 码"= 恰好 1 个小单元切换。若模拟端按"每次单元切换"报价且 glitch∝面积，**1bit 的单单元大 8×，同一 fs/code 数字对应的物理要求苛刻 ~4–8×**；若 glitch 由驱动器主导（弱面积依赖），1bit 简单且够用。这是选型的决定性问题；
+4. 其它权衡：1bit 省硬件（1 单元+1bit SDM vs 8 匹配单元+温度计译码）、纹波 3.7fs vs 0.3fs（均可忽略）；1bit 空闲音/杂散潜力更强（本轮 total 的 25M 杂散 −90 vs −90，未见恶化）。
 
 诊断运行（不在预算内）：`tdc`（eq≡0 相位静止）→量化噪声退化为 0；`dsm`（理想TDC无抖动）→kdtc/g2 相关器确定性极限环 606fs 伪影（真实抖动下 kdtc 收敛 279.4、泄漏仅 ~55fs）。
 
@@ -119,7 +179,7 @@ DTC 按 spec 建模：**PN floor ≤−160 dBc/Hz @fout=100MHz（换算 159fs �
 
 1. **RM kdtc LMS 固定延迟2拍在 frac=0.25 反收敛**：周期4量化锯齿的半周期滞后使 cov(phe,eq_lag2)<0，任意增益误差下 kdtc 均被推离真值；正确对齐为 lag 0（phe(i) 携带 eq(i)，TDC mod-1 混叠吸收 DSM 超前一拍的整数差）。仿真 cfg 旋钮 `kdtc_lms_delay` 可复现（设 2 即重现反收敛）。
 2. **funcs/lpf.m 将 ki 量化到 2^-10 网格**：ki<2^-10 会 round 成 0，积分器静默冻结、环路退化为 I 型（phe 出现持续 DC）。
-3. **dsm_dco 必须自由运行**：adpll_fsm.v 未驱动 rstn_dsm_dco；FLL 期间若随 rstn_lpf 复位，细bank卡中间值 → DCO 只有整数分辨率 → FLL 死区 25MHz 永不锁定。且 dsm_dco 需按高速 clk_dsm 建模/实现（仿真按 32 倍过采样；ref 速率下 512 拍窗口计数噪声 ±80，freq_lock 无法判定）。
+3. **dsm_dco 必须自由运行**：adpll_fsm.v 未驱动 rstn_dsm_dco；FLL 期间若随 rstn_lpf 复位，细bank卡中间值 → DCO 只有整数分辨率 → FLL 死区 25MHz 永不锁定。且 dsm_dco 需按高速 clk_dsm 建模/实现——**clk_dsm = DCO÷4（复用 FLL fb_cnt 同源分频，8.025GHz 时 ≈2.006GHz），即每参考周期 FCW/4≈20.06 子步**（cfg `dsm_dco_oversample: 20`；曾按 32 近似，2026-09-14 修正）。ref 速率下 512 拍窗口计数噪声 ±80，freq_lock 无法判定。
 4. **RM/dsm_dco_rm.m 直接以 lpf_frac 驱动 DSM 是占位错误**：均值偏 f/8 → abank 极限环。正确架构：8 个温度计码 = 1个abank LSB，DSM 输入 mod(8f,1) + 静态部分 floor(8f)（溢出折入 abank）。
 5. **RM/RTL 不一致**：
    - `rtl/adpll/fll/fll.v` expected_count=FCW_int·2^thr 与 `funcs/fll.m` calc_cnt=FCW·2^thr/4 矛盾（模型隐含 fb 计数时钟为 DCO÷4 预分频；RTL 语义对应 DCO÷1 且 4bit thr 无法吸收分数部分）；

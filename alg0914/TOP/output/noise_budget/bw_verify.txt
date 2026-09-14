@@ -1,0 +1,13 @@
+tot2m_s7: lock_us=150.39 seg_start_us=1650 sigma_t_fs=1676.1 spur25_dBc=-98.08 chatter_x=0.0
+tot2m_s1: lock_us=147.59 seg_start_us=1650 sigma_t_fs=1655.7 spur25_dBc=-99.81 chatter_x=0.0
+tot2m_s3: lock_us=149.99 seg_start_us=1650 sigma_t_fs=1795.8 spur25_dBc=-100.76 chatter_x=0.0
+gl2m_s7: lock_us=144.81 seg_start_us=1650 sigma_t_fs=0.3 spur25_dBc=-176.64 chatter_x=0.0
+gl2m_s3: lock_us=145.41 seg_start_us=1650 sigma_t_fs=0.3 spur25_dBc=-177.05 chatter_x=0.0
+tot3m_s7: lock_us=150.39 seg_start_us=1650 sigma_t_fs=1561.2 spur25_dBc=-94.49 chatter_x=0.0
+tot3m_s3: lock_us=149.99 seg_start_us=1650 sigma_t_fs=1636.5 spur25_dBc=-97.92 chatter_x=0.0
+tot5m_ng: lock_us=149.91 seg_start_us=1650 sigma_t_fs=226.6 spur25_dBc=-90.74
+tot2m_g10: lock_us=150.03 seg_start_us=1650 sigma_t_fs=326.2 spur25_dBc=-98.53
+tot3m_ng: lock_us=149.91 seg_start_us=1650 sigma_t_fs=231.4 spur25_dBc=-95.06
+tot2m_g30: lock_us=150.19 seg_start_us=1650 sigma_t_fs=559.0 spur25_dBc=-98.36
+tot2m_ng: lock_us=149.91 seg_start_us=1650 sigma_t_fs=282.0 spur25_dBc=-98.57
+tot5m_g10: lock_us=150.03 seg_start_us=1650 sigma_t_fs=263.8 spur25_dBc=-90.73
